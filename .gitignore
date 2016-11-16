@@ -1,0 +1,4 @@
+# ignore PDFLatex output
+*.sty
+*.aux
+*.log
