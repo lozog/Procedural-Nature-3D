@@ -11,7 +11,7 @@
 using namespace glm;
 using namespace std;
 
-static const size_t DIM = 16;
+static const size_t DIM = 20;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -59,6 +59,7 @@ void A5::init()
 	// since it depends on the GLFW window being set up correctly).
 	view = glm::lookAt( 
 		glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 ),
+		// glm::vec3( 0.0f, 0.0f, 0.0f ),
 		glm::vec3( 0.0f, 0.0f, 0.0f ),
 		glm::vec3( 0.0f, 1.0f, 0.0f ) );
 
@@ -153,9 +154,7 @@ void A5::draw()
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( W ) );
 
 		// Just draw the terrain for now.
-		glBindVertexArray( theTerrain.getVAO() );
-		glUniform3f( col_uni, 1, 1, 1 );
-		glDrawArrays( GL_LINES, 0, (3+DIM)*4 );
+		theTerrain.draw( col_uni );
 
 	m_shader.disable();
 

@@ -80,3 +80,9 @@ void Terrain::init( ShaderProgram& m_shader )
 
 	CHECK_GL_ERRORS;
 }
+
+void Terrain::draw( const GLuint& col_uni ) {
+	glBindVertexArray( m_terrain_vao );
+	glUniform3f( col_uni, 1, 1, 1 );
+	glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
+}

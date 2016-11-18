@@ -18,6 +18,8 @@ public:
 	GLuint getVBO();
 
 	void init( ShaderProgram& m_shader );
+
+	void draw( const GLuint& col_uni );
 	
 private:
 	size_t tileSize;
