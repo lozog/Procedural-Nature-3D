@@ -19,6 +19,9 @@ A5::A5()
 	: current_col( 0 ),
 	theTerrain(10, 10, DIM)
 {
+	cameraPos 	= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
+	cameraTarget 	= glm::vec3( 0.0f, 0.0f, 0.0f );
+	// cameraRight 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
 	colour[2] = 0.0f;
@@ -56,16 +59,43 @@ void A5::init()
 
 	// Set up initial view and projection matrices (need to do this here,
 	// since it depends on the GLFW window being set up correctly).
-	view = glm::lookAt( 
-		glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 ),
-		// glm::vec3( 0.0f, 0.0f, 0.0f ),
-		glm::vec3( 0.0f, 0.0f, 0.0f ),
-		glm::vec3( 0.0f, 1.0f, 0.0f ) );
+	cout << float(DIM)*2.0*M_SQRT1_2 << " " << float(DIM)*2.0*M_SQRT1_2 << endl;
+	view = glm::lookAt( cameraPos, cameraTarget, glm::vec3( 0.0f, 1.0f, 0.0f ) );
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
 		float( m_framebufferWidth ) / float( m_framebufferHeight ),
 		1.0f, 1000.0f );
+}
+
+//----------------------------------------------------------------------------------------
+/*
+ * Camera control functions
+ */
+
+// TODO: implement first-person camera controls
+// see http://learnopengl.com/#!Getting-started/Camera
+
+void A5::moveCameraForward() {
+	cout << "forward" << endl;
+	// eye += glm::vec3(0.0f, 0.0f, -1.0f);
+	// view = glm::lookAt( eye, center, up );
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f));
+}
+
+void A5::moveCameraBackward() {
+	cout << "backward" << endl;
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
+}
+
+void A5::moveCameraLeft() {
+	cout << "left" << endl;
+	view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f));
+}
+
+void A5::moveCameraRight() {
+	cout << "right" << endl;
+	view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 //----------------------------------------------------------------------------------------
@@ -144,7 +174,7 @@ void A5::draw()
 	// Create a global transformation for the model (centre it).
 	mat4 W;
 	W = glm::translate( W, vec3( -float(DIM)/2.0f, 0, -float(DIM)/2.0f ) );
-	glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;
+	glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	m_shader.enable();
 		glEnable( GL_DEPTH_TEST );
 
@@ -248,10 +278,40 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 
 	if( action == GLFW_PRESS ) {
 		// Respond to some key events.
+
+		// UI controls
 		if (key == GLFW_KEY_Q) {
 			// quit application
 			glfwSetWindowShouldClose(m_window, GL_TRUE);
 			eventHandled = true;
+		} // if
+
+		// Camera controls
+		if (key == GLFW_KEY_W) {
+			// move forward
+			moveCameraForward();
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_S) {
+			// move forward
+			moveCameraBackward();
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_A) {
+			// move forward
+			moveCameraLeft();
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_D) {
+			// move forward
+			moveCameraRight();
+			eventHandled = true;
+		} // if
+	} // if
+
+	if ( action == GLFW_RELEASE ) {
+		if ( key == GLFW_KEY_W ) {
+			// do stuff
 		} // if
 	} // if
 

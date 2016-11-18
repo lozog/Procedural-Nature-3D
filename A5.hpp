@@ -28,6 +28,17 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
+	// Camera controls
+	void moveCameraForward();
+	void moveCameraBackward();
+	void moveCameraLeft();
+	void moveCameraRight();
+
+	// camera-related fields
+	glm::vec3 cameraPos;
+	glm::vec3 cameraTarget;
+	glm::vec3 cameraRight;
+
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;
 	GLint P_uni; 		// Uniform location for Projection matrix.
