@@ -157,9 +157,6 @@ void A5::draw()
 
 	m_shader.disable();
 
-	// Restore defaults
-	glBindVertexArray( 0 );
-
 	CHECK_GL_ERRORS;
 }
 
