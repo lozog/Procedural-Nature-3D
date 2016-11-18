@@ -28,7 +28,7 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
-	void initGrid();
+	void initTerrain();
 
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;

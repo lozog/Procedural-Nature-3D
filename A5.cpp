@@ -51,7 +51,7 @@ void A5::init()
 	M_uni = m_shader.getUniformLocation( "M" );
 	col_uni = m_shader.getUniformLocation( "colour" );
 
-	initGrid();
+	initTerrain();
 
 	// Set up initial view and projection matrices (need to do this here,
 	// since it depends on the GLFW window being set up correctly).
@@ -66,7 +66,7 @@ void A5::init()
 		1.0f, 1000.0f );
 }
 
-void A5::initGrid()
+void A5::initTerrain()
 {
 	size_t sz = 3 * 2 * 2 * (DIM+3);
 
@@ -302,10 +302,14 @@ bool A5::windowResizeEvent(int width, int height) {
 bool A5::keyInputEvent(int key, int action, int mods) {
 	bool eventHandled(false);
 
-	// Fill in with event handling code...
 	if( action == GLFW_PRESS ) {
 		// Respond to some key events.
-	}
+		if (key == GLFW_KEY_Q) {
+			// quit application
+			glfwSetWindowShouldClose(m_window, GL_TRUE);
+			eventHandled = true;
+		} // if
+	} // if
 
 	return eventHandled;
 }
