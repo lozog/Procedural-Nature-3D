@@ -130,17 +130,17 @@ void Terrain::init( ShaderProgram& m_shader )
 	heightMapVertData[ idx+2 ] = 0;
 	idx += 3;
 	heightMapVertData[ idx ] = 1;
-	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+1 ] = 1;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
+	heightMapVertData[ idx ] = 2;
+	heightMapVertData[ idx+1 ] = 2;
 	heightMapVertData[ idx+2 ] = 0;
 	idx += 3;
 	heightMapVertData[ idx ] = 1;
-	heightMapVertData[ idx+1 ] = 0;
-	heightMapVertData[ idx+2 ] = 1;
-	idx += 1;
-	heightMapVertData[ idx ] = 1;
-	heightMapVertData[ idx+1 ] = 0;
-	heightMapVertData[ idx+2 ] = 2;
-	idx += 1;
+	heightMapVertData[ idx+1 ] = 3;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
 
 	size_t heightMapIndexDataSZ = 4;
 	float* heightMapIndexData = new float[ heightMapIndexDataSZ ];
@@ -273,7 +273,7 @@ void Terrain::draw( const GLuint& col_uni ) {
 	// glBindVertexBuffer( m_terrain_ibo );
 	glUniform3f( col_uni, 1, 1, 1 );
 	// glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
-	glDrawArrays( GL_TRIANGLES, 0, 6 );
+	glDrawArrays( GL_TRIANGLE_STRIP, 0, 6 ); // last param is # of ACTUAL verts to draw
 	// glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
 	// glBindVertexBuffer( 0 );											// Restore defaults
 	glBindVertexArray( 0 );											// Restore defaults

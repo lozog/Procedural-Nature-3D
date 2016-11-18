@@ -155,7 +155,6 @@ void A5::draw()
 		// Just draw the terrain for now.
 		theTerrain.draw( col_uni );
 
-
 	m_shader.disable();
 
 	CHECK_GL_ERRORS;
