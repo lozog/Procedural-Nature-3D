@@ -40,6 +40,11 @@ private:
 	glm::vec3 cameraUp;	// not sure if need this yet
 	float cameraSpeed;
 
+	// input-related fields
+
+	// keyboard movement
+	bool forwardPress, backwardPress, leftPress, rightPress;
+
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;
 	GLint P_uni; 		// Uniform location for Projection matrix.

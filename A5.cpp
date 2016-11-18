@@ -19,10 +19,14 @@ static const size_t DIM = 10;
 A5::A5()
 	: current_col( 0 ),
 	theTerrain(10, 10, DIM),
-	cameraSpeed(0.05f)
+	cameraSpeed(0.05f),
+	forwardPress(false),
+	backwardPress(false),
+	leftPress(false),
+	rightPress(false)
 {
 	// cameraPos 		= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
-	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
+	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	colour[0] = 0.0f;
@@ -88,8 +92,12 @@ void A5::init()
      if(key == GLFW_KEY_D)
          cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 */
+
+#define DEBUG_CAMERAMOVEMENT 0
 void A5::moveCameraForward() {
+	#if DEBUG_CAMERAMOVEMENT
 	cout << "forward" << endl;
+	#endif
 	// eye += glm::vec3(0.0f, 0.0f, -1.0f);
 	// view = glm::lookAt( eye, center, up );
 	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f));
@@ -97,19 +105,25 @@ void A5::moveCameraForward() {
 }
 
 void A5::moveCameraBackward() {
+	#if DEBUG_CAMERAMOVEMENT
 	cout << "backward" << endl;
+	#endif
 	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
 	cameraPos -= cameraSpeed * cameraFront;
 }
 
 void A5::moveCameraLeft() {
+	#if DEBUG_CAMERAMOVEMENT
 	cout << "left" << endl;
+	#endif
 	// view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f));
 	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 void A5::moveCameraRight() {
+	#if DEBUG_CAMERAMOVEMENT
 	cout << "right" << endl;
+	#endif
 	// view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f));
 	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
@@ -121,6 +135,10 @@ void A5::moveCameraRight() {
 void A5::appLogic()
 {
 	// calculate viewMatrix
+	if ( forwardPress ) moveCameraForward();
+	if ( backwardPress ) moveCameraBackward();
+	if ( leftPress ) moveCameraLeft();
+	if ( rightPress ) moveCameraRight();
 	// view = glm::lookAt( cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, 1.0f, 0.0f ) );
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -307,30 +325,49 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 
 		// Camera controls
 		if (key == GLFW_KEY_W) {
-			// move forward
-			moveCameraForward();
+			// toggle forward movement
+			forwardPress = true;
+			// moveCameraForward();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_S) {
-			// move forward
-			moveCameraBackward();
+			// toggle backward movement
+			backwardPress = true;
+			// moveCameraBackward();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_A) {
-			// move forward
-			moveCameraLeft();
+			// toggle left movement
+			leftPress = true;
+			// moveCameraLeft();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_D) {
-			// move forward
-			moveCameraRight();
+			// toggle right movement
+			rightPress = true;
+			// moveCameraRight();
 			eventHandled = true;
 		} // if
 	} // if
 
 	if ( action == GLFW_RELEASE ) {
+
+		// Camera Controls
 		if ( key == GLFW_KEY_W ) {
-			// do stuff
+			forwardPress = false;
+			eventHandled = true;
+		} // if
+		if ( key == GLFW_KEY_S ) {
+			backwardPress = false;
+			eventHandled = true;
+		} // if
+		if ( key == GLFW_KEY_A ) {
+			leftPress = false;
+			eventHandled = true;
+		} // if
+		if ( key == GLFW_KEY_D ) {
+			rightPress = false;
+			eventHandled = true;
 		} // if
 	} // if
 
