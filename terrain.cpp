@@ -50,6 +50,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	// will need to use an index buffer object and use degenerate triangles to store.
 	// see http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
 
+	#if 0
 	// for an x by z grid:
 	size_t numVerts 	= (m_length) * (m_width);
 	size_t numTriangles = 2 * ((m_length-1)*(m_width-1));
@@ -73,7 +74,8 @@ void Terrain::init( ShaderProgram& m_shader )
 	// Now build the index data
 	// based on http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
 	size_t numStrips = m_width - 1;
-	size_t numDegens = 2 * (numStrips - 1);
+	// size_t numDegens = 2 * (numStrips - 1);
+	size_t numDegens = 0;
 	size_t vertsPerStrip = 2 * m_length;
 
 	size_t heightMapIndexDataSZ = (vertsPerStrip * numStrips) + numDegens;
@@ -84,7 +86,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	for (int z = 0; z < m_width - 1; z += 1) {      
 		if (z > 0) {
 	        // Degenerate begin: repeat first vertex
-	        heightMapIndexData[offset++] = (unsigned short) (z * m_width);
+	        // heightMapIndexData[offset++] = (unsigned short) (z * m_width);
 	    } // if
 	 
 	    for (int x = 0; x < m_length; x += 1) {
@@ -95,7 +97,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	 
 	    if (z < m_width - 2) {
 	        // Degenerate end: repeat last vertex
-	        heightMapIndexData[offset++] = (unsigned short) (((z + 1) * m_width) + (m_length - 1));
+	        // heightMapIndexData[offset++] = (unsigned short) (((z + 1) * m_width) + (m_length - 1));
 	    } // if
 	} // for
 
@@ -104,10 +106,52 @@ void Terrain::init( ShaderProgram& m_shader )
 	for (int i = 0; i < bufferIndexCount; i += 1) {
 		cout << heightMapIndexData[i] << endl;
 	} // for
-	// cout << numTriangles << " triangles" << endl;
-	// cout << heightMapVertDataSZ << " vert sz" << endl;
+	cout << numTriangles << " triangles" << endl;
+	cout << heightMapVertDataSZ << " vert sz" << endl;
 	cout << heightMapIndexDataSZ << " index sz" << endl;
 	cout << bufferIndexCount << " bufferIndexCount" << endl;
+	#else 
+
+	size_t numVerts = 6;
+	size_t heightMapVertDataSZ = 3 * numVerts;
+	float* heightMapVertData = new float[ heightMapVertDataSZ ];
+
+	size_t idx = 0;
+	heightMapVertData[ idx ] = 0;
+	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
+	heightMapVertData[ idx ] = 0;
+	heightMapVertData[ idx+1 ] = 1;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
+	heightMapVertData[ idx ] = 1;
+	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
+	heightMapVertData[ idx ] = 1;
+	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+2 ] = 0;
+	idx += 3;
+	heightMapVertData[ idx ] = 1;
+	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+2 ] = 1;
+	idx += 1;
+	heightMapVertData[ idx ] = 1;
+	heightMapVertData[ idx+1 ] = 0;
+	heightMapVertData[ idx+2 ] = 2;
+	idx += 1;
+
+	size_t heightMapIndexDataSZ = 4;
+	float* heightMapIndexData = new float[ heightMapIndexDataSZ ];
+
+	heightMapIndexData[0] = 0;
+	heightMapIndexData[1] = 3;
+	heightMapIndexData[2] = 1;
+	heightMapIndexData[3] = 4;
+
+
+	#endif
 	#if 0
 	for (int i = 0; i < numTriangles; i += 1 ) {
 		for (int k = 0; k < 3; k += 1 ) {
@@ -135,10 +179,10 @@ void Terrain::init( ShaderProgram& m_shader )
 		heightMapVertData, GL_STATIC_DRAW );
 
 	// Create the terrain index buffer
-	glGenBuffers( 1, &m_terrain_ibo );
+	/*glGenBuffers( 1, &m_terrain_ibo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_terrain_ibo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, heightMapIndexDataSZ*sizeof(unsigned short),
-		heightMapIndexData, GL_STATIC_DRAW );
+		heightMapIndexData, GL_STATIC_DRAW );*/
 
 	// Specify the means of extracting the position values properly.
 	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
@@ -223,13 +267,14 @@ void Terrain::draw( const GLuint& col_uni ) {
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	
 	#else
+
 	// THEIR IMPL
 	glBindVertexArray( m_terrain_vao );
 	// glBindVertexBuffer( m_terrain_ibo );
 	glUniform3f( col_uni, 1, 1, 1 );
 	// glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
-	// glDrawArrays( GL_LINES, 0, bufferIndexCount );
-	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
+	glDrawArrays( GL_TRIANGLES, 0, 6 );
+	// glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
 	// glBindVertexBuffer( 0 );											// Restore defaults
 	glBindVertexArray( 0 );											// Restore defaults
 	
