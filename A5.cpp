@@ -11,13 +11,13 @@
 using namespace glm;
 using namespace std;
 
-static const size_t DIM = 20;
+static const size_t DIM = 10;
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(DIM)
+	theTerrain(3, 3, DIM)
 {
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
@@ -52,7 +52,6 @@ void A5::init()
 	M_uni = m_shader.getUniformLocation( "M" );
 	col_uni = m_shader.getUniformLocation( "colour" );
 
-	// theTerrain = new Terrain(DIM);
 	theTerrain.init( m_shader );
 
 	// Set up initial view and projection matrices (need to do this here,

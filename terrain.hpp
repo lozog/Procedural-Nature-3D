@@ -7,7 +7,7 @@
 class Terrain
 {
 public:
-	Terrain( size_t tileSize );
+	Terrain( size_t m_length, size_t m_width, size_t tileSize );
 	~Terrain();
 
 	void reset();
@@ -22,7 +22,8 @@ public:
 	void draw( const GLuint& col_uni );
 	
 private:
-	size_t tileSize;
+	// m_length and m_width correspond to x and z, respectively.
+	size_t m_length, m_width, tileSize;
 	const size_t numVertices = 128;
 
 	// Fields related to terrain geometry.
