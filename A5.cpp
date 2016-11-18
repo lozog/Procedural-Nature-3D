@@ -16,7 +16,8 @@ static const size_t DIM = 16;
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
-	: current_col( 0 )
+	: current_col( 0 ),
+	theTerrain(DIM)
 {
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
@@ -51,7 +52,8 @@ void A5::init()
 	M_uni = m_shader.getUniformLocation( "M" );
 	col_uni = m_shader.getUniformLocation( "colour" );
 
-	initTerrain();
+	// theTerrain = new Terrain(DIM);
+	theTerrain.init( m_shader );
 
 	// Set up initial view and projection matrices (need to do this here,
 	// since it depends on the GLFW window being set up correctly).
@@ -64,57 +66,6 @@ void A5::init()
 		glm::radians( 45.0f ),
 		float( m_framebufferWidth ) / float( m_framebufferHeight ),
 		1.0f, 1000.0f );
-}
-
-void A5::initTerrain()
-{
-	size_t sz = 3 * 2 * 2 * (DIM+3);
-
-	float *verts = new float[ sz ];
-	size_t ct = 0;
-	for( int idx = 0; idx < DIM+3; ++idx ) {
-		verts[ ct ] = -1;
-		verts[ ct+1 ] = 0;
-		verts[ ct+2 ] = idx-1;
-		verts[ ct+3 ] = DIM+1;
-		verts[ ct+4 ] = 0;
-		verts[ ct+5 ] = idx-1;
-		ct += 6;
-
-		verts[ ct ] = idx-1;
-		verts[ ct+1 ] = 0;
-		verts[ ct+2 ] = -1;
-		verts[ ct+3 ] = idx-1;
-		verts[ ct+4 ] = 0;
-		verts[ ct+5 ] = DIM+1;
-		ct += 6;
-	}
-
-	// Create the vertex array to record buffer assignments.
-	glGenVertexArrays( 1, &m_grid_vao );
-	glBindVertexArray( m_grid_vao );
-
-	// Create the cube vertex buffer
-	glGenBuffers( 1, &m_grid_vbo );
-	glBindBuffer( GL_ARRAY_BUFFER, m_grid_vbo );
-	glBufferData( GL_ARRAY_BUFFER, sz*sizeof(float),
-		verts, GL_STATIC_DRAW );
-
-	// Specify the means of extracting the position values properly.
-	GLint posAttrib = m_shader.getAttribLocation( "position" );
-	glEnableVertexAttribArray( posAttrib );
-	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
-
-	// Reset state to prevent rogue code from messing with *my* 
-	// stuff!
-	glBindVertexArray( 0 );
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-	// OpenGL has the buffer now, there's no need for us to keep a copy.
-	delete [] verts;
-
-	CHECK_GL_ERRORS;
 }
 
 //----------------------------------------------------------------------------------------
@@ -201,13 +152,11 @@ void A5::draw()
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( W ) );
 
-		// Just draw the grid for now.
-		glBindVertexArray( m_grid_vao );
+		// Just draw the terrain for now.
+		glBindVertexArray( theTerrain.getVAO() );
 		glUniform3f( col_uni, 1, 1, 1 );
 		glDrawArrays( GL_LINES, 0, (3+DIM)*4 );
 
-		// Draw the cubes
-		// Highlight the active square.
 	m_shader.disable();
 
 	// Restore defaults

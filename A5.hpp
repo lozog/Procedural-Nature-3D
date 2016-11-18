@@ -6,7 +6,7 @@
 #include "cs488-framework/OpenGLImport.hpp"
 #include "cs488-framework/ShaderProgram.hpp"
 
-#include "grid.hpp"
+#include "terrain.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -28,8 +28,6 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
-	void initTerrain();
-
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;
 	GLint P_uni; // Uniform location for Projection matrix.
@@ -37,13 +35,11 @@ private:
 	GLint M_uni; // Uniform location for Model matrix.
 	GLint col_uni;   // Uniform location for cube colour.
 
-	// Fields related to grid geometry.
-	GLuint m_grid_vao; // Vertex Array Object
-	GLuint m_grid_vbo; // Vertex Buffer Object
-
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
 	glm::mat4 view;
+
+	Terrain theTerrain;
 
 	float colour[3];
 	int current_col;
