@@ -17,7 +17,7 @@ static const size_t DIM = 10;
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(3, 3, DIM)
+	theTerrain(10, 10, DIM)
 {
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
