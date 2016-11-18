@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-#define NEWIMPL 0
+#define NEWIMPL 1
 
 Terrain::Terrain( size_t x, size_t z, size_t tileSize )
 	: m_length( x ),
@@ -104,7 +104,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	} // for
 	#endif
 
-	#if NEWIMPL
+	#if 1
 
 	// Create the vertex array to record buffer assignments.
 	glGenVertexArrays( 1, &m_terrain_vao );
@@ -195,7 +195,7 @@ void Terrain::init( ShaderProgram& m_shader )
 }
 
 void Terrain::draw( const GLuint& col_uni ) {
-	#if NEWIMPL
+	#if 0
 	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_terrain_ibo );
 
@@ -209,7 +209,8 @@ void Terrain::draw( const GLuint& col_uni ) {
 	glBindVertexArray( m_terrain_vao );
 	// glBindVertexBuffer( m_terrain_ibo );
 	glUniform3f( col_uni, 1, 1, 1 );
-	glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
+	// glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
+	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
 	// glBindVertexBuffer( 0 );											// Restore defaults
 	glBindVertexArray( 0 );											// Restore defaults
 	

@@ -36,7 +36,7 @@ A5::~A5()
 void A5::init()
 {
 	// Set the background colour.
-	glClearColor( 0.3, 0.5, 0.7, 1.0 );
+	glClearColor( 0.0, 0.0, 0.0, 1.0 );
 
 	// Build the shader
 	m_shader.generateProgramObject();
