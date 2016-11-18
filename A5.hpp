@@ -35,9 +35,10 @@ private:
 	void moveCameraRight();
 
 	// camera-related fields
-	glm::vec3 cameraPos;
-	glm::vec3 cameraTarget;
-	glm::vec3 cameraRight;
+	glm::vec3 cameraPos;	// position of camera
+	glm::vec3 cameraFront;	// point camera is looking at
+	glm::vec3 cameraUp;	// not sure if need this yet
+	float cameraSpeed;
 
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;

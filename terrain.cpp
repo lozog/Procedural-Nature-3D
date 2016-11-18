@@ -79,9 +79,11 @@ void Terrain::init( ShaderProgram& m_shader )
 	size_t heightMapIndexDataSZ = (vertsPerStrip * numStrips) + numDegens;
 	unsigned int* heightMapIndexData = new unsigned int[ heightMapIndexDataSZ ];
 
+	#if 0
 	cout << numTriangles << " triangles" << endl;
 	cout << heightMapVertDataSZ << " vert sz" << endl;
 	cout << heightMapIndexDataSZ << " index sz" << endl;
+	#endif
 
 	int offset = 0;
 	 

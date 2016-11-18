@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/io.hpp>
 
 using namespace glm;
 using namespace std;
@@ -17,11 +18,13 @@ static const size_t DIM = 10;
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(10, 10, DIM)
+	theTerrain(10, 10, DIM),
+	cameraSpeed(0.05f)
 {
-	cameraPos 	= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
-	cameraTarget 	= glm::vec3( 0.0f, 0.0f, 0.0f );
-	// cameraRight 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	// cameraPos 		= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
+	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
+	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
+	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
 	colour[2] = 0.0f;
@@ -59,8 +62,7 @@ void A5::init()
 
 	// Set up initial view and projection matrices (need to do this here,
 	// since it depends on the GLFW window being set up correctly).
-	cout << float(DIM)*2.0*M_SQRT1_2 << " " << float(DIM)*2.0*M_SQRT1_2 << endl;
-	view = glm::lookAt( cameraPos, cameraTarget, glm::vec3( 0.0f, 1.0f, 0.0f ) );
+	// cout << float(DIM)*2.0*M_SQRT1_2 << " " << float(DIM)*2.0*M_SQRT1_2 << endl;
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
@@ -75,27 +77,41 @@ void A5::init()
 
 // TODO: implement first-person camera controls
 // see http://learnopengl.com/#!Getting-started/Camera
-
+/*
+ GLfloat cameraSpeed = 0.05f;
+     if(key == GLFW_KEY_W)
+         cameraPos += cameraSpeed * cameraFront;
+     if(key == GLFW_KEY_S)
+         cameraPos -= cameraSpeed * cameraFront;
+     if(key == GLFW_KEY_A)
+         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+     if(key == GLFW_KEY_D)
+         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+*/
 void A5::moveCameraForward() {
 	cout << "forward" << endl;
 	// eye += glm::vec3(0.0f, 0.0f, -1.0f);
 	// view = glm::lookAt( eye, center, up );
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f));
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f));
+	cameraPos += cameraSpeed * cameraFront;
 }
 
 void A5::moveCameraBackward() {
 	cout << "backward" << endl;
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
+	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
+	cameraPos -= cameraSpeed * cameraFront;
 }
 
 void A5::moveCameraLeft() {
 	cout << "left" << endl;
-	view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f));
+	// view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f));
+	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 void A5::moveCameraRight() {
 	cout << "right" << endl;
-	view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f));
+	// view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f));
+	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 //----------------------------------------------------------------------------------------
@@ -104,7 +120,10 @@ void A5::moveCameraRight() {
  */
 void A5::appLogic()
 {
-	// Place per frame, application logic here ...
+	// calculate viewMatrix
+	// view = glm::lookAt( cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, 1.0f, 0.0f ) );
+	// cout << cameraPos + cameraFront << endl;
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 }
 
 //----------------------------------------------------------------------------------------
