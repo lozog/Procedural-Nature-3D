@@ -144,7 +144,7 @@ void A5::draw()
 	// Create a global transformation for the model (centre it).
 	mat4 W;
 	W = glm::translate( W, vec3( -float(DIM)/2.0f, 0, -float(DIM)/2.0f ) );
-
+	glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;
 	m_shader.enable();
 		glEnable( GL_DEPTH_TEST );
 

@@ -77,37 +77,38 @@ void Terrain::init( ShaderProgram& m_shader )
 	size_t vertsPerStrip = 2 * m_length;
 
 	size_t heightMapIndexDataSZ = (vertsPerStrip * numStrips) + numDegens;
-	short* heightMapIndexData = new short[ heightMapIndexDataSZ ];
+	unsigned short* heightMapIndexData = new unsigned short[ heightMapIndexDataSZ ];
 
 	int offset = 0;
-	bufferIndexCount = 0;
 	 
 	for (int z = 0; z < m_width - 1; z += 1) {      
 		if (z > 0) {
 	        // Degenerate begin: repeat first vertex
-	        heightMapIndexData[offset++] = (short) (z * m_width);
-	        bufferIndexCount += 1;
+	        heightMapIndexData[offset++] = (unsigned short) (z * m_width);
 	    } // if
 	 
 	    for (int x = 0; x < m_length; x += 1) {
 	        // One part of the strip
-	        heightMapIndexData[offset++] = (short) ((z * m_width) + x);
-	        heightMapIndexData[offset++] = (short) (((z + 1) * m_width) + x);
-	        bufferIndexCount += 2;
+	        heightMapIndexData[offset++] = (unsigned short) ((z * m_width) + x);
+	        heightMapIndexData[offset++] = (unsigned short) (((z + 1) * m_width) + x);
 	    } // for
 	 
 	    if (z < m_width - 2) {
 	        // Degenerate end: repeat last vertex
-	        heightMapIndexData[offset++] = (short) (((z + 1) * m_width) + (m_length - 1));
-	        bufferIndexCount += 1;
+	        heightMapIndexData[offset++] = (unsigned short) (((z + 1) * m_width) + (m_length - 1));
 	    } // if
 	} // for
 
-	#if 1
+	bufferIndexCount = heightMapIndexDataSZ;
+
 	for (int i = 0; i < bufferIndexCount; i += 1) {
 		cout << heightMapIndexData[i] << endl;
 	} // for
-	cout << numTriangles << " triangles" << endl;
+	// cout << numTriangles << " triangles" << endl;
+	// cout << heightMapVertDataSZ << " vert sz" << endl;
+	cout << heightMapIndexDataSZ << " index sz" << endl;
+	cout << bufferIndexCount << " bufferIndexCount" << endl;
+	#if 0
 	for (int i = 0; i < numTriangles; i += 1 ) {
 		for (int k = 0; k < 3; k += 1 ) {
 			cout << heightMapIndexData[i+k] << " " << heightMapIndexData[i+k+1] << " " << heightMapIndexData[i+k+2] << " - ";
@@ -136,14 +137,14 @@ void Terrain::init( ShaderProgram& m_shader )
 	// Create the terrain index buffer
 	glGenBuffers( 1, &m_terrain_ibo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_terrain_ibo );
-	glBufferData( GL_ELEMENT_ARRAY_BUFFER, heightMapIndexDataSZ*sizeof(short),
+	glBufferData( GL_ELEMENT_ARRAY_BUFFER, heightMapIndexDataSZ*sizeof(unsigned short),
 		heightMapIndexData, GL_STATIC_DRAW );
 
 	// Specify the means of extracting the position values properly.
-	const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
+	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
 	GLint posAttrib = m_shader.getAttribLocation( "position" );
 	glEnableVertexAttribArray( posAttrib );
-	glVertexAttribPointer( posAttrib, STRIDE, GL_FLOAT, GL_FALSE, 0, nullptr );
+	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!
