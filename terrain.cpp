@@ -38,6 +38,11 @@ GLuint Terrain::getVBO() {
 	return m_terrain_vbo;
 }
 
+size_t Terrain::getBufferIndexCount() {
+	return bufferIndexCount;
+}
+
+
 void Terrain::init( ShaderProgram& m_shader )
 {
 	// TODO: generate flat terrain with GL_TRIANGLES_STRIP
@@ -47,18 +52,18 @@ void Terrain::init( ShaderProgram& m_shader )
 
 	// for an x by z grid:
 	size_t numVerts 	= (m_length) * (m_width);
-	size_t numTriangles = 2 * (m_length*m_width);
+	size_t numTriangles = 2 * ((m_length-1)*(m_width-1));
 
 	size_t heightMapVertDataSZ = 3 * numVerts;					// x, y, and z for each vertex
 	float* heightMapVertData = new float[ heightMapVertDataSZ ];
 
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
-			size_t idx = 3*(z*(m_length)) + x;
+			size_t idx = 3*(z*(m_length-1)) + x;
 			heightMapVertData[ idx ] 	= x;
-			heightMapVertData[ idx+1 ] 	= 0;					// flat terrain -> y=0
-			heightMapVertData[ idx+2 ] 	= z;
-			#if 0
+			heightMapVertData[ idx+1 ] 	= z;					// flat terrain -> y=0
+			heightMapVertData[ idx+2 ] 	= 0;
+			#if 1
 			cout << heightMapVertData[idx] << ", " << heightMapVertData[idx+1] << ", " << heightMapVertData[idx+2] << endl;
 			#endif
 		} // for
@@ -98,10 +103,22 @@ void Terrain::init( ShaderProgram& m_shader )
 	    } // if
 	} // for
 
-	#if 0
+	#if 1
 	for (int i = 0; i < bufferIndexCount; i += 1) {
 		cout << heightMapIndexData[i] << endl;
 	} // for
+	cout << numTriangles << " triangles" << endl;
+	for (int i = 0; i < numTriangles; i += 1 ) {
+		for (int k = 0; k < 3; k += 1 ) {
+			cout << heightMapIndexData[i+k] << " " << heightMapIndexData[i+k+1] << " " << heightMapIndexData[i+k+2] << " - ";
+			float x = heightMapVertData[ heightMapIndexData[i+k] ];
+			float y = heightMapVertData[ heightMapIndexData[i+1+k] ];
+			float z = heightMapVertData[ heightMapIndexData[i+2+k] ];
+			if ( i+k % 2 == 1) swap(x, y);
+			// cout << x <<", " << y << ", " << z << " -- ";
+		}
+		cout << endl;
+	}
 	#endif
 
 	#if 1
@@ -210,6 +227,7 @@ void Terrain::draw( const GLuint& col_uni ) {
 	// glBindVertexBuffer( m_terrain_ibo );
 	glUniform3f( col_uni, 1, 1, 1 );
 	// glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
+	// glDrawArrays( GL_LINES, 0, bufferIndexCount );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
 	// glBindVertexBuffer( 0 );											// Restore defaults
 	glBindVertexArray( 0 );											// Restore defaults

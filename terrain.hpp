@@ -16,6 +16,7 @@ public:
 
 	GLuint getVAO();
 	GLuint getVBO();
+	size_t getBufferIndexCount();
 
 	void init( ShaderProgram& m_shader );
 
