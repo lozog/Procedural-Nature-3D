@@ -20,15 +20,15 @@ A5::A5()
 	: current_col( 0 ),
 	theTerrain(10, 10, DIM),
 	cameraSpeed(0.05f),
+	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
 	leftPress(false),
-	rightPress(false)
+	rightPress(false),
+	firstMouseMove(false)
 {
 	// cameraPos 		= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
-	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
-	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
-	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	reset();
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
 	colour[2] = 0.0f;
@@ -38,6 +38,22 @@ A5::A5()
 // Destructor
 A5::~A5()
 {}
+
+//----------------------------------------------------------------------------------------
+// Reset things
+void A5::reset() {
+	resetCamera();
+}
+
+//----------------------------------------------------------------------------------------
+// Reset camera position
+void A5::resetCamera() {
+	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
+	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	pitch = 0.0f;
+	yaw = 0.0f;
+}
 
 //----------------------------------------------------------------------------------------
 /*
@@ -72,6 +88,10 @@ void A5::init()
 		glm::radians( 45.0f ),
 		float( m_framebufferWidth ) / float( m_framebufferHeight ),
 		1.0f, 1000.0f );
+
+	// grab and hide the cursor
+	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+	// glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 }
 
 //----------------------------------------------------------------------------------------
@@ -142,6 +162,8 @@ void A5::appLogic()
 	// view = glm::lookAt( cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, 1.0f, 0.0f ) );
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+	cout << glfwGetInputMode( m_window, GLFW_CURSOR ) << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -150,6 +172,7 @@ void A5::appLogic()
  */
 void A5::guiLogic()
 {
+	#if 0
 	// We already know there's only going to be one window, so for 
 	// simplicity we'll store button states in static local variables.
 	// If there was ever a possibility of having multiple instances of
@@ -158,8 +181,13 @@ void A5::guiLogic()
 	static bool showTestWindow(false);
 	static bool showDebugWindow(true);
 
+	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_ENABLED );
+
+
 	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize);
 	float opacity(0.5f);
+
+	// ImGui::SetMouseCursor(ImGuiMouseCursor_None);
 
 	ImGui::Begin("Debug Window", &showDebugWindow, ImVec2(100,100), opacity, windowFlags);
 		if( ImGui::Button( "Quit Application" ) ) {
@@ -200,6 +228,10 @@ void A5::guiLogic()
 	if( showTestWindow ) {
 		ImGui::ShowTestWindow( &showTestWindow );
 	}
+
+	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+
+	#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -257,12 +289,39 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 	bool eventHandled(false);
 
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
-		// Put some code here to handle rotations.  Probably need to
-		// check whether we're *dragging*, not just moving the mouse.
-		// Probably need some instance variables to track the current
-		// rotation amount, and maybe the previous X position (so 
-		// that you can rotate relative to the *change* in X.
-	}
+		if ( !firstMouseMove ) {
+			xPosPrev = xPos;
+			yPosPrev = yPos;
+			firstMouseMove = true;
+		}
+		double xOffset = xPos - xPosPrev;
+		double yOffset = yPosPrev - yPos;
+
+		cout << xPos << " from " << xPosPrev << " becomes " << xOffset << endl;
+
+		xOffset *= mouseSensitivity;
+		yOffset *= mouseSensitivity;
+
+
+		// cout << xOffset << " " << yOffset << endl;
+
+		yaw		+= xOffset;
+		pitch 	+= yOffset;
+
+		if(pitch > 89.0f)
+			pitch = 89.0f;
+		if(pitch < -89.0f)
+			pitch = -89.0f;
+
+		glm::vec3 front;
+	    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+		front.y = sin(glm::radians(pitch));
+		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		cameraFront = glm::normalize(front);
+
+		xPosPrev = xPos;
+		yPosPrev = yPos;
+	} // if
 
 	return eventHandled;
 }
@@ -320,6 +379,11 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		if (key == GLFW_KEY_Q) {
 			// quit application
 			glfwSetWindowShouldClose(m_window, GL_TRUE);
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_R) {
+			// reset
+			reset();
 			eventHandled = true;
 		} // if
 

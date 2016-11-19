@@ -28,6 +28,9 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
+	void reset();
+	void resetCamera();
+
 	// Camera controls
 	void moveCameraForward();
 	void moveCameraBackward();
@@ -35,22 +38,25 @@ private:
 	void moveCameraRight();
 
 	// camera-related fields
-	glm::vec3 cameraPos;	// position of camera
-	glm::vec3 cameraFront;	// point camera is looking at
-	glm::vec3 cameraUp;	// not sure if need this yet
-	float cameraSpeed;
+	glm::vec3 cameraPos;						// position of camera
+	glm::vec3 cameraFront;						// point camera is looking at
+	glm::vec3 cameraUp;
+	float cameraSpeed;							// movement speed of camera
+	float mouseSensitivity;						// sensitivity of mouse control of pitch/yaw
 
 	// input-related fields
 
-	// keyboard movement
-	bool forwardPress, backwardPress, leftPress, rightPress;
+	bool forwardPress, backwardPress, leftPress, rightPress;	// keyboard movement
+	double xPosPrev, yPosPrev;									// mousePos of previous frame
+	bool firstMouseMove;	// flag variable (I know, I know...) to signal if xPosPrev has been set yet
+	double pitch, yaw;
 
 	// Fields related to the shader and uniforms.
 	ShaderProgram m_shader;
-	GLint P_uni; 		// Uniform location for Projection matrix.
-	GLint V_uni; 		// Uniform location for View matrix.
-	GLint M_uni; 		// Uniform location for Model matrix.
-	GLint col_uni;   	// Uniform location for cube colour.
+	GLint P_uni; 								// Uniform location for Projection matrix.
+	GLint V_uni; 								// Uniform location for View matrix.
+	GLint M_uni; 								// Uniform location for Model matrix.
+	GLint col_uni;   							// Uniform location for cube colour.
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
