@@ -163,7 +163,7 @@ void A5::appLogic()
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	cout << glfwGetInputMode( m_window, GLFW_CURSOR ) << endl;
+	// cout << glfwGetInputMode( m_window, GLFW_CURSOR ) << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -297,21 +297,17 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		double xOffset = xPos - xPosPrev;
 		double yOffset = yPosPrev - yPos;
 
-		cout << xPos << " from " << xPosPrev << " becomes " << xOffset << endl;
+		// cout << xPos << " from " << xPosPrev << " becomes " << xOffset << endl;
 
 		xOffset *= mouseSensitivity;
 		yOffset *= mouseSensitivity;
 
-
-		// cout << xOffset << " " << yOffset << endl;
-
 		yaw		+= xOffset;
 		pitch 	+= yOffset;
 
-		if(pitch > 89.0f)
-			pitch = 89.0f;
-		if(pitch < -89.0f)
-			pitch = -89.0f;
+		// limit range of up/down motion
+		if( pitch > 89.0f )  pitch = 89.0f;
+		if( pitch < -89.0f ) pitch = -89.0f;
 
 		glm::vec3 front;
 	    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
