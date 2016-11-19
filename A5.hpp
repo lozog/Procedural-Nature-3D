@@ -36,6 +36,8 @@ private:
 	void moveCameraBackward();
 	void moveCameraLeft();
 	void moveCameraRight();
+	void moveCameraUp();
+	void moveCameraDown();
 
 	// camera-related fields
 	glm::vec3 cameraPos;						// position of camera
@@ -46,9 +48,14 @@ private:
 
 	// input-related fields
 
-	bool forwardPress, backwardPress, leftPress, rightPress;	// keyboard movement
-	double xPosPrev, yPosPrev;									// mousePos of previous frame
-	bool firstMouseMove;	// flag variable (I know, I know...) to signal if xPosPrev has been set yet
+	bool forwardPress,							// keyboard movement
+		 backwardPress,
+		 leftPress,
+		 rightPress,
+		 upPress,
+		 downPress;
+	double xPosPrev, yPosPrev;					// mousePos of previous frame
+	bool firstMouseMove;						// prevents jump on first mouse movement
 	double pitch, yaw;
 
 	// Fields related to the shader and uniforms.

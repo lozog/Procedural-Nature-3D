@@ -25,7 +25,8 @@ A5::A5()
 	backwardPress(false),
 	leftPress(false),
 	rightPress(false),
-	firstMouseMove(false)
+	upPress(false),
+	downPress(false)
 {
 	// cameraPos 		= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
 	reset();
@@ -51,6 +52,7 @@ void A5::resetCamera() {
 	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	firstMouseMove = false;
 	pitch = 0.0f;
 	yaw = 0.0f;
 }
@@ -99,28 +101,11 @@ void A5::init()
  * Camera control functions
  */
 
-// TODO: implement first-person camera controls
-// see http://learnopengl.com/#!Getting-started/Camera
-/*
- GLfloat cameraSpeed = 0.05f;
-     if(key == GLFW_KEY_W)
-         cameraPos += cameraSpeed * cameraFront;
-     if(key == GLFW_KEY_S)
-         cameraPos -= cameraSpeed * cameraFront;
-     if(key == GLFW_KEY_A)
-         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-     if(key == GLFW_KEY_D)
-         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-*/
-
 #define DEBUG_CAMERAMOVEMENT 0
 void A5::moveCameraForward() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "forward" << endl;
 	#endif
-	// eye += glm::vec3(0.0f, 0.0f, -1.0f);
-	// view = glm::lookAt( eye, center, up );
-	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, 1.0f));
 	cameraPos += cameraSpeed * cameraFront;
 }
 
@@ -128,7 +113,6 @@ void A5::moveCameraBackward() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "backward" << endl;
 	#endif
-	// view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
 	cameraPos -= cameraSpeed * cameraFront;
 }
 
@@ -136,7 +120,6 @@ void A5::moveCameraLeft() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "left" << endl;
 	#endif
-	// view = glm::translate(view, glm::vec3(-1.0f, 0.0f, 0.0f));
 	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
@@ -144,8 +127,21 @@ void A5::moveCameraRight() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "right" << endl;
 	#endif
-	// view = glm::translate(view, glm::vec3(1.0f, 0.0f, 0.0f));
 	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+void A5::moveCameraUp() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "up" << endl;
+	#endif
+	cameraPos += glm::normalize(cameraUp) * cameraSpeed;
+}
+
+void A5::moveCameraDown() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "down" << endl;
+	#endif
+	cameraPos -= glm::normalize(cameraUp) * cameraSpeed;
 }
 
 //----------------------------------------------------------------------------------------
@@ -159,6 +155,8 @@ void A5::appLogic()
 	if ( backwardPress ) moveCameraBackward();
 	if ( leftPress ) moveCameraLeft();
 	if ( rightPress ) moveCameraRight();
+	if ( upPress ) moveCameraUp();
+	if ( downPress ) moveCameraDown();
 	// view = glm::lookAt( cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, 1.0f, 0.0f ) );
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -290,10 +288,11 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
 		if ( !firstMouseMove ) {
+			// prevent jumping on first mouse movement
 			xPosPrev = xPos;
 			yPosPrev = yPos;
 			firstMouseMove = true;
-		}
+		} // if
 		double xOffset = xPos - xPosPrev;
 		double yOffset = yPosPrev - yPos;
 
@@ -309,6 +308,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		if( pitch > 89.0f )  pitch = 89.0f;
 		if( pitch < -89.0f ) pitch = -89.0f;
 
+		// calculate new direction vector for camera
 		glm::vec3 front;
 	    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
@@ -372,7 +372,7 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		// Respond to some key events.
 
 		// UI controls
-		if (key == GLFW_KEY_Q) {
+		if (key == GLFW_KEY_ESCAPE) {
 			// quit application
 			glfwSetWindowShouldClose(m_window, GL_TRUE);
 			eventHandled = true;
@@ -387,25 +387,31 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		if (key == GLFW_KEY_W) {
 			// toggle forward movement
 			forwardPress = true;
-			// moveCameraForward();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_S) {
 			// toggle backward movement
 			backwardPress = true;
-			// moveCameraBackward();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_A) {
 			// toggle left movement
 			leftPress = true;
-			// moveCameraLeft();
 			eventHandled = true;
 		} // if
 		if (key == GLFW_KEY_D) {
 			// toggle right movement
 			rightPress = true;
-			// moveCameraRight();
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_Q) {
+			// toggle up movement
+			downPress = true;
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_E) {
+			// toggle down movement
+			upPress = true;
 			eventHandled = true;
 		} // if
 	} // if
@@ -427,6 +433,14 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		} // if
 		if ( key == GLFW_KEY_D ) {
 			rightPress = false;
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_Q) {
+			downPress = false;
+			eventHandled = true;
+		} // if
+		if (key == GLFW_KEY_E) {
+			upPress = false;
 			eventHandled = true;
 		} // if
 	} // if
