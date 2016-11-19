@@ -327,6 +327,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		// cout << "old: " << cameraFront << endl;
 		cameraFront = glm::normalize(front);
+		// TODO: calc new cameraFront!
 		// cout << "new: " << cameraFront << endl;
 
 		xPosPrev = xPos;

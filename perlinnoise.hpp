@@ -21,6 +21,6 @@ public:
 // private:
 	// gradients are 8 evenly distributed directions around the unit circle
 	static double grads[8][2];
-	// static int perms[];
+	static int perms[PERLIN_GRID_SIZE*PERLIN_GRID_SIZE];
 
 };
