@@ -3,7 +3,8 @@
 #include <glm/glm.hpp>							// GLuint
 #include "cs488-framework/GlErrorCheck.hpp"		// CHECK_GL_ERRORS
 #include "cs488-framework/ShaderProgram.hpp"	// ShaderProgram
-#include "simplexnoise.hpp"
+// #include "simplexnoise.hpp"
+#include "perlinnoise.hpp"
 
 class Terrain
 {

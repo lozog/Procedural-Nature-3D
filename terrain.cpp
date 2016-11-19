@@ -52,10 +52,11 @@ void Terrain::init( ShaderProgram& m_shader )
 			// size_t idx = 3*(z*(m_length-1)) + x;
 			heightMapVertData[ idx ] 	= x;
 			// heightMapVertData[ idx+1 ] 	= SimplexNoise1234::noise(x, z);
-			heightMapVertData[ idx+1 ] 	= ((x % 2 == 0) ? 3 : 0);
+			heightMapVertData[ idx+1 ] 	= Perlin::terrain(x, z, 100, 100); // TODO: don't hardcode
+			// heightMapVertData[ idx+1 ] 	= ((x % 2 == 0) ? 3 : 0);
 			heightMapVertData[ idx+2 ] 	= z;
-			#if 0
-			cout << heightMapVertData[idx] << ", " << heightMapVertData[idx+1] << ", " << heightMapVertData[idx+2] << endl;
+			#if 1
+			// cout << heightMapVertData[idx] << ", " << heightMapVertData[idx+1] << ", " << heightMapVertData[idx+2] << endl;
 			#endif
 			idx += 3;
 		} // for
