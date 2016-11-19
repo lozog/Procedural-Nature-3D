@@ -1,34 +1,25 @@
 #include <algorithm>
 
 #include "terrain.hpp"
+// #include "grad.hpp"
 
 #include <iostream>
 using namespace std;
 
-#define NEWIMPL 1
-
-Terrain::Terrain( size_t x, size_t z, size_t tileSize )
+Terrain::Terrain( size_t x, size_t z )
 	: m_length( x ),
 	  m_width( z ),
-	  bufferIndexCount(0),
-	  tileSize( tileSize )
+	  bufferIndexCount(0)
 {
-
 	reset();
 }
 
 void Terrain::reset()
 {
-	// size_t sz = tileSize*tileSize;
 }
 
 Terrain::~Terrain()
 {}
-
-size_t Terrain::getTileSize() const
-{
-	return tileSize;
-}
 
 GLuint Terrain::getVAO() {
 	return m_terrain_vao;
@@ -41,7 +32,6 @@ GLuint Terrain::getVBO() {
 size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;
 }
-
 
 void Terrain::init( ShaderProgram& m_shader )
 {
@@ -61,7 +51,7 @@ void Terrain::init( ShaderProgram& m_shader )
 		for (int z = 0; z < m_width; z += 1) {
 			// size_t idx = 3*(z*(m_length-1)) + x;
 			heightMapVertData[ idx ] 	= x;
-			heightMapVertData[ idx+1 ] 	= 0;					// flat terrain -> y=0
+			heightMapVertData[ idx+1 ] 	= SimplexNoise1234::noise(x, z);
 			heightMapVertData[ idx+2 ] 	= z;
 			#if 0
 			cout << heightMapVertData[idx] << ", " << heightMapVertData[idx+1] << ", " << heightMapVertData[idx+2] << endl;
@@ -150,28 +140,10 @@ void Terrain::init( ShaderProgram& m_shader )
 }
 
 void Terrain::draw( const GLuint& col_uni ) {
-	#if 0
-	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_terrain_ibo );
 
-	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_SHORT, 0 );
-
-	glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-	
-	#else
-
-	// THEIR IMPL
 	glBindVertexArray( m_terrain_vao );
-	// glBindVertexBuffer( m_terrain_ibo );
 	glUniform3f( col_uni, 1, 1, 1 );
-	// glDrawArrays( GL_LINES, 0, (3+tileSize)*4 );
-	// glDrawArrays( GL_TRIANGLE_STRIP, 0, 6 ); // last param is # of ACTUAL verts to draw
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );
-	// glBindVertexBuffer( 0 );											// Restore defaults
 	glBindVertexArray( 0 );											// Restore defaults
-	
-
-	#endif
 
 }

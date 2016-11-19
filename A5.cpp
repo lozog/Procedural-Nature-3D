@@ -12,13 +12,14 @@
 using namespace glm;
 using namespace std;
 
-static const size_t DIM = 10;
+static const size_t TERRAIN_WIDTH = 100;
+static const size_t TERRAIN_LENGTH = 100;
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(10, 10, DIM),
+	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	cameraSpeed(0.05f),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
@@ -28,7 +29,6 @@ A5::A5()
 	upPress(false),
 	downPress(false)
 {
-	// cameraPos 		= glm::vec3( 0.0f, float(DIM)*2.0*M_SQRT1_2, float(DIM)*2.0*M_SQRT1_2 );
 	reset();
 	colour[0] = 0.0f;
 	colour[1] = 0.0f;
@@ -82,18 +82,13 @@ void A5::init()
 
 	theTerrain.init( m_shader );
 
-	// Set up initial view and projection matrices (need to do this here,
-	// since it depends on the GLFW window being set up correctly).
-	// cout << float(DIM)*2.0*M_SQRT1_2 << " " << float(DIM)*2.0*M_SQRT1_2 << endl;
-
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
 		float( m_framebufferWidth ) / float( m_framebufferHeight ),
 		1.0f, 1000.0f );
 
-	// grab and hide the cursor
+	// grab and hide the cursor for first-person mode
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-	// glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL );
 }
 
 //----------------------------------------------------------------------------------------
@@ -240,7 +235,7 @@ void A5::draw()
 {
 	// Create a global transformation for the model (centre it).
 	mat4 W;
-	W = glm::translate( W, vec3( -float(DIM)/2.0f, 0, -float(DIM)/2.0f ) );
+	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 	glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	m_shader.enable();
 		glEnable( GL_DEPTH_TEST );

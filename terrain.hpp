@@ -3,16 +3,15 @@
 #include <glm/glm.hpp>							// GLuint
 #include "cs488-framework/GlErrorCheck.hpp"		// CHECK_GL_ERRORS
 #include "cs488-framework/ShaderProgram.hpp"	// ShaderProgram
+#include "simplexnoise.hpp"
 
 class Terrain
 {
 public:
-	Terrain( size_t m_length, size_t m_width, size_t tileSize );
+	Terrain( size_t m_length, size_t m_width );
 	~Terrain();
 
 	void reset();
-
-	size_t getTileSize() const;
 
 	GLuint getVAO();
 	GLuint getVBO();
@@ -23,8 +22,7 @@ public:
 	void draw( const GLuint& col_uni );
 	
 private:
-	// m_length and m_width correspond to x and z, respectively.
-	size_t m_length, m_width, tileSize;
+	size_t m_length, m_width;
 	size_t bufferIndexCount;
 	const size_t numVertices = 128;
 
@@ -32,4 +30,5 @@ private:
 	GLuint m_terrain_vao; 						// Vertex Array Object
 	GLuint m_terrain_vbo; 						// Vertex Buffer Object
 	GLuint m_terrain_ibo; 						// Index Buffer Object
+
 };
