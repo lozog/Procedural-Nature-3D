@@ -20,7 +20,6 @@ static const size_t TERRAIN_LENGTH = 100;
 A5::A5()
 	: current_col( 0 ),
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH),
-	cameraSpeed(0.05f),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -50,11 +49,12 @@ void A5::reset() {
 // Reset camera position
 void A5::resetCamera() {
 	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
-	cameraFront 	= glm::vec3( 0.0f, 0.0f, -1.0f );
+	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove = false;
 	pitch = 0.0f;
 	yaw = 0.0f;
+	cameraSpeed = 0.05f;
 }
 
 //----------------------------------------------------------------------------------------
@@ -89,6 +89,7 @@ void A5::init()
 
 	// grab and hide the cursor for first-person mode
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+
 }
 
 //----------------------------------------------------------------------------------------
@@ -137,6 +138,21 @@ void A5::moveCameraDown() {
 	cout << "down" << endl;
 	#endif
 	cameraPos -= glm::normalize(cameraUp) * cameraSpeed;
+}
+
+void A5::cameraSpeedUp() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "camera speed up" << endl;
+	#endif
+	cameraSpeed += 0.01f;
+}
+
+void A5::cameraSpeedDown() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "camera speed down" << endl;
+	#endif
+	cameraSpeed -= 0.01f;
+	if (cameraSpeed < 0) cameraSpeed = 0.05f;
 }
 
 //----------------------------------------------------------------------------------------
@@ -284,6 +300,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 	if (!ImGui::IsMouseHoveringAnyWindow()) {
 		if ( !firstMouseMove ) {
 			// prevent jumping on first mouse movement
+			// cout << "firstMouseMove" << endl;
 			xPosPrev = xPos;
 			yPosPrev = yPos;
 			firstMouseMove = true;
@@ -308,7 +325,9 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 	    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+		// cout << "old: " << cameraFront << endl;
 		cameraFront = glm::normalize(front);
+		// cout << "new: " << cameraFront << endl;
 
 		xPosPrev = xPos;
 		yPosPrev = yPos;
@@ -409,6 +428,14 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			upPress = true;
 			eventHandled = true;
 		} // if
+		if (key == GLFW_KEY_Z) {
+			cameraSpeedDown();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_X) {
+			cameraSpeedUp();
+			eventHandled = true;
+		}
 	} // if
 
 	if ( action == GLFW_RELEASE ) {

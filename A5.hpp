@@ -38,6 +38,8 @@ private:
 	void moveCameraRight();
 	void moveCameraUp();
 	void moveCameraDown();
+	void cameraSpeedUp();
+	void cameraSpeedDown();
 
 	// camera-related fields
 	glm::vec3 cameraPos;						// position of camera
