@@ -54,7 +54,7 @@ void A5::resetCamera() {
 	firstMouseMove = false;
 	pitch = 0.0f;
 	yaw = 0.0f;
-	cameraSpeed = 0.05f;
+	cameraSpeed = 0.5f;
 }
 
 //----------------------------------------------------------------------------------------
@@ -144,15 +144,15 @@ void A5::cameraSpeedUp() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "camera speed up" << endl;
 	#endif
-	cameraSpeed += 0.01f;
+	cameraSpeed += 0.1f;
 }
 
 void A5::cameraSpeedDown() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "camera speed down" << endl;
 	#endif
-	cameraSpeed -= 0.01f;
-	if (cameraSpeed < 0) cameraSpeed = 0.05f;
+	cameraSpeed -= 0.1f;
+	if (cameraSpeed < 0) cameraSpeed = 0.00f;
 }
 
 //----------------------------------------------------------------------------------------
