@@ -91,8 +91,8 @@ double Perlin::terrain( int x, int y, int w, int h ) {
 	// map coords of x,y point on terrain to the noise grid
 	double gridX = (double)x / (double)w;
 	double gridY = (double)y / (double)h;
-	gridX *= LATTICE_AREA;
-	gridY *= LATTICE_AREA;
+	gridX *= 5.0f;
+	gridY *= 5.0f;
 
 	cout << gridX << " " << gridY << endl;
 
