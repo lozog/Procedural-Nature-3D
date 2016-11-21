@@ -7,8 +7,10 @@
 const static double sin45 = 0.70710678118f;
 const static double cos45 = sin45;
 
-const static int LATTICE_SIZE = 10;
+const static int LATTICE_SIZE = 4;
 const static int LATTICE_AREA = LATTICE_SIZE*LATTICE_SIZE;
+
+const double PI = 3.14159265f;
 
 class Perlin {
 public:
@@ -17,6 +19,7 @@ public:
     static double noise( double x, double y );
     static double dot( double g[], double x, double y );
     static double fade( double t );
+	static double smoothStep( double t ); // general "fade" function
 
     static double simpleNoise( double x, double y );
 
@@ -25,6 +28,6 @@ public:
 	// gradients are 8 evenly distributed directions around the unit circle
 	static double grads[8][2];
 	static int perms[256];
-	static double rand1D[LATTICE_SIZE];
+	static double rand2D[LATTICE_AREA];
 
 };

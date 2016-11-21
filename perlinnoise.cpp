@@ -36,9 +36,8 @@ int Perlin::perms[256] = {
 	138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
 };
 
-double Perlin::rand1D[LATTICE_SIZE] = {
-	151,160,137,91,90,15,
-	131,13,201,95
+double Perlin::rand2D[LATTICE_AREA] = {
+	0.36f, 0.54f, 0.12f, 0.93f, 0.42f, 0.73f, 0.23f, 0.84f
 };
 
 double Perlin::terrain( int x, int y, int w, int h ) {
@@ -47,13 +46,18 @@ double Perlin::terrain( int x, int y, int w, int h ) {
 
 	double gridX = (double)x / (double)w;
 	double gridY = (double)y / (double)h;
-	gridX *= 256;
-	gridY *= 256;
+	gridX *= 10;
+	gridY *= 10;
 
 	cout << gridX << " " << gridY << endl;
 
-	return noise( gridX, gridY );
-	// return 0.0f;
+	return simpleNoise( gridX, gridY );
+	// return noise( gridX, gridY );
+}
+
+double Perlin::smoothStep( double t ) {
+	assert(t >= 0 && t <= 1 );
+	return (1 - cos( t * PI )) * 0.5;
 }
 
 double Perlin::simpleNoise( double x, double y ) {
@@ -65,14 +69,26 @@ double Perlin::simpleNoise( double x, double y ) {
 	int xMax = (xMin + 1) % LATTICE_SIZE;
 	int yMax = (yMin + 1) % LATTICE_SIZE;
 
-	double u = x - xMin;
-	double v = y - yMin;
+	double u = x - xi;
+	double v = y - yi;
+	// cout << x << ", " << xi << endl;
 
 	assert(xMin < LATTICE_SIZE);
 	assert(yMin < LATTICE_SIZE);
 	// cout << fmod(rand1D[xMin], LATTICE_SIZE) << endl;
 
-	return lerp( fmod(rand1D[xMin], LATTICE_SIZE), fmod(rand1D[xMax], LATTICE_SIZE), u );
+	// u = smoothStep( u );
+	// v = smoothStep( v );
+
+	double c00 = rand2D[xMin];
+	double c01 = rand2D[xMax];
+	double c10 = rand2D[yMin];
+	double c11 = rand2D[yMax];
+
+	double nx0 = lerp( c00, c10, u );
+	double nx1 = lerp( c01, c11, u );
+
+	return lerp( nx0, nx1, v );
 }
 
 double Perlin::noise( double x, double y ) {
