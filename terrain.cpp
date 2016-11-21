@@ -35,6 +35,7 @@ size_t Terrain::getBufferIndexCount() {
 
 void Terrain::init( ShaderProgram& m_shader )
 {
+
 	// generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
 	// will need to use an index buffer object and use degenerate triangles to store.
 	// see http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/

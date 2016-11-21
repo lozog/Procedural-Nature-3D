@@ -11,15 +11,6 @@ inline T lerp(const T& lo, const T& hi, const T& t) {
 	return lo * (1 - t) + hi * t;
 }
 
-double Perlin::grads[8][2] = {  {1,0},
-								{cos45,sin45},
-								{0,1},
-								{-cos45,sin45},
-								{-1,0},
-								{-cos45,-sin45},
-								{0,-1},
-								{cos45,-sin45} };
-
 // hash lookup table, from Ken Perlin's original implementation
 int Perlin::permuteTable[512] = {
 	151,160,137,91,90,15,
@@ -86,6 +77,21 @@ double Perlin::rand2D[256] = {
 	0.447176, 0.642764, 0.512671, 0.535131, 0.0559212, 0.632968, 0.414535, 0.586414
 };
 
+
+// factory function for gradients
+static Vec2D* generateGrads() {
+	Vec2D* grads = new Vec2D[LATTICE_AREA];
+	for (int i = 0; i < LATTICE_AREA; i += 1 ) {
+		// grads[i] = Vec2D(cos(2.0f * PI * i / LATTICE_AREA),
+						 // sin(2.0f * PI * i / LATTICE_AREA));
+		grads[i].x = cos(2.0f * PI * i / LATTICE_AREA);
+		grads[i].y = sin(2.0f * PI * i / LATTICE_AREA);
+	} // for
+	return grads;
+}
+
+Vec2D* Perlin::grads = generateGrads();
+
 double Perlin::terrain( int x, int y, int w, int h ) {
 
 	// map coords of x,y point on terrain to the noise grid
@@ -94,7 +100,7 @@ double Perlin::terrain( int x, int y, int w, int h ) {
 	gridX *= 5.0f;
 	gridY *= 5.0f;
 
-	cout << gridX << " " << gridY << endl;
+	// cout << gridX << " " << gridY << endl;
 
 	// calculate sum of octaves of noise
 	double noiseSum = 0;
@@ -106,7 +112,7 @@ double Perlin::terrain( int x, int y, int w, int h ) {
 	for ( unsigned int i = 0; i < numLayers; i += 1 ) {
 		// double res = simpleNoise((gridX * freq) / amp, (gridY * freq) / amp);
 		double res = simpleNoise((gridX * freq), (gridY * freq)) / amp;
-		cout << "res: " << res << endl;
+		// cout << "res: " << res << endl;
 		noiseSum += res;
 
 		amp *= 0.5f;
@@ -143,78 +149,29 @@ double Perlin::simpleNoise( double x, double y ) {
 	u = fade( u );
 	v = fade( v );
 
+	// generate direction bectors from (x,y) to 4 corners
+	Vec2D p00 = Vec2D(xMin, yMin);
+	Vec2D p10 = Vec2D(xMin, yMax);
+	Vec2D p01 = Vec2D(xMin, yMin);
+	Vec2D p11 = Vec2D(xMax, yMax);
+
+
 	// get the values for each of the 4 corners of the cell
-	double c00 = rand2D[permuteTable[permuteTable[xMin] + yMin]];
-	double c01 = rand2D[permuteTable[permuteTable[xMin] + yMax]];
-	double c10 = rand2D[permuteTable[permuteTable[xMax] + yMin]];
-	double c11 = rand2D[permuteTable[permuteTable[xMax] + yMax]];
+	Vec2D c00 = grads[permuteTable[permuteTable[xMin] + yMin]];
+	Vec2D c01 = grads[permuteTable[permuteTable[xMin] + yMax]];
+	Vec2D c10 = grads[permuteTable[permuteTable[xMax] + yMin]];
+	Vec2D c11 = grads[permuteTable[permuteTable[xMax] + yMax]];
 
 	// lerp along x axis first
-	double nx0 = lerp( c00, c10, u );
-	double nx1 = lerp( c01, c11, u );
+	double nx0 = lerp( dot(c00, p00), dot(c10, p10), u );
+	double nx1 = lerp( dot(c01, p01), dot(c11, p11), u );
 
 	// lerp along remaining (y) axis
 	return lerp( nx0, nx1, v );
 }
 
-double Perlin::noise( double x, double y ) {
-
-	// P = (x, y)
-
-	// find unit grid cell containing P
-	int x0 = FASTFLOOR(x);
-	int y0 = FASTFLOOR(y);
-	int x1 = x0 + 1;
-	int y1 = y0 + 1;
-
-	// cout << x << ", " << y << endl;
-	// cout << x0 << ", " << y0 << endl;
-	// cout << x1 << ", " << y1 << endl;
-
-	// get gradients at each corner
-
-	// hash function
-	int aaa, aba, aab, abb, baa, bba, bab, bbb;
-	// TODO: gradients must be pseudo-randomly chosen - hash fn?
-	double* grad00 = Perlin::grads[1];
-	double* grad01 = Perlin::grads[3];
-	double* grad10 = Perlin::grads[5];
-	double* grad11 = Perlin::grads[7];
-
-	#if 1
-	/*
-	|---x0----x-------x1--
-	|   |-----| <- this interval is u
-	used for lerp
-	*/
-	double u = x - x0;
-	double v = y - y0;
-
-	// cout << u << ", " << v << endl;
-
-	// calculate noise contributions from the 4 corners
-	double n00 = dot(grad00, u, v);
-	double n01 = dot(grad01, u, v-1);
-	double n10 = dot(grad10, u-1, v);
-	double n11 = dot(grad11, u-1, v-1);
-
-	// interpolate noise contributions for x and y
-	double fu = fade(u);
-	double fv = fade(v);
-
-	double nx0 = n00*(1-fu) + n10*fu;
-	double nx1 = n01*(1-fu) + n11*fu;
-	double nxy = nx0*(1-fv) + nx1*fv;
-
-	// cout << nxy << endl;
-	return nxy;
-	#else
-	return 0.0f;
-	#endif
-}
-
-double Perlin::dot( double g[], double x, double y ) {
-	return g[0]*x + g[1]*y;
+double Perlin::dot( Vec2D a, Vec2D b ) {
+	return a.x*b.x + a.y*b.y;
 }
 
 

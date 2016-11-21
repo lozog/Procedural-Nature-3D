@@ -13,25 +13,35 @@ const static int LATTICE_MASK = LATTICE_AREA - 1;
 
 const double PI = 3.14159265f;
 
+class Vec2D {
+public:
+	Vec2D(double x, double y) : x(x), y(y) {}
+	Vec2D() {}
+	~Vec2D() {}
+	double x;
+	double y;
+};
+
 class Perlin {
 public:
 	Perlin() {
-		// generateRand2D();
+		// generateGrads();
 	}
-	~Perlin() {}
+	~Perlin() {
+		delete [] grads;
+	}
     static double noise( double x, double y );
-    static double dot( double g[], double x, double y );
+    static double dot( Vec2D a, Vec2D b );
     static double fade( double t );
 	static double smoothStep( double t ); // general "fade" function
 
     static double simpleNoise( double x, double y );
-    // static void generateRand2D();
+    // static void generateGrads();
 
     static double terrain( int x, int y, int w, int h );
 // private:
-	// gradients are 8 evenly distributed directions around the unit circle
-	static double grads[8][2];
 	static int permuteTable[512];
 	static double rand2D[LATTICE_AREA];
+	static Vec2D* grads;
 
 };

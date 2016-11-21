@@ -96,7 +96,6 @@ void A5::init()
 
 	// grab and hide the cursor for first-person mode
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-
 }
 
 //----------------------------------------------------------------------------------------
@@ -259,7 +258,7 @@ void A5::draw()
 	// Create a global transformation for the model (centre it).
 	mat4 W;
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
-	
+
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	
 	m_shader.enable();
