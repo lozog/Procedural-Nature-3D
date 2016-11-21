@@ -13,7 +13,7 @@ using namespace glm;
 using namespace std;
 
 // terrain needs to be square or terrain map vertices get all hecked up
-static const size_t TERRAIN_WIDTH = 100;
+static const size_t TERRAIN_WIDTH = 512;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 
 //----------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ void A5::resetCamera() {
 	firstMouseMove = false;
 	pitch = 0.0f;
 	yaw = 0.0f;
-	cameraSpeed = 0.05f;
+	cameraSpeed = 0.15f;
 	#if 1
 	// position camera to have a view of grid by default
 	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
@@ -72,7 +72,7 @@ void A5::resetCamera() {
 void A5::init()
 {
 	// Set the background colour.
-	glClearColor( 0.0, 0.0, 0.0, 1.0 );
+	glClearColor( 0.1, 0.1, 0.1, 1.0 );
 
 	// Build the shader
 	m_shader.generateProgramObject();
@@ -335,11 +335,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 	    front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		// cout << "old: " << cameraFront << endl;
 		cameraFront = glm::normalize(front);
-		// TODO: calc new cameraFront!
-		// cout << "new: " << cameraFront << endl;
-
 
 		xPosPrev = xPos;
 		yPosPrev = yPos;

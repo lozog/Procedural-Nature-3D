@@ -44,7 +44,7 @@ private:
 	// camera-related fields
 	glm::vec3 cameraPos;						// position of camera
 	glm::vec3 cameraFront;						// point camera is looking at
-	glm::vec3 cameraUp;
+	glm::vec3 cameraUp;							// "up" relative to cameraFront
 	float cameraSpeed;							// movement speed of camera
 	float mouseSensitivity;						// sensitivity of mouse control of pitch/yaw
 

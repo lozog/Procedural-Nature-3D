@@ -92,33 +92,42 @@ static Vec2D* generateGrads() {
 
 Vec2D* Perlin::grads = generateGrads();
 
-double Perlin::terrain( int x, int y, int w, int h ) {
+double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
 
 	// map coords of x,y point on terrain to the noise grid
-	double gridX = (double)x / (double)w;
-	double gridY = (double)y / (double)h;
-	gridX *= 5.0f;
-	gridY *= 5.0f;
+	// double gridX = (double)x / (double)w;
+	// double gridY = (double)y / (double)h;
+	double gridX = (double)x;
+	double gridY = (double)y;
+
+	// increasing scale makes noise patterns smaller
+	float scale = 5.0f;
+	gridX *= scale;
+	gridY *= scale;
 
 	// cout << gridX << " " << gridY << endl;
 
 	// calculate sum of octaves of noise
 	double noiseSum = 0;
-	unsigned int numLayers = 3;				// # of octaves
+	unsigned int numLayers = 5;				// # of octaves
 
 	// going to be a bit verbose for the sake of clarity
 	float amp  = 1.0f;
-	float freq = 1.0f;
+	float freq = 1.0f/2.0f;
 	for ( unsigned int i = 0; i < numLayers; i += 1 ) {
+		#if 1
 		// double res = simpleNoise((gridX * freq) / amp, (gridY * freq) / amp);
-		double res = simpleNoise((gridX * freq), (gridY * freq)) / amp;
-		// cout << "res: " << res << endl;
-		noiseSum += res;
-
+		double res = (0.5f + simpleNoise((gridX * freq), (gridY * freq))) / amp;
+		#else
+			double res = (1.0f + simpleNoise(gridX, gridY)) * amp;
+		#endif
 		amp *= 0.5f;
 		freq *= 2;
+		// cout << "res: " << res << endl;
+		noiseSum += res;
 	} // for
-		cout << "total: " << noiseSum << endl;
+	if (noiseSum > maxVal) maxVal = noiseSum;
+		// cout << "total: " << noiseSum << endl;
 
 	return noiseSum;
 	// return simpleNoise( gridX, gridY );

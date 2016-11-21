@@ -35,6 +35,22 @@ size_t Terrain::getBufferIndexCount() {
 
 void Terrain::init( ShaderProgram& m_shader )
 {
+	double maxVal = 0.0f;
+	double heightMap[m_length][m_width];
+	for (int x = 0; x < m_length; x += 1) {
+		for (int z = 0; z < m_width; z += 1) {
+			heightMap[x][z] = Perlin::terrain(x, z, 512, 512, maxVal); // TODO: don't hardcode
+		} // for
+	} // for
+
+	cout << maxVal << endl;
+	for (int x = 0; x < m_length; x += 1) {
+		for (int z = 0; z < m_width; z += 1) {
+			// cout << " " << heightMap[x][z] << endl;
+			heightMap[x][z] /= (0.1f*maxVal);
+			// cout << heightMap[x][z] << endl;
+		} // for
+	} // for
 
 	// generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
 	// will need to use an index buffer object and use degenerate triangles to store.
@@ -53,7 +69,7 @@ void Terrain::init( ShaderProgram& m_shader )
 			// size_t idx = 3*(z*(m_length-1)) + x;
 			heightMapVertData[ idx ] 	= x;
 			// heightMapVertData[ idx+1 ] 	= SimplexNoise1234::noise(x, z);
-			heightMapVertData[ idx+1 ] 	= Perlin::terrain(x, z, 100, 100); // TODO: don't hardcode
+			heightMapVertData[ idx+1 ] 	= heightMap[x][z];
 			// heightMapVertData[ idx+1 ] 	= 0.01f*Perlin::simpleNoise(x, z);
 			// heightMapVertData[ idx+1 ] 	= (((x+z )% 2 == 0) ? 3 : 0);
 			heightMapVertData[ idx+2 ] 	= z;

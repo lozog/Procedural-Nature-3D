@@ -38,7 +38,7 @@ public:
     static double simpleNoise( double x, double y );
     // static void generateGrads();
 
-    static double terrain( int x, int y, int w, int h );
+    static double terrain( int x, int y, int w, int h, double& maxVal );
 // private:
 	static int permuteTable[512];
 	static double rand2D[LATTICE_AREA];
