@@ -16,6 +16,7 @@ Perlin Noise
 http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
 http://flafla2.github.io/2014/08/09/perlinnoise.html
 http://www.java-gaming.org/index.php?topic=31637.0 - I want results like these
+http://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1/creating-simple-2D-noise - really good lesson on noise functions & Perlin noise
 
 Skyboxes
 http://learnopengl.com/#!Advanced-OpenGL/Cubemaps
