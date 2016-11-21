@@ -137,8 +137,8 @@ double Perlin::simpleNoise( double x, double y ) {
 	int yMax = (yMin + 1) & LATTICE_MASK;
 
 	// calculate parameters for lerp
-	double u = x - xi;
-	double v = y - yi;
+	double tx = x - xi;
+	double ty = y - yi;
 	// cout << x << ", " << xi << endl;
 
 	// sanity check
@@ -146,17 +146,19 @@ double Perlin::simpleNoise( double x, double y ) {
 	assert(yMin < LATTICE_AREA);
 
 	// remap lerp parameters using smoothstep function
-	u = fade( u );
-	v = fade( v );
+	double u = fade( tx );
+	double v = fade( ty );
 
-	#if 0
+	#if 1
+
+	float x0 = tx, x1 = tx - 1;
+	float y0 = ty, y1 = ty - 1;
 
 	// generate direction bectors from (x,y) to 4 corners
-	Vec2D p00 = Vec2D(xMin, yMin);
-	Vec2D p10 = Vec2D(xMin, yMax);
-	Vec2D p01 = Vec2D(xMin, yMin);
-	Vec2D p11 = Vec2D(xMax, yMax);
-
+	Vec2D p00 = Vec2D(x0, y0);
+	Vec2D p01 = Vec2D(x1, y0);
+	Vec2D p10 = Vec2D(x0, y1);
+	Vec2D p11 = Vec2D(x1, y1);
 
 	// get the values for each of the 4 corners of the cell
 	Vec2D c00 = grads[permuteTable[permuteTable[xMin] + yMin]];
