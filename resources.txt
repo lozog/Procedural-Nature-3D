@@ -5,6 +5,7 @@ http://learnopengl.com/#!Getting-started/Camera
 
 L-systems
 http://www.allenpike.com/modeling-plants-with-l-systems/
+- randomness in lengths, angles, probabilities on which rule to use
 
 Bloom
 http://prideout.net/archive/bloom/
