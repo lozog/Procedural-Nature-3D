@@ -48,12 +48,13 @@ void A5::reset() {
 //----------------------------------------------------------------------------------------
 // Reset camera position
 void A5::resetCamera() {
-	cameraPos 		= glm::vec3( 0.0f, 1.0f, 0.0f );
-	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
+	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
+	// cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
+	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove = false;
-	pitch = 0.0f;
-	yaw = 0.0f;
+	pitch = -15.77f;
+	yaw = 51.72f;
 	cameraSpeed = 0.05f;
 }
 
@@ -305,6 +306,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 			yPosPrev = yPos;
 			firstMouseMove = true;
 		} // if
+
 		double xOffset = xPos - xPosPrev;
 		double yOffset = yPosPrev - yPos;
 
@@ -329,6 +331,7 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		cameraFront = glm::normalize(front);
 		// TODO: calc new cameraFront!
 		// cout << "new: " << cameraFront << endl;
+
 
 		xPosPrev = xPos;
 		yPosPrev = yPos;
@@ -435,6 +438,13 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		}
 		if (key == GLFW_KEY_X) {
 			cameraSpeedUp();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_P) {
+			// print debug info
+			cout << cameraPos << endl;
+			cout << cameraFront << endl;
+			cout << pitch << " " << yaw << endl;
 			eventHandled = true;
 		}
 	} // if
