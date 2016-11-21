@@ -149,8 +149,7 @@ void Terrain::init( ShaderProgram& m_shader )
 void Terrain::draw( const GLuint& col_uni ) {
 
 	glBindVertexArray( m_terrain_vao );
-	// glUniform3f( col_uni, 1, 1, 1 );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );
-	glBindVertexArray( 0 );											// Restore defaults
+	glBindVertexArray( 0 );									// Restore defaults
 
 }
