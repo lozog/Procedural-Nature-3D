@@ -96,19 +96,35 @@ double Perlin::terrain( int x, int y, int w, int h ) {
 
 	cout << gridX << " " << gridY << endl;
 
-	return simpleNoise( gridX, gridY );
-	// return noise( gridX, gridY );
-}
+	// calculate sum of octaves of noise
+	double noiseSum = 0;
+	unsigned int numLayers = 3;				// # of octaves
 
-double Perlin::smoothStep( double t ) {
-	assert(t >= 0 && t <= 1 );
-	return (1 - cos( t * PI )) * 0.5;
+	// going to be a bit verbose for the sake of clarity
+	float amp  = 1.0f;
+	float freq = 1.0f;
+	for ( unsigned int i = 0; i < numLayers; i += 1 ) {
+		// double res = simpleNoise((gridX * freq) / amp, (gridY * freq) / amp);
+		double res = simpleNoise((gridX * freq), (gridY * freq)) / amp;
+		cout << "res: " << res << endl;
+		noiseSum += res;
+
+		amp *= 0.5f;
+		freq *= 2;
+	} // for
+		cout << "total: " << noiseSum << endl;
+
+	return noiseSum;
+	// return simpleNoise( gridX, gridY );
+	// return noise( gridX, gridY );
 }
 
 double Perlin::simpleNoise( double x, double y ) {
 	int xi = FASTFLOOR(x);
 	int yi = FASTFLOOR(y);
 
+	// We can use the & operator as a mod function since we chose the lattice size
+	// to be a power of two.
 	int xMin = xi & LATTICE_MASK;
 	int yMin = yi & LATTICE_MASK;
 	int xMax = (xMin + 1) & LATTICE_MASK;
@@ -118,26 +134,19 @@ double Perlin::simpleNoise( double x, double y ) {
 	double u = x - xi;
 	double v = y - yi;
 	// cout << x << ", " << xi << endl;
-	// cout << "2" << endl;
 
-	// cout << xMin << ", " << yMin << endl;
 	// sanity check
 	assert(xMin < LATTICE_AREA);
 	assert(yMin < LATTICE_AREA);
 
 	// remap lerp parameters using smoothstep function
-	u = smoothStep( u );
-	v = smoothStep( v );
-	// cout << "3" << endl;
+	u = fade( u );
+	v = fade( v );
 
 	// get the values for each of the 4 corners of the cell
-	// double c00 = rand2D[xMin];
 	double c00 = rand2D[permuteTable[permuteTable[xMin] + yMin]];
-	// double c01 = rand2D[xMax];
 	double c01 = rand2D[permuteTable[permuteTable[xMin] + yMax]];
-	// double c10 = rand2D[yMin];
 	double c10 = rand2D[permuteTable[permuteTable[xMax] + yMin]];
-	// double c11 = rand2D[yMax];
 	double c11 = rand2D[permuteTable[permuteTable[xMax] + yMax]];
 
 	// lerp along x axis first
