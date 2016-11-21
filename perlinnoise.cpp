@@ -149,6 +149,8 @@ double Perlin::simpleNoise( double x, double y ) {
 	u = fade( u );
 	v = fade( v );
 
+	#if 0
+
 	// generate direction bectors from (x,y) to 4 corners
 	Vec2D p00 = Vec2D(xMin, yMin);
 	Vec2D p10 = Vec2D(xMin, yMax);
@@ -165,6 +167,20 @@ double Perlin::simpleNoise( double x, double y ) {
 	// lerp along x axis first
 	double nx0 = lerp( dot(c00, p00), dot(c10, p10), u );
 	double nx1 = lerp( dot(c01, p01), dot(c11, p11), u );
+
+	#else 
+
+	// get the values for each of the 4 corners of the cell
+	double c00 = rand2D[permuteTable[permuteTable[xMin] + yMin]];
+	double c01 = rand2D[permuteTable[permuteTable[xMin] + yMax]];
+	double c10 = rand2D[permuteTable[permuteTable[xMax] + yMin]];
+	double c11 = rand2D[permuteTable[permuteTable[xMax] + yMax]];
+
+	// lerp along x axis first
+	double nx0 = lerp( c00, c10, u );
+	double nx1 = lerp( c01, c11, u );
+
+	#endif
 
 	// lerp along remaining (y) axis
 	return lerp( nx0, nx1, v );
