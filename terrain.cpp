@@ -54,7 +54,7 @@ void Terrain::init( ShaderProgram& m_shader )
 			// heightMapVertData[ idx+1 ] 	= SimplexNoise1234::noise(x, z);
 			heightMapVertData[ idx+1 ] 	= Perlin::terrain(x, z, 100, 100); // TODO: don't hardcode
 			// heightMapVertData[ idx+1 ] 	= 0.01f*Perlin::simpleNoise(x, z);
-			// heightMapVertData[ idx+1 ] 	= ((x % 2 == 0) ? 3 : 0);
+			// heightMapVertData[ idx+1 ] 	= (((x+z )% 2 == 0) ? 3 : 0);
 			heightMapVertData[ idx+2 ] 	= z;
 			#if 1
 			// cout << heightMapVertData[idx] << ", " << heightMapVertData[idx+1] << ", " << heightMapVertData[idx+2] << endl;
@@ -101,6 +101,10 @@ void Terrain::init( ShaderProgram& m_shader )
 	bufferIndexCount = heightMapIndexDataSZ;
 
 	#if 0
+	for (int i = 0; i < heightMapVertDataSZ; i += 1) {
+		cout << heightMapVertData[i] << " ";
+	} // for
+	cout << endl;
 	for (int i = 0; i < bufferIndexCount; i += 1) {
 		cout << heightMapIndexData[i] << " ";
 	} // for
@@ -145,7 +149,7 @@ void Terrain::init( ShaderProgram& m_shader )
 void Terrain::draw( const GLuint& col_uni ) {
 
 	glBindVertexArray( m_terrain_vao );
-	glUniform3f( col_uni, 1, 1, 1 );
+	// glUniform3f( col_uni, 1, 1, 1 );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );
 	glBindVertexArray( 0 );											// Restore defaults
 

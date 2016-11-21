@@ -12,8 +12,9 @@
 using namespace glm;
 using namespace std;
 
+// terrain needs to be square or terrain map vertices get all hecked up
 static const size_t TERRAIN_WIDTH = 100;
-static const size_t TERRAIN_LENGTH = 100;
+static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -48,14 +49,20 @@ void A5::reset() {
 //----------------------------------------------------------------------------------------
 // Reset camera position
 void A5::resetCamera() {
-	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
-	// cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
-	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
+	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
+	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove = false;
+	pitch = 0.0f;
+	yaw = 0.0f;
+	cameraSpeed = 0.05f;
+	#if 1
+	// position camera to have a view of grid by default
+	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
+	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	pitch = -15.77f;
 	yaw = 51.72f;
-	cameraSpeed = 0.05f;
+	#endif
 }
 
 //----------------------------------------------------------------------------------------
@@ -79,7 +86,6 @@ void A5::init()
 	P_uni = m_shader.getUniformLocation( "P" );
 	V_uni = m_shader.getUniformLocation( "V" );
 	M_uni = m_shader.getUniformLocation( "M" );
-	col_uni = m_shader.getUniformLocation( "colour" );
 
 	theTerrain.init( m_shader );
 
