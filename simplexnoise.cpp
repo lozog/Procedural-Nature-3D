@@ -34,6 +34,8 @@
 
 
 #include	"simplexnoise.hpp"
+ #include <iostream>
+ using namespace std;
 
 #define FASTFLOOR(x) ( ((x)>0) ? ((int)x) : (((int)x)-1) )
 
@@ -108,6 +110,7 @@ float  SimplexNoise1234::grad( int hash, float x ) {
 }
 
 float  SimplexNoise1234::grad( int hash, float x, float y ) {
+  // cout << hash << endl;
     int h = hash & 7;      // Convert low 3 bits of hash code
     float u = h<4 ? x : y;  // into 8 simple gradient directions,
     float v = h<4 ? y : x;  // and compute the dot product with (x,y).

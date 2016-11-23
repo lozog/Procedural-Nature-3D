@@ -34,7 +34,7 @@ public:
     static double noise( double x, double y );
     static double dot( Vec2D a, Vec2D b );
     static double fade( double t );
-    // static double grad( int hash, double x, double y );
+    static double grad( int hash, double x, double y );
 	static int hash( int x, int y );
 	static double smoothStep( double t ); // general "fade" function
 

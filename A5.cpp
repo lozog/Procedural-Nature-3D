@@ -409,7 +409,8 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_I) {
-			theTerrain.numOctaves -= 1;
+			if ( theTerrain.numOctaves > 0)
+				theTerrain.numOctaves -= 1;
 			cout << theTerrain.numOctaves << " octaves" << endl;
 			initTerrain();
 			eventHandled = true;

@@ -87,6 +87,7 @@ void Vec2D::normalize() {
 
 
 // factory function for gradients
+#if 0
 static Vec2D* generateGrads() {
 	Vec2D* grads = new Vec2D[LATTICE_AREA];
 	unsigned int seed = 1995;
@@ -104,15 +105,37 @@ static Vec2D* generateGrads() {
 	} // for
 	return grads;
 }
+#else
+static Vec2D* generateGrads() {
+	Vec2D* grads = new Vec2D[8];
+	grads[0] = Vec2D(0, 1);
+	grads[1] = Vec2D(0, -1);
+	grads[2] = Vec2D(1, 0);
+	grads[3] = Vec2D(-1, 0);
+	grads[4] = Vec2D(1, 1);
+	grads[5] = Vec2D(1, -1);
+	grads[6] = Vec2D(-1, 1);
+	grads[7] = Vec2D(-1, -1);
+	return grads;
+}
+#endif
 
 Vec2D* Perlin::grads = generateGrads();
 
 /*double Perlin::grad( int hash, double x, double y ) {
 	return (( hash & 1) ? x : -x ) + (( hash & 2) ? y : -y );
+}*/
+
+double  Perlin::grad( int hash, double x, double y ) {
+    int h = hash & 7;      		// Convert low 3 bits of hash code
+    double u = h<4 ? x : y;  	// into 8 simple gradient directions,
+    double v = h<4 ? y : x;  	// and compute the dot product with (x,y).
+    return ((h&1)? -u : u) + ((h&2)? -2.0f*v : 2.0f*v);
 }
-*/
+
 int Perlin::hash( int x, int y ) {
-	return permuteTable[permuteTable[x] + y];
+	// return permuteTable[permuteTable[x] + y];
+	return permuteTable[x + permuteTable[y]] & 7;
 }
 
 double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
@@ -161,6 +184,7 @@ double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
 double Perlin::simpleNoise( double x, double y ) {
 	int xi = FASTFLOOR(x);
 	int yi = FASTFLOOR(y);
+	// cout << x << ", " << xi << endl;
 
 	// We can use the & operator as a mod function since we chose the lattice size
 	// to be a power of two.
@@ -172,7 +196,7 @@ double Perlin::simpleNoise( double x, double y ) {
 	// calculate parameters for lerp
 	double tx = x - xi;
 	double ty = y - yi;
-	// cout << x << ", " << xi << endl;
+	cout << tx << " " << ty << endl;
 
 	// sanity check
 	assert(xMin < LATTICE_AREA);
@@ -182,46 +206,21 @@ double Perlin::simpleNoise( double x, double y ) {
 	double u = fade( tx );
 	double v = fade( ty );
 
-	#if 1
+	// indices of gradients at four corners
+	int g00 = hash(xMin, yMin);
+	int g10 = hash(xMax, yMin);
+	int g01 = hash(xMin, yMax);
+	int g11 = hash(xMax, yMax);
 
-	float x0 = xi & LATTICE_MASK, x1 = (xi+1) & LATTICE_MASK;
-	float y0 = yi & LATTICE_MASK, y1 = (yi+1) & LATTICE_MASK;
-	// float y0 = ty, y1 = ty - 1;
+	// take dot products to find values to lerp
+	double n00 = dot(grads[g00], Vec2D(tx, ty));
+	double n10 = dot(grads[g10], Vec2D(tx - 1, ty));
+	double n01 = dot(grads[g01], Vec2D(tx, ty - 1));
+	double n11 = dot(grads[g11], Vec2D(tx - 1, ty - 1));
 
-	// generate direction vectors from (x,y) to 4 corners
-	Vec2D p00 = Vec2D(x0, y0);
-	Vec2D p01 = Vec2D(x0, y1);
-	Vec2D p10 = Vec2D(x1, y0);
-	Vec2D p11 = Vec2D(x1, y1);
-
-	// get the values for each of the 4 corners of the cell
-	// use permutation table to access 
-	// Vec2D c00 = grads[permuteTable[permuteTable[xMin] + yMin]];
-	// Vec2D c01 = grads[permuteTable[permuteTable[xMin] + yMax]];
-	// Vec2D c10 = grads[permuteTable[permuteTable[xMax] + yMin]];
-	// Vec2D c11 = grads[permuteTable[permuteTable[xMax] + yMax]];
-	Vec2D c00 = grads[hash(xMin, xMax)];
-	Vec2D c01 = grads[hash(xMin, yMax)];
-	Vec2D c10 = grads[hash(xMax, yMin)];
-	Vec2D c11 = grads[hash(xMax, yMax)];
-
-	// lerp along x axis first
-	double nx0 = lerp( dot(c00, p00), dot(c10, p10), u );
-	double nx1 = lerp( dot(c01, p01), dot(c11, p11), u );
-
-	#else 
-
-	// get the values for each of the 4 corners of the cell
-	double c00 = rand2D[permuteTable[permuteTable[xMin] + yMin]];
-	double c01 = rand2D[permuteTable[permuteTable[xMin] + yMax]];
-	double c10 = rand2D[permuteTable[permuteTable[xMax] + yMin]];
-	double c11 = rand2D[permuteTable[permuteTable[xMax] + yMax]];
-
-	// lerp along x axis first
-	double nx0 = lerp( c00, c10, u );
-	double nx1 = lerp( c01, c11, u );
-
-	#endif
+	// lerp along x axis
+	double nx0 = lerp( n00, n10, u );
+	double nx1 = lerp( n01, n11, u );
 
 	// lerp along remaining (y) axis
 	return lerp( nx0, nx1, v );

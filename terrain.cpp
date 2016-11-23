@@ -58,7 +58,7 @@ void Terrain::init( ShaderProgram& m_shader )
 				if (mode == 0 ) {
 					fractalSum += (2.0f * SimplexNoise1234::noise(freq*gridX, freq*gridY)) * amp ;
 				} else {
-					fractalSum += (1.0f + Perlin::simpleNoise(freq*gridX, freq*gridY)) * amp ;
+					fractalSum += (2.0f * Perlin::simpleNoise(freq*gridX, freq*gridY)) * amp ;
 				}
 				amp *= 0.5f;
 				freq *= 2.0f;
