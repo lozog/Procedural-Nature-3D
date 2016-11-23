@@ -1,6 +1,8 @@
 #include <algorithm>
 
 #include "terrain.hpp"
+#include "simplexnoise.hpp"
+// #include "perlinnoise.hpp"
 // #include "grad.hpp"
 
 #include <iostream>
@@ -35,22 +37,42 @@ size_t Terrain::getBufferIndexCount() {
 
 void Terrain::init( ShaderProgram& m_shader )
 {
-	double maxVal = 0.0f;
 	double heightMap[m_length][m_width];
+
+
+	// double maxVal = 0.0f;
+	unsigned int numLayers = 5;				// # of octaves
+
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
-			heightMap[x][z] = Perlin::terrain(x, z, 512, 512, maxVal); // TODO: don't hardcode
+
+			double gridX = ((double)x / (double)m_length) - 0.5f;
+			double gridY = ((double)z / (double)m_width) - 0.5f;
+			double freq = 1.0f;
+			double amp = 1.0f;
+			double fractalSum = 0;
+
+			for ( unsigned int i = 0; i < numLayers; i += 1 ) {
+				fractalSum += (2.0f * SimplexNoise1234::noise(freq*gridX, freq*gridY)) * amp ;
+				amp *= 0.5f;
+				freq *= 2.0f;
+			} // for
+
+			heightMap[x][z] = fractalSum;
+
 		} // for
 	} // for
 
+	#if 0
 	cout << maxVal << endl;
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
 			// cout << " " << heightMap[x][z] << endl;
-			heightMap[x][z] /= (0.05f*maxVal);
+			// heightMap[x][z] /= maxVal;
 			// cout << heightMap[x][z] << endl;
 		} // for
 	} // for
+	#endif
 
 	// generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
 	// will need to use an index buffer object and use degenerate triangles to store.
