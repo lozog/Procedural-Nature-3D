@@ -227,9 +227,12 @@ void A5::draw()
 
 		glEnable( GL_DEPTH_TEST );
 
+		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( W ) );
+
+		// set uniforms for theSun
 		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
 		glUniform3fv( theSunDir_uni, 1, value_ptr( m_theSunDir ) );
 		glUniform1f( theSunIntensity_uni, m_theSunIntensity );

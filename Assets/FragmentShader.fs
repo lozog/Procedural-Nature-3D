@@ -27,15 +27,12 @@ void main() {
 	// fragColor = vec4(vec3((pos.y/5.0f), 0, 0)+norm, 1);
 	vec4 terrainCol = vec4(vec3((pos.y/5.0f), 0, 0)+norm, 1);
 
+	// directional light from the Sun
 	DirLight theSun;
-	// theSun.colour = vec3(1, 1, 0);
 	theSun.colour = theSunColour;
-	// theSun.dir = vec3(1, 0, 0);
 	theSun.dir = theSunDir;
-	// theSun.intensity = 0.5f;
 	theSun.intensity = theSunIntensity;
 
-	// directional light from the Sun
 	float kd = max(0.0, dot(norm, -theSun.dir));
 	fragColor = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
 }

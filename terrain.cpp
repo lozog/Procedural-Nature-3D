@@ -242,18 +242,6 @@ void Terrain::init( ShaderProgram& m_shader ) {
 	glBufferData( GL_ARRAY_BUFFER, vertexDataSZ*sizeof(Vertex),
 		verts, GL_STATIC_DRAW );
 
-	/*// Create the terrain vertex buffer
-	glGenBuffers( 1, &m_terrain_vbo );
-	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
-	glBufferData( GL_ARRAY_BUFFER, heightMapVertDataSZ*sizeof(float),
-		heightMapVertData, GL_STATIC_DRAW );
-
-	// Create the terrain normal buffer
-	glGenBuffers( 1, &m_normal_vbo );
-	glBindBuffer( GL_ARRAY_BUFFER, m_normal_vbo );
-	glBufferData( GL_ARRAY_BUFFER, heightMapVertDataSZ*sizeof(float),
-		normalMap, GL_STATIC_DRAW );*/
-
 	// Create the terrain index buffer
 	glGenBuffers( 1, &m_terrain_ibo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_terrain_ibo );
