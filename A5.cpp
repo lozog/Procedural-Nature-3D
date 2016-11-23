@@ -55,13 +55,20 @@ void A5::resetCamera() {
 	firstMouseMove = false;
 	pitch = 0.0f;
 	yaw = 0.0f;
-	cameraSpeed = 0.15f;
-	#if 1
-	// position camera to have a view of grid by default
+	cameraSpeed = 0.3f;
+	#if 0
+	// position camera to have a view of 100x100 grid by default
 	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
 	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	pitch = -15.77f;
 	yaw = 51.72f;
+	#endif
+	#if 1
+	// position camera to have a view of grid by default
+	cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
+	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
+	pitch = -16.5f;
+	yaw = 52.42f;
 	#endif
 }
 
@@ -150,15 +157,15 @@ void A5::cameraSpeedUp() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "camera speed up" << endl;
 	#endif
-	cameraSpeed += 0.025f;
+	cameraSpeed += 0.1f;
 }
 
 void A5::cameraSpeedDown() {
 	#if DEBUG_CAMERAMOVEMENT
 	cout << "camera speed down" << endl;
 	#endif
-	cameraSpeed -= 0.025f;
-	if (cameraSpeed < 0.025f) cameraSpeed = 0.025f;
+	cameraSpeed -= 0.1f;
+	if (cameraSpeed < 0.1f) cameraSpeed = 0.1f;
 }
 
 //----------------------------------------------------------------------------------------

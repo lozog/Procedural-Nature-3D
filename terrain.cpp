@@ -47,7 +47,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
 			// cout << " " << heightMap[x][z] << endl;
-			heightMap[x][z] /= (0.1f*maxVal);
+			heightMap[x][z] /= (0.05f*maxVal);
 			// cout << heightMap[x][z] << endl;
 		} // for
 	} // for

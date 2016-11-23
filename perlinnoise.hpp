@@ -18,6 +18,7 @@ public:
 	Vec2D(double x, double y) : x(x), y(y) {}
 	Vec2D() {}
 	~Vec2D() {}
+	void normalize();
 	double x;
 	double y;
 };
@@ -33,6 +34,8 @@ public:
     static double noise( double x, double y );
     static double dot( Vec2D a, Vec2D b );
     static double fade( double t );
+    // static double grad( int hash, double x, double y );
+	static int hash( int x, int y );
 	static double smoothStep( double t ); // general "fade" function
 
     static double simpleNoise( double x, double y );

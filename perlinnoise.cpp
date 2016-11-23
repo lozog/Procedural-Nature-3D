@@ -3,6 +3,8 @@
 #include <assert.h> 	// assert
 #include <cmath>		// cos
 #include <cstdlib>  	// rand
+#include <random>  	// dice
+#include <memory>  	// auto
 #include <iostream>
 using namespace std;
 
@@ -77,20 +79,41 @@ double Perlin::rand2D[256] = {
 	0.447176, 0.642764, 0.512671, 0.535131, 0.0559212, 0.632968, 0.414535, 0.586414
 };
 
+void Vec2D::normalize() {
+	double length = sqrt( (x*x) + (y*y) );
+	x /= length;
+	y /= length;
+}
+
 
 // factory function for gradients
 static Vec2D* generateGrads() {
 	Vec2D* grads = new Vec2D[LATTICE_AREA];
+	unsigned int seed = 1995;
+	std::mt19937 gen(seed);
+	std::uniform_real_distribution<double> dist(0.0f, 1.0f);
 	for (int i = 0; i < LATTICE_AREA; i += 1 ) {
 		// grads[i] = Vec2D(cos(2.0f * PI * i / LATTICE_AREA),
 						 // sin(2.0f * PI * i / LATTICE_AREA));
-		grads[i].x = cos(2.0f * PI * i / LATTICE_AREA);
-		grads[i].y = sin(2.0f * PI * i / LATTICE_AREA);
+		// grads[i].x = cos(2.0f * PI * i / LATTICE_AREA);
+		// grads[i].y = sin(2.0f * PI * i / LATTICE_AREA);
+		
+		grads[i].x = 2*dist(gen) - 1;
+		grads[i].y = 2*dist(gen) - 1;
+		grads[i].normalize();
 	} // for
 	return grads;
 }
 
 Vec2D* Perlin::grads = generateGrads();
+
+/*double Perlin::grad( int hash, double x, double y ) {
+	return (( hash & 1) ? x : -x ) + (( hash & 2) ? y : -y );
+}
+*/
+int Perlin::hash( int x, int y ) {
+	return permuteTable[permuteTable[x] + y];
+}
 
 double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
 
@@ -101,7 +124,7 @@ double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
 	double gridY = (double)y;
 
 	// increasing scale makes noise patterns smaller
-	float scale = 5.0f;
+	float scale = 1.0f;
 	gridX *= scale;
 	gridY *= scale;
 
@@ -109,15 +132,16 @@ double Perlin::terrain( int x, int y, int w, int h, double& maxVal ) {
 
 	// calculate sum of octaves of noise
 	double noiseSum = 0;
-	unsigned int numLayers = 5;				// # of octaves
+	unsigned int numLayers = 3;				// # of octaves
 
 	// going to be a bit verbose for the sake of clarity
 	float amp  = 1.0f;
-	float freq = 1.0f/2.0f;
+	float freq = 1.0f/256.0f;
 	for ( unsigned int i = 0; i < numLayers; i += 1 ) {
 		#if 1
 		// double res = simpleNoise((gridX * freq) / amp, (gridY * freq) / amp);
-		double res = (0.5f + simpleNoise((gridX * freq), (gridY * freq))) / amp;
+		// double res = (0.5f + simpleNoise((gridX * freq), (gridY * freq))) / amp;
+		double res = (1.0f + simpleNoise((gridX * freq), (gridY * freq))) / amp;
 		#else
 			double res = (1.0f + simpleNoise(gridX, gridY)) * amp;
 		#endif
@@ -160,20 +184,26 @@ double Perlin::simpleNoise( double x, double y ) {
 
 	#if 1
 
-	float x0 = tx, x1 = tx - 1;
-	float y0 = ty, y1 = ty - 1;
+	float x0 = xi & LATTICE_MASK, x1 = (xi+1) & LATTICE_MASK;
+	float y0 = yi & LATTICE_MASK, y1 = (yi+1) & LATTICE_MASK;
+	// float y0 = ty, y1 = ty - 1;
 
-	// generate direction bectors from (x,y) to 4 corners
+	// generate direction vectors from (x,y) to 4 corners
 	Vec2D p00 = Vec2D(x0, y0);
-	Vec2D p01 = Vec2D(x1, y0);
-	Vec2D p10 = Vec2D(x0, y1);
+	Vec2D p01 = Vec2D(x0, y1);
+	Vec2D p10 = Vec2D(x1, y0);
 	Vec2D p11 = Vec2D(x1, y1);
 
 	// get the values for each of the 4 corners of the cell
-	Vec2D c00 = grads[permuteTable[permuteTable[xMin] + yMin]];
-	Vec2D c01 = grads[permuteTable[permuteTable[xMin] + yMax]];
-	Vec2D c10 = grads[permuteTable[permuteTable[xMax] + yMin]];
-	Vec2D c11 = grads[permuteTable[permuteTable[xMax] + yMax]];
+	// use permutation table to access 
+	// Vec2D c00 = grads[permuteTable[permuteTable[xMin] + yMin]];
+	// Vec2D c01 = grads[permuteTable[permuteTable[xMin] + yMax]];
+	// Vec2D c10 = grads[permuteTable[permuteTable[xMax] + yMin]];
+	// Vec2D c11 = grads[permuteTable[permuteTable[xMax] + yMax]];
+	Vec2D c00 = grads[hash(xMin, xMax)];
+	Vec2D c01 = grads[hash(xMin, yMax)];
+	Vec2D c10 = grads[hash(xMax, yMin)];
+	Vec2D c11 = grads[hash(xMax, yMax)];
 
 	// lerp along x axis first
 	double nx0 = lerp( dot(c00, p00), dot(c10, p10), u );
