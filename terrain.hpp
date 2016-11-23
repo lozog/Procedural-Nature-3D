@@ -30,6 +30,7 @@ private:
 	// Fields related to terrain geometry.
 	GLuint m_terrain_vao; 						// Vertex Array Object
 	GLuint m_terrain_vbo; 						// Vertex Buffer Object
+	GLuint m_normal_vbo; 						// vertex normal Buffer Object
 	GLuint m_terrain_ibo; 						// Index Buffer Object
 
 };

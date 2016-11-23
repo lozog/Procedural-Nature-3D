@@ -7,6 +7,12 @@
 #include <iostream>
 using namespace std;
 
+struct Vertex {
+	float x, y, z;			// coordinates of this vertex
+	float Nx, Ny, Nz;		// normal at this vertex
+	float u, v;				// texture coordinates
+};
+
 Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves )
 	: m_length( length ),
 	  m_width( width ),
@@ -38,13 +44,15 @@ size_t Terrain::getBufferIndexCount() {
 }
 
 // generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
-void Terrain::init( ShaderProgram& m_shader )
-{
+void Terrain::init( ShaderProgram& m_shader ) {
+	//----------------------------------------------------------------------------------------
+	/*
+	 * use noise to generate terrain
+	 */
 	double heightMap[m_length][m_width];
 
-	double maxVal = 0.0f;
+	double maxVal = 0.0f; // for now, unused
 
-	// use noise to generate terrain
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
 
@@ -85,8 +93,10 @@ void Terrain::init( ShaderProgram& m_shader )
 	} // for
 	#endif
 
-	// will need to use an index buffer object and use degenerate triangles to store.
-	// see http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
+	//----------------------------------------------------------------------------------------
+	/*
+	 * Generate vertices of the terrain
+	 */
 
 	// for an x by z grid:
 	size_t numVerts 	= (m_length) * (m_width);
@@ -112,8 +122,65 @@ void Terrain::init( ShaderProgram& m_shader )
 		} // for
 	} // for
 
-	// Now build the index data
-	// based on http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
+	//----------------------------------------------------------------------------------------
+	/*
+	 * Calculate normals at each vertex of terrain
+	 */
+
+	// one normal per vertex -> same size as vertex
+	float* normalMap = new float[ heightMapVertDataSZ ];
+
+	idx = 0;
+	for (int x = 0; x < m_length; x += 1) {
+		for (int z = 0; z < m_width; z += 1) {
+			float sx = heightMap[x < m_length-1 ? x+1 : x][z] 
+					  - heightMap[x > 0 ? x-1 : x][z];
+			if ( x == 0 || x == m_length-1)
+				sx *= 2.0f;
+
+			float sz = heightMap[x][z < m_width-1 ? z+1 : z]
+					  - heightMap[x][z > 0 ? z-1 : z];
+			if ( z == 0 || z == m_width-1)
+				sz *= 2.0f;
+
+			/*if ( x == 18 && z == 39 ) {
+				cout << (z < m_width-1 ? z+1 : z) << endl;
+				cout << (z > 0 ? z-1 : z) << endl;
+				cout << heightMap[x][z < m_width-1 ? z+1 : z] << " - " << heightMap[x][z > 0 ? z-1 : z] << endl;
+				cout << sz << endl;
+			}*/
+			// cout << x << ", " << z << ": " << sx << ", " << sz << endl;
+			glm::vec3 norm = glm::normalize(glm::vec3(-sx, 2.0f, sz));
+			normalMap[idx] = norm.x;
+			normalMap[idx+1] = norm.y;
+			normalMap[idx+2] = norm.z;
+			idx += 3;
+		} // for
+	} // for
+
+	//----------------------------------------------------------------------------------------
+	/*
+	 * Collect vertex info into Vertex structs
+	 */
+
+	idx = 0;
+	size_t vertexDataSZ = sizeof(Vertex) * numVerts;
+	Vertex* verts = new Vertex[ vertexDataSZ ];
+	for (int i = 0; i < numVerts; i += 1) {
+		verts[i].x = heightMapVertData[idx    ];
+		verts[i].y = heightMapVertData[idx + 1];
+		verts[i].z = heightMapVertData[idx + 2];
+		verts[i].Nx = normalMap[idx];
+		verts[i].Ny = normalMap[idx + 1];
+		verts[i].Nz = normalMap[idx + 2];
+		idx += 3;
+	} // for
+
+	//----------------------------------------------------------------------------------------
+	/*
+	 * Now build the vertex index data using an index buffer object and degenerate triangles
+	 * based on http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
+	 */
 	size_t numStrips = m_width - 1;
 	size_t numDegens = 2 * (numStrips - 1);
 	size_t vertsPerStrip = 2 * m_length;
@@ -160,6 +227,11 @@ void Terrain::init( ShaderProgram& m_shader )
 	cout << endl;
 	#endif
 
+	//----------------------------------------------------------------------------------------
+	/*
+	 * Set up Vertex arrays, buffers, etc.
+	 */
+
 	// Create the vertex array to record buffer assignments.
 	glGenVertexArrays( 1, &m_terrain_vao );
 	glBindVertexArray( m_terrain_vao );
@@ -167,8 +239,20 @@ void Terrain::init( ShaderProgram& m_shader )
 	// Create the terrain vertex buffer
 	glGenBuffers( 1, &m_terrain_vbo );
 	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
+	glBufferData( GL_ARRAY_BUFFER, vertexDataSZ*sizeof(Vertex),
+		verts, GL_STATIC_DRAW );
+
+	/*// Create the terrain vertex buffer
+	glGenBuffers( 1, &m_terrain_vbo );
+	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
 	glBufferData( GL_ARRAY_BUFFER, heightMapVertDataSZ*sizeof(float),
 		heightMapVertData, GL_STATIC_DRAW );
+
+	// Create the terrain normal buffer
+	glGenBuffers( 1, &m_normal_vbo );
+	glBindBuffer( GL_ARRAY_BUFFER, m_normal_vbo );
+	glBufferData( GL_ARRAY_BUFFER, heightMapVertDataSZ*sizeof(float),
+		normalMap, GL_STATIC_DRAW );*/
 
 	// Create the terrain index buffer
 	glGenBuffers( 1, &m_terrain_ibo );
@@ -180,7 +264,13 @@ void Terrain::init( ShaderProgram& m_shader )
 	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
 	GLint posAttrib = m_shader.getAttribLocation( "position" );
 	glEnableVertexAttribArray( posAttrib );
-	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, 0, nullptr );
+	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr );
+
+	// Specify the means of extracting the normals properly.
+	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
+	GLint normAttrib = m_shader.getAttribLocation( "normal" );
+	glEnableVertexAttribArray( normAttrib );
+	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!
@@ -190,6 +280,7 @@ void Terrain::init( ShaderProgram& m_shader )
 
 	// OpenGL has the buffer now, there's no need for us to keep a copy.
 	delete [] heightMapVertData;
+	delete [] normalMap;
 	delete [] heightMapIndexData;
 
 	CHECK_GL_ERRORS;
