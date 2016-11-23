@@ -12,6 +12,8 @@ http://prideout.net/archive/bloom/
 
 Terrain:
 http://www.geisswerks.com/about_terrain.html
+http://www.flipcode.com/archives/Calculating_Vertex_Normals_for_Height_Maps.shtml
+http://stackoverflow.com/questions/13983189/opengl-how-to-calculate-normals-in-a-terrain-height-grid
 
 Perlin Noise
 http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
