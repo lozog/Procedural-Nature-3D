@@ -30,6 +30,7 @@ protected:
 private:
 	void reset();
 	void resetCamera();
+	void resetLight();
 	void initTerrain();
 
 	// Camera controls
@@ -50,7 +51,6 @@ private:
 	float mouseSensitivity;						// sensitivity of mouse control of pitch/yaw
 
 	// input-related fields
-
 	bool forwardPress,							// keyboard movement
 		 backwardPress,
 		 leftPress,
@@ -66,7 +66,13 @@ private:
 	GLint P_uni; 								// Uniform location for Projection matrix.
 	GLint V_uni; 								// Uniform location for View matrix.
 	GLint M_uni; 								// Uniform location for Model matrix.
-	GLint col_uni;   							// Uniform location for cube colour.
+	GLint theSunColour_uni;   					// Uniform location for the Sun colour
+	GLint theSunDir_uni;   						// Uniform location for the Sun direction
+	GLint theSunIntensity_uni;   				// Uniform location for the Sun intensity
+
+	glm::vec3 m_theSunColour;
+	glm::vec3 m_theSunDir;
+	float m_theSunIntensity;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;

@@ -18,7 +18,7 @@ public:
 
 	void init( ShaderProgram& m_shader );
 
-	void draw( const GLuint& col_uni );
+	void draw();
 
 	int mode, numModes;
 	unsigned int numOctaves;

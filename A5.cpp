@@ -45,6 +45,7 @@ A5::~A5()
 // Reset things
 void A5::reset() {
 	resetCamera();
+	resetLight();
 }
 
 //----------------------------------------------------------------------------------------
@@ -74,6 +75,14 @@ void A5::resetCamera() {
 }
 
 //----------------------------------------------------------------------------------------
+// Reset lights
+void A5::resetLight() {
+	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
+	m_theSunDir = glm::vec3(1.0f, 0.0f, 0.0f);
+	m_theSunIntensity = 0.5f;
+}
+
+//----------------------------------------------------------------------------------------
 /*
  * Called once, at program start.
  */
@@ -94,6 +103,9 @@ void A5::init()
 	P_uni = m_shader.getUniformLocation( "P" );
 	V_uni = m_shader.getUniformLocation( "V" );
 	M_uni = m_shader.getUniformLocation( "M" );
+	theSunColour_uni	= m_shader.getUniformLocation( "theSunColour" );
+	theSunDir_uni 		= m_shader.getUniformLocation( "theSunDir" );
+	theSunIntensity_uni = m_shader.getUniformLocation( "theSunIntensity" );
 
 	// initialize terrain
 	initTerrain();
@@ -218,9 +230,12 @@ void A5::draw()
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( W ) );
+		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
+		glUniform3fv( theSunDir_uni, 1, value_ptr( m_theSunDir ) );
+		glUniform1f( theSunIntensity_uni, m_theSunIntensity );
 
 		// draw terrain
-		theTerrain.draw( col_uni );
+		theTerrain.draw();
 
 	m_shader.disable();
 
@@ -420,6 +435,19 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			theTerrain.mode += 1;
 			theTerrain.mode %= theTerrain.numModes; // cycle through terrain modes
 			cout << "mode: " << theTerrain.mode << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_K) {
+			m_theSunIntensity += 0.1f;;
+			cout << m_theSunIntensity << " intensity" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_J) {
+			if ( m_theSunIntensity > 0.1f)
+				m_theSunIntensity -= 0.1f;
+			cout << m_theSunIntensity << " intensity" << endl;
 			initTerrain();
 			eventHandled = true;
 		}

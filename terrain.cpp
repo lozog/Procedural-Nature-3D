@@ -286,7 +286,7 @@ void Terrain::init( ShaderProgram& m_shader ) {
 	CHECK_GL_ERRORS;
 }
 
-void Terrain::draw( const GLuint& col_uni ) {
+void Terrain::draw() {
 
 	glBindVertexArray( m_terrain_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );
