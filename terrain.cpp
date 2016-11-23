@@ -13,7 +13,7 @@ Terrain::Terrain( size_t x, size_t z )
 	  m_width( z ),
 	  bufferIndexCount(0),
 	  numOctaves(5),
-	  mode(0),
+	  mode(1),
 	  numModes(2)
 {
 	reset();
@@ -38,10 +38,10 @@ size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;
 }
 
+// generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
 void Terrain::init( ShaderProgram& m_shader )
 {
 	double heightMap[m_length][m_width];
-
 
 	double maxVal = 0.0f;
 
@@ -58,7 +58,7 @@ void Terrain::init( ShaderProgram& m_shader )
 				if (mode == 0 ) {
 					fractalSum += (2.0f * SimplexNoise1234::noise(freq*gridX, freq*gridY)) * amp ;
 				} else {
-					fractalSum += (2.0f * Perlin::simpleNoise(freq*gridX, freq*gridY)) * amp ;
+					fractalSum += (1.0f + Perlin::noise(freq*gridX, freq*gridY)) * amp ;
 				}
 				amp *= 0.5f;
 				freq *= 2.0f;
@@ -70,6 +70,7 @@ void Terrain::init( ShaderProgram& m_shader )
 	} // for
 
 	#if 0
+	// resources say I should have this, but I find results are better when omitted
 	cout << maxVal << endl;
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
@@ -80,7 +81,6 @@ void Terrain::init( ShaderProgram& m_shader )
 	} // for
 	#endif
 
-	// generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
 	// will need to use an index buffer object and use degenerate triangles to store.
 	// see http://www.learnopengles.com/android-lesson-eight-an-introduction-to-index-buffer-objects-ibos/
 
