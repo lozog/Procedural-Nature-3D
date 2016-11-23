@@ -19,11 +19,13 @@ public:
 	void init( ShaderProgram& m_shader );
 
 	void draw( const GLuint& col_uni );
+
+	int mode, numModes;
+	unsigned int numOctaves;
 	
 private:
 	size_t m_length, m_width;
 	size_t bufferIndexCount;
-	const size_t numVertices = 128;
 
 	// Fields related to terrain geometry.
 	GLuint m_terrain_vao; 						// Vertex Array Object

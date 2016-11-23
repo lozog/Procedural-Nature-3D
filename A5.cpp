@@ -94,7 +94,8 @@ void A5::init()
 	V_uni = m_shader.getUniformLocation( "V" );
 	M_uni = m_shader.getUniformLocation( "M" );
 
-	theTerrain.init( m_shader );
+	// initialize terrain
+	initTerrain();
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
@@ -105,67 +106,8 @@ void A5::init()
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 }
 
-//----------------------------------------------------------------------------------------
-/*
- * Camera control functions
- */
-
-#define DEBUG_CAMERAMOVEMENT 0
-void A5::moveCameraForward() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "forward" << endl;
-	#endif
-	cameraPos += cameraSpeed * cameraFront;
-}
-
-void A5::moveCameraBackward() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "backward" << endl;
-	#endif
-	cameraPos -= cameraSpeed * cameraFront;
-}
-
-void A5::moveCameraLeft() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "left" << endl;
-	#endif
-	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-}
-
-void A5::moveCameraRight() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "right" << endl;
-	#endif
-	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-}
-
-void A5::moveCameraUp() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "up" << endl;
-	#endif
-	cameraPos += glm::normalize(cameraUp) * cameraSpeed;
-}
-
-void A5::moveCameraDown() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "down" << endl;
-	#endif
-	cameraPos -= glm::normalize(cameraUp) * cameraSpeed;
-}
-
-void A5::cameraSpeedUp() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "camera speed up" << endl;
-	#endif
-	cameraSpeed += 0.1f;
-}
-
-void A5::cameraSpeedDown() {
-	#if DEBUG_CAMERAMOVEMENT
-	cout << "camera speed down" << endl;
-	#endif
-	cameraSpeed -= 0.1f;
-	if (cameraSpeed < 0.1f) cameraSpeed = 0.1f;
+void A5::initTerrain() {
+	theTerrain.init( m_shader );
 }
 
 //----------------------------------------------------------------------------------------
@@ -458,6 +400,27 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			cout << pitch << " " << yaw << endl;
 			eventHandled = true;
 		}
+
+		// Debug controls
+		if (key == GLFW_KEY_O) {
+			theTerrain.numOctaves += 1;
+			cout << theTerrain.numOctaves << " octaves" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_I) {
+			theTerrain.numOctaves -= 1;
+			cout << theTerrain.numOctaves << " octaves" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_L) {
+			theTerrain.mode += 1;
+			theTerrain.mode %= theTerrain.numModes; // cycle through terrain modes
+			cout << "mode: " << theTerrain.mode << endl;
+			initTerrain();
+			eventHandled = true;
+		}
 	} // if
 
 	if ( action == GLFW_RELEASE ) {
@@ -490,4 +453,67 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 	} // if
 
 	return eventHandled;
+}
+
+//----------------------------------------------------------------------------------------
+/*
+ * Camera control functions
+ */
+
+#define DEBUG_CAMERAMOVEMENT 0
+void A5::moveCameraForward() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "forward" << endl;
+	#endif
+	cameraPos += cameraSpeed * cameraFront;
+}
+
+void A5::moveCameraBackward() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "backward" << endl;
+	#endif
+	cameraPos -= cameraSpeed * cameraFront;
+}
+
+void A5::moveCameraLeft() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "left" << endl;
+	#endif
+	cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+void A5::moveCameraRight() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "right" << endl;
+	#endif
+	cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+}
+
+void A5::moveCameraUp() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "up" << endl;
+	#endif
+	cameraPos += glm::normalize(cameraUp) * cameraSpeed;
+}
+
+void A5::moveCameraDown() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "down" << endl;
+	#endif
+	cameraPos -= glm::normalize(cameraUp) * cameraSpeed;
+}
+
+void A5::cameraSpeedUp() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "camera speed up" << endl;
+	#endif
+	cameraSpeed += 0.1f;
+}
+
+void A5::cameraSpeedDown() {
+	#if DEBUG_CAMERAMOVEMENT
+	cout << "camera speed down" << endl;
+	#endif
+	cameraSpeed -= 0.1f;
+	if (cameraSpeed < 0.1f) cameraSpeed = 0.1f;
 }

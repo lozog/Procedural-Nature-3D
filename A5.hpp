@@ -30,6 +30,7 @@ protected:
 private:
 	void reset();
 	void resetCamera();
+	void initTerrain();
 
 	// Camera controls
 	void moveCameraForward();
