@@ -7,7 +7,7 @@
 class Terrain
 {
 public:
-	Terrain( size_t m_length, size_t m_width );
+	Terrain( size_t m_length, size_t m_width, unsigned int numOctaves );
 	~Terrain();
 
 	void reset();

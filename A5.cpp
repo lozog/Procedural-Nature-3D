@@ -15,12 +15,13 @@ using namespace std;
 // terrain needs to be square or terrain map vertices get all hecked up
 static const size_t TERRAIN_WIDTH = 100;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
+static const unsigned int NUM_OCTAVES = 6; // # of octaves for terrain generation
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH),
+	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -218,7 +219,7 @@ void A5::draw()
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( W ) );
 
-		// Just draw the terrain for now.
+		// draw terrain
 		theTerrain.draw( col_uni );
 
 	m_shader.disable();

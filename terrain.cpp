@@ -3,16 +3,15 @@
 #include "terrain.hpp"
 #include "simplexnoise.hpp"
 #include "perlinnoise.hpp"
-// #include "grad.hpp"
 
 #include <iostream>
 using namespace std;
 
-Terrain::Terrain( size_t x, size_t z )
-	: m_length( x ),
-	  m_width( z ),
+Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves )
+	: m_length( length ),
+	  m_width( width ),
 	  bufferIndexCount(0),
-	  numOctaves(5),
+	  numOctaves(numOctaves),
 	  mode(1),
 	  numModes(2)
 {
@@ -45,11 +44,16 @@ void Terrain::init( ShaderProgram& m_shader )
 
 	double maxVal = 0.0f;
 
+	// use noise to generate terrain
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
 
-			double gridX = ((double)x / (double)m_length) - 0.5f;
-			double gridY = ((double)z / (double)m_width) - 0.5f;
+			// scaling factor makes terrain more interesting
+			double scale = 0.5f;
+
+			double gridX = ((double)x / ((double)m_length * scale)) - 0.5f;
+			double gridY = ((double)z / ((double)m_width * scale)) - 0.5f;
+
 			double freq = 1.0f;
 			double amp = 1.0f;
 			double fractalSum = 0;
@@ -58,7 +62,7 @@ void Terrain::init( ShaderProgram& m_shader )
 				if (mode == 0 ) {
 					fractalSum += (2.0f * SimplexNoise1234::noise(freq*gridX, freq*gridY)) * amp ;
 				} else {
-					fractalSum += (1.0f + Perlin::noise(freq*gridX, freq*gridY)) * amp ;
+					fractalSum += (2.0f + Perlin::noise(freq*gridX, freq*gridY)) * amp ;
 				}
 				amp *= 0.5f;
 				freq *= 2.0f;
