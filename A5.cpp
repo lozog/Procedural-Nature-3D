@@ -13,7 +13,7 @@ using namespace glm;
 using namespace std;
 
 // terrain needs to be square or terrain map vertices get all hecked up
-static const size_t TERRAIN_WIDTH = 512;
+static const size_t TERRAIN_WIDTH = 100;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 
 //----------------------------------------------------------------------------------------
@@ -56,15 +56,15 @@ void A5::resetCamera() {
 	pitch = 0.0f;
 	yaw = 0.0f;
 	cameraSpeed = 0.3f;
-	#if 0
+	#if 1
 	// position camera to have a view of 100x100 grid by default
 	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
 	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	pitch = -15.77f;
 	yaw = 51.72f;
 	#endif
-	#if 1
-	// position camera to have a view of grid by default
+	#if 0
+	// position camera to have a view of 512x512 grid by default
 	cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
 	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	pitch = -16.5f;
