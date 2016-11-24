@@ -49,9 +49,20 @@ A5::~A5()
 //----------------------------------------------------------------------------------------
 // Load textures
 void A5::loadTextures() {
+
+	// load texture image with SOIL
 	int width, height;
 	unsigned char* image = SOIL_load_image("res/grass.png", &width, &height, 0, SOIL_LOAD_RGB);
-	cout << (int)*image << endl;
+	
+	// generate texture
+	glGenTextures(1, &m_ground_texture);
+	glBindTexture(GL_TEXTURE_2D, m_ground_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	// free image and unbind texture
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //----------------------------------------------------------------------------------------
@@ -59,7 +70,6 @@ void A5::loadTextures() {
 void A5::reset() {
 	resetCamera();
 	resetLight();
-	loadTextures();
 	cout << "controls:" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;
@@ -135,6 +145,9 @@ void A5::init()
 
 	// initialize terrain
 	initTerrain();
+
+	// load textures
+	loadTextures();
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
