@@ -2,6 +2,9 @@
 
 in vec3 pos;
 in vec3 norm;
+in vec2 tex;
+
+uniform sampler2D theTexture;
 
 out vec4 fragColor;
 
@@ -34,5 +37,8 @@ void main() {
 	theSun.intensity = theSunIntensity;
 
 	float kd = max(0.0, dot(norm, -theSun.dir));
-	fragColor = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	vec4 temp = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	// fragColor = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	fragColor = texture(theTexture, tex) * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	// fragColor = texture(theTexture, tex) + 0.001f*temp;
 }

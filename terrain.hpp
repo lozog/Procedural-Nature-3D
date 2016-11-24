@@ -16,7 +16,7 @@ public:
 	GLuint getVBO();
 	size_t getBufferIndexCount();
 
-	void init( ShaderProgram& m_shader );
+	void init( ShaderProgram& m_shader, GLuint m_ground_texture );
 
 	void draw();
 
@@ -32,6 +32,10 @@ private:
 	GLuint m_terrain_vao; 						// Vertex Array Object
 	GLuint m_terrain_vbo; 						// Vertex Buffer Object
 	GLuint m_normal_vbo; 						// vertex normal Buffer Object
+	GLuint m_texture_vbo; 						// vertex texture Buffer Object
 	GLuint m_terrain_ibo; 						// Index Buffer Object
+
+	// terrain texture
+	GLuint m_ground_texture; 					// ground texture
 
 };

@@ -60,6 +60,9 @@ void A5::loadTextures() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
 	// free image and unbind texture
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -143,11 +146,11 @@ void A5::init()
 	theSunDir_uni 		= m_shader.getUniformLocation( "theSunDir" );
 	theSunIntensity_uni = m_shader.getUniformLocation( "theSunIntensity" );
 
-	// initialize terrain
-	initTerrain();
-
 	// load textures
 	loadTextures();
+
+	// initialize terrain
+	initTerrain();
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
@@ -159,7 +162,7 @@ void A5::init()
 }
 
 void A5::initTerrain() {
-	theTerrain.init( m_shader );
+	theTerrain.init( m_shader, m_ground_texture );
 }
 
 //----------------------------------------------------------------------------------------

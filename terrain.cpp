@@ -10,7 +10,7 @@ using namespace std;
 struct Vertex {
 	float x, y, z;			// coordinates of this vertex
 	float Nx, Ny, Nz;		// normal at this vertex
-	float u, v;				// texture coordinates
+	int u, v;				// texture coordinates
 };
 
 Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
@@ -45,7 +45,8 @@ size_t Terrain::getBufferIndexCount() {
 }
 
 // generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
-void Terrain::init( ShaderProgram& m_shader ) {
+void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
+	m_ground_texture = ground_texture;
 	//----------------------------------------------------------------------------------------
 	/*
 	 * use noise to generate terrain
@@ -129,6 +130,7 @@ void Terrain::init( ShaderProgram& m_shader ) {
 	 * Calculate normals at each vertex of terrain
 	 */
 
+	// TODO: don't need this one to be heap anymore
 	// one normal per vertex -> same size as vertex
 	float* normalMap = new float[ heightMapVertDataSZ ];
 
@@ -162,10 +164,28 @@ void Terrain::init( ShaderProgram& m_shader ) {
 
 	//----------------------------------------------------------------------------------------
 	/*
+	 * Calculate terrain (u, v) coordinates for each vertex
+	 */
+
+	int terrainMap[m_length * m_width * 2];
+
+	idx = 0;
+	for (int x = 0; x < m_length; x += 1) {
+		for (int z = 0; z < m_width; z += 1) {
+			terrainMap[idx] = x % 1024;
+			terrainMap[idx+1] = z % 1024;
+			// if ( idx < 8 ) cout << terrainMap[idx] << ", " << terrainMap[idx+1] << endl;
+			idx += 2;
+		} // for
+	} // for
+
+	//----------------------------------------------------------------------------------------
+	/*
 	 * Collect vertex info into Vertex structs
 	 */
 
 	idx = 0;
+	size_t idx2 = 0;
 	size_t vertexDataSZ = sizeof(Vertex) * numVerts;
 	Vertex* verts = new Vertex[ vertexDataSZ ];
 	for (int i = 0; i < numVerts; i += 1) {
@@ -175,7 +195,11 @@ void Terrain::init( ShaderProgram& m_shader ) {
 		verts[i].Nx = normalMap[idx];
 		verts[i].Ny = normalMap[idx + 1];
 		verts[i].Nz = normalMap[idx + 2];
+		verts[i].u = terrainMap[idx2];
+		verts[i].v = terrainMap[idx2 + 1];
+		// if ( i < 4 ) cout << verts[i].u << ", " << verts[i].v << endl;
 		idx += 3;
+		idx2 += 2;
 	} // for
 
 	//----------------------------------------------------------------------------------------
@@ -251,16 +275,19 @@ void Terrain::init( ShaderProgram& m_shader ) {
 		heightMapIndexData, GL_STATIC_DRAW );
 
 	// Specify the means of extracting the position values properly.
-	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
 	GLint posAttrib = m_shader.getAttribLocation( "position" );
 	glEnableVertexAttribArray( posAttrib );
 	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr );
 
 	// Specify the means of extracting the normals properly.
-	// const size_t STRIDE = 3; // number of components per generic vertex attribute (3 for x,y,z)
 	GLint normAttrib = m_shader.getAttribLocation( "normal" );
 	glEnableVertexAttribArray( normAttrib );
 	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
+
+	// Specify the means of extracting the textures properly.
+	GLint texAttrib = m_shader.getAttribLocation( "texture" );
+	glEnableVertexAttribArray( texAttrib );
+	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!
@@ -278,6 +305,7 @@ void Terrain::init( ShaderProgram& m_shader ) {
 
 void Terrain::draw() {
 
+	glBindTexture(GL_TEXTURE_2D, m_ground_texture);
 	glBindVertexArray( m_terrain_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );
 	glBindVertexArray( 0 );									// Restore defaults
