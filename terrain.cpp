@@ -13,13 +13,14 @@ struct Vertex {
 	float u, v;				// texture coordinates
 };
 
-Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves )
+Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
 	: m_length( length ),
 	  m_width( width ),
 	  bufferIndexCount(0),
 	  numOctaves(numOctaves),
 	  mode(1),
-	  numModes(2)
+	  numModes(2),
+	  redist(redist)
 {
 	reset();
 }
@@ -68,15 +69,16 @@ void Terrain::init( ShaderProgram& m_shader ) {
 
 			for ( unsigned int i = 0; i < numOctaves; i += 1 ) {
 				if (mode == 0 ) {
-					fractalSum += (2.0f * SimplexNoise1234::noise(freq*gridX, freq*gridY)) * amp ;
+					fractalSum += 3.0f * (1.0f + (SimplexNoise1234::noise(freq*gridX, freq*gridY) * amp));
 				} else {
-					fractalSum += (2.0f + Perlin::noise(freq*gridX, freq*gridY)) * amp ;
+					fractalSum += 3.0f * (1.1f + (Perlin::noise(freq*gridX, freq*gridY) * amp));
 				}
 				amp *= 0.5f;
 				freq *= 2.0f;
 			} // for
+			if (fractalSum < 0.0f) cout << fractalSum << endl;
 			if ( fractalSum > maxVal ) maxVal = fractalSum;
-			heightMap[x][z] = fractalSum;
+			heightMap[x][z] = pow(fractalSum, redist);
 
 		} // for
 	} // for

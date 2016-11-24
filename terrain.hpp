@@ -7,7 +7,7 @@
 class Terrain
 {
 public:
-	Terrain( size_t m_length, size_t m_width, unsigned int numOctaves );
+	Terrain( size_t m_length, size_t m_width, unsigned int numOctaves, double redist );
 	~Terrain();
 
 	void reset();
@@ -20,8 +20,9 @@ public:
 
 	void draw();
 
-	int mode, numModes;
-	unsigned int numOctaves;
+	int mode, numModes;							// 0 == SimplexNoise1234, 1 == my impl
+	unsigned int numOctaves;					// fractalization factor
+	double redist;								// raise elevation to pow of redist
 	
 private:
 	size_t m_length, m_width;

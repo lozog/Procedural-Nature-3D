@@ -13,15 +13,16 @@ using namespace glm;
 using namespace std;
 
 // terrain needs to be square or terrain map vertices get all hecked up
-static const size_t TERRAIN_WIDTH = 100;
+static const size_t TERRAIN_WIDTH = 200;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
-static const unsigned int NUM_OCTAVES = 6; // # of octaves for terrain generation
+static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
+static const double REDIST = 1.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
 	: current_col( 0 ),
-	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES),
+	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -46,6 +47,11 @@ A5::~A5()
 void A5::reset() {
 	resetCamera();
 	resetLight();
+	cout << "controls:" << endl;
+	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
+	cout << "M/N: raise/lower distribution power" << endl;
+	cout << "K/J: raise/lower sun intensity" << endl;
+	cout << "O/I: raise/lower # of octaves in terrain" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -58,12 +64,19 @@ void A5::resetCamera() {
 	pitch = 0.0f;
 	yaw = 0.0f;
 	cameraSpeed = 0.3f;
-	#if 1
+	#if 0
 	// position camera to have a view of 100x100 grid by default
 	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
 	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
 	pitch = -15.77f;
 	yaw = 51.72f;
+	#endif
+	#if 1
+	// position camera to have a view of 200x200 grid by default
+	cameraPos 		= glm::vec3( -171.0f, 72.0f, -103.0f );
+	cameraFront 	= glm::vec3( 0.579f, -0.363f, 0.496f );
+	pitch = -22.3f;
+	yaw = 33.4f;
 	#endif
 	#if 0
 	// position camera to have a view of 512x512 grid by default
@@ -451,6 +464,19 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			if ( m_theSunIntensity > 0.1f)
 				m_theSunIntensity -= 0.1f;
 			cout << m_theSunIntensity << " intensity" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_M) {
+			theTerrain.redist += 0.05f;;
+			cout << theTerrain.redist << " redist power" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_N) {
+			if ( theTerrain.redist > 0.01f)
+				theTerrain.redist -= 0.05f;
+			cout << theTerrain.redist << " redist power" << endl;
 			initTerrain();
 			eventHandled = true;
 		}
