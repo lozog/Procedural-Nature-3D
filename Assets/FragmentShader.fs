@@ -39,6 +39,6 @@ void main() {
 	float kd = max(0.0, dot(norm, -theSun.dir));
 	vec4 temp = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
 	// fragColor = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
-	fragColor = texture(theTexture, tex) * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	fragColor = texture(theTexture, 0.05f*tex) * vec4( theSun.colour*(theSun.intensity + kd), 1);
 	// fragColor = texture(theTexture, tex) + 0.001f*temp;
 }

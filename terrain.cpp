@@ -106,7 +106,6 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	size_t numTriangles = 2 * ((m_length-1)*(m_width-1));
 
 	size_t heightMapVertDataSZ = 3 * numVerts;					// x, y, and z for each vertex
-	// float* heightMapVertData = new float[ heightMapVertDataSZ ];
 	float heightMapVertData[ heightMapVertDataSZ ];
 
 	size_t idx = 0;
@@ -132,7 +131,6 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	 */
 
 	// one normal per vertex -> same size as vertex
-	// float* normalMap = new float[ heightMapVertDataSZ ];
 	float normalMap[ heightMapVertDataSZ ];
 
 	idx = 0;
@@ -297,9 +295,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-	// OpenGL has the buffer now, there's no need for us to keep a copy.
-	// delete [] heightMapVertData;
-	// delete [] normalMap;
+	// OpenGL has the buffers now, there's no need for us to keep any copies
 	delete [] verts;
 	delete [] heightMapIndexData;
 
