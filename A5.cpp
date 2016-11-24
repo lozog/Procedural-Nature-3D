@@ -9,6 +9,10 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/io.hpp>
 
+// Simple OpenGL Image Library
+// http://www.lonesock.net/soil.html
+#include "SOIL.h"
+
 using namespace glm;
 using namespace std;
 
@@ -43,10 +47,19 @@ A5::~A5()
 {}
 
 //----------------------------------------------------------------------------------------
+// Load textures
+void A5::loadTextures() {
+	int width, height;
+	unsigned char* image = SOIL_load_image("res/grass.png", &width, &height, 0, SOIL_LOAD_RGB);
+	cout << (int)*image << endl;
+}
+
+//----------------------------------------------------------------------------------------
 // Reset things
 void A5::reset() {
 	resetCamera();
 	resetLight();
+	loadTextures();
 	cout << "controls:" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;

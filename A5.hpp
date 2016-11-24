@@ -28,6 +28,8 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
+	void loadTextures();
+
 	void reset();
 	void resetCamera();
 	void resetLight();

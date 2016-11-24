@@ -36,7 +36,8 @@ if os.get() == "linux" then
         "X11",
         "stdc++",
         "dl",
-        "pthread"
+        "pthread",
+        "SOIL"
     }
 end
 
@@ -61,7 +62,7 @@ solution "CS488-Projects"
         links (linkLibs)
         linkoptions (linkOptionList)
         includedirs (includeDirList)
-        files { "*.cpp" }
+        files { "*.cpp", "*.c" }
 
     configuration "Debug"
         defines { "DEBUG" }
