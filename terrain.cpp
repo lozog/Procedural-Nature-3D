@@ -106,7 +106,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	size_t numTriangles = 2 * ((m_length-1)*(m_width-1));
 
 	size_t heightMapVertDataSZ = 3 * numVerts;					// x, y, and z for each vertex
-	float* heightMapVertData = new float[ heightMapVertDataSZ ];
+	// float* heightMapVertData = new float[ heightMapVertDataSZ ];
+	float heightMapVertData[ heightMapVertDataSZ ];
 
 	size_t idx = 0;
 	for (int x = 0; x < m_length; x += 1) {
@@ -130,9 +131,9 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	 * Calculate normals at each vertex of terrain
 	 */
 
-	// TODO: don't need this one to be heap anymore
 	// one normal per vertex -> same size as vertex
-	float* normalMap = new float[ heightMapVertDataSZ ];
+	// float* normalMap = new float[ heightMapVertDataSZ ];
+	float normalMap[ heightMapVertDataSZ ];
 
 	idx = 0;
 	for (int x = 0; x < m_length; x += 1) {
@@ -182,6 +183,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Collect vertex info into Vertex structs
+	 * this one is allocated on the heap, since we pass it to OpenGL
 	 */
 
 	idx = 0;
@@ -296,8 +298,9 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 	// OpenGL has the buffer now, there's no need for us to keep a copy.
-	delete [] heightMapVertData;
-	delete [] normalMap;
+	// delete [] heightMapVertData;
+	// delete [] normalMap;
+	delete [] verts;
 	delete [] heightMapIndexData;
 
 	CHECK_GL_ERRORS;
