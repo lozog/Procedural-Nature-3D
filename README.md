@@ -52,3 +52,7 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 
 *water.png
     retrieved from http://opengameart.org/content/3-live-proceduraly-generated-tiling-water-textures-512px-running-brushes
+
+*skybox textures
+    created by Jockun Skoglund
+    retrieved from http://opengameart.org/content/interstellar-skybox
