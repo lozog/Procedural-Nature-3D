@@ -1,12 +1,12 @@
 #include "vertex.hpp"
+#include "water.hpp"
 
 #include <iostream>
 using namespace std;
 
-Water::Water( size_t length, size_t width, size_t waterHeight )
+Water::Water( size_t length, size_t width )
 	: m_length( length ),
 	  m_width( width ),
-	  m_height( waterHeight ),
 	  numVerts(4)
 {
 	reset();
@@ -28,19 +28,22 @@ GLuint Water::getVBO() {
 }
 
 // generates water to be rendered with GL_TRIANGLES
-void Water::init( ShaderProgram& m_shader, GLuint texture ) {
-	m_texture = ground_texture;
+void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) {
+	m_height = waterHeight;
+	m_texture = texture;
 
-	Vertex verts[ numVerts ];
-	unsigned int vertIndices[numVerts];
-	for (int i = 0; i < numVerts; i += 1 ) {
+	Vertex* verts = new Vertex[ numVerts ];
+	unsigned int* vertIndices = new unsigned int[numVerts];
+	for (unsigned int i = 0; i < numVerts; i += 1 ) {
+		verts[i].y = m_height;
+
 		// all vertices face up
-		vertz[i].Nx = 1;
+		verts[i].Nx = 1;
 		verts[i].Ny = 0;
 		verts[i].Nz = 0;
 
 		// vertex index buffer
-		vertIndices = i;
+		vertIndices[i] = i;
 	} // for
 	verts[0].x = 0;
 	verts[0].z = 0;
@@ -106,10 +109,8 @@ void Water::init( ShaderProgram& m_shader, GLuint texture ) {
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 	// OpenGL has the buffers now, there's no need for us to keep any copies
-	delete [] normalMap;
+	delete [] vertIndices;
 	delete [] verts;
-	delete [] heightMapIndexData;
-	delete [] heightMapVertData;
 
 	CHECK_GL_ERRORS;
 }

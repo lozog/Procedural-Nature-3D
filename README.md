@@ -45,9 +45,10 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 
 ----
 
-## Windows
-Sorry for all of the hardcore Microsoft fans out there.  We have not had time to test the build system on Windows yet. Currently our build steps work for OSX and Linux, but all the steps should be the same on Windows, except you will need different libraries to link against when building your project executables.  Some good news is that premake4 can output a Visual Studio .sln file by running:
+## Other Resources
 
-    $ premake4 vs2013
+*grass.png
+    copyright Blender Foundation | apricot.blender.org
 
- This should point you in the general direction.
+*water.png
+    retrieved from http://opengameart.org/content/3-live-proceduraly-generated-tiling-water-textures-512px-running-brushes

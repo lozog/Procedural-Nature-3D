@@ -19,14 +19,16 @@ using namespace std;
 // terrain needs to be square or terrain map vertices get all hecked up
 static const size_t TERRAIN_WIDTH = 200;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
+static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
-static const double REDIST = 1.0f;
+static const double REDIST = 1.05f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
 	: current_col( 0 ),
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
+	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -82,11 +84,13 @@ void A5::reset() {
 	resetCamera();
 	resetLight();
 	cout << "controls:" << endl;
+	
+	cout << "U/Y: raise/lower x position of the Sun" << endl;
+	cout << "O/I: raise/lower # of octaves in terrain" << endl;
+	cout << "H/G: raise/lower water level" << endl;
+	cout << "K/J: raise/lower sun intensity" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;
-	cout << "K/J: raise/lower sun intensity" << endl;
-	cout << "O/I: raise/lower # of octaves in terrain" << endl;
-	cout << "U/Y: raise/lower x position of the Sun" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -177,7 +181,7 @@ void A5::init()
 
 void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
-	// theWater.init( m_shader, m_water_texture );
+	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 }
 
 //----------------------------------------------------------------------------------------
@@ -299,8 +303,9 @@ void A5::draw()
 
 		glUniform3fv( eye_uni, 1, value_ptr( cameraPos ) );
 
-		// draw terrain
+		// draw environment
 		theTerrain.draw();
+		theWater.draw();
 
 	m_shader.disable();
 
@@ -539,6 +544,18 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			if ( m_theSunDir.x > 0.0f)
 				m_theSunDir -= glm::vec3(0.5f, 0.0f, 0.0f);
 			cout << m_theSunDir << " sun direction" << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_H) {
+			WATER_HEIGHT += 1;
+			cout << "water height: " << WATER_HEIGHT << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_G) {
+			WATER_HEIGHT -= 1;
+			cout << "water height: " << WATER_HEIGHT << endl;
 			initEnvironment();
 			eventHandled = true;
 		}

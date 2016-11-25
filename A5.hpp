@@ -7,6 +7,7 @@
 #include "cs488-framework/ShaderProgram.hpp"
 
 #include "terrain.hpp"
+#include "water.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -88,7 +89,9 @@ private:
 	glm::mat4 proj;
 	glm::mat4 view;
 
+	// models
 	Terrain theTerrain;
+	Water theWater;
 
 	float colour[3];
 	int current_col;

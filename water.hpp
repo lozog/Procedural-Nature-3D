@@ -7,7 +7,7 @@
 class Water
 {
 public:
-	Water( size_t m_length, size_t m_width, size_t waterHeight );
+	Water( size_t m_length, size_t m_width );
 	~Water();
 
 	void reset();
@@ -15,7 +15,7 @@ public:
 	GLuint getVAO();
 	GLuint getVBO();
 
-	void init( ShaderProgram& m_shader, GLuint m_texture );
+	void init( ShaderProgram& m_shader, GLuint m_texture, size_t waterHeight );
 
 	void draw();
 
