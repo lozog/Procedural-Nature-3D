@@ -86,6 +86,7 @@ void A5::reset() {
 	cout << "M/N: raise/lower distribution power" << endl;
 	cout << "K/J: raise/lower sun intensity" << endl;
 	cout << "O/I: raise/lower # of octaves in terrain" << endl;
+	cout << "U/Y: raise/lower x position of the Sun" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -125,8 +126,9 @@ void A5::resetCamera() {
 // Reset lights
 void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
-	m_theSunDir = glm::vec3(1.0f, 0.0f, 0.0f);
-	m_theSunIntensity = 0.5f;
+	m_theSunDir = glm::vec3(0.5f, -0.5f, 0.0f);
+	m_theSunIntensity = 0.8f;
+	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.1f);
 }
 
 //----------------------------------------------------------------------------------------
@@ -150,9 +152,11 @@ void A5::init()
 	P_uni = m_shader.getUniformLocation( "P" );
 	V_uni = m_shader.getUniformLocation( "V" );
 	M_uni = m_shader.getUniformLocation( "M" );
-	theSunColour_uni	= m_shader.getUniformLocation( "theSunColour" );
-	theSunDir_uni 		= m_shader.getUniformLocation( "theSunDir" );
-	theSunIntensity_uni = m_shader.getUniformLocation( "theSunIntensity" );
+	theSunColour_uni		= m_shader.getUniformLocation( "theSunColour" );
+	theSunDir_uni 			= m_shader.getUniformLocation( "theSunDir" );
+	theSunIntensity_uni 	= m_shader.getUniformLocation( "theSunIntensity" );
+	globalAmbientLight_uni 	= m_shader.getUniformLocation( "globalAmbientLight" );
+	eye_uni 				= m_shader.getUniformLocation( "eye" );
 
 	// load textures
 	loadTextures();
@@ -286,6 +290,11 @@ void A5::draw()
 		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
 		glUniform3fv( theSunDir_uni, 1, value_ptr( m_theSunDir ) );
 		glUniform1f( theSunIntensity_uni, m_theSunIntensity );
+
+		// ambient light uniform
+		glUniform3fv( globalAmbientLight_uni, 1, value_ptr( m_globalAmbientLight ) );
+
+		glUniform3fv( eye_uni, 1, value_ptr( cameraPos ) );
 
 		// draw terrain
 		theTerrain.draw();
@@ -505,7 +514,7 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_M) {
-			theTerrain.redist += 0.05f;;
+			theTerrain.redist += 0.05f;
 			cout << theTerrain.redist << " redist power" << endl;
 			initTerrain();
 			eventHandled = true;
@@ -514,6 +523,19 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			if ( theTerrain.redist > 0.01f)
 				theTerrain.redist -= 0.05f;
 			cout << theTerrain.redist << " redist power" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_U) {
+			m_theSunDir += glm::vec3(0.5f, 0.0f, 0.0f);
+			cout << m_theSunDir << " sun direction" << endl;
+			initTerrain();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_Y) {
+			if ( m_theSunDir.x > 0.0f)
+				m_theSunDir -= glm::vec3(0.5f, 0.0f, 0.0f);
+			cout << m_theSunDir << " sun direction" << endl;
 			initTerrain();
 			eventHandled = true;
 		}

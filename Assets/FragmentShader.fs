@@ -19,6 +19,9 @@ uniform vec3 theSunColour;
 uniform vec3 theSunDir;
 uniform float theSunIntensity;
 
+uniform vec3 globalAmbientLight;
+uniform vec3 eye;
+
 void main() {
 	// map colour based on height
 	// if ( pos.y < 0 )
@@ -28,17 +31,42 @@ void main() {
 
 	// map colour based on height & normals
 	// fragColor = vec4(vec3((pos.y/5.0f), 0, 0)+norm, 1);
-	vec4 terrainCol = vec4(vec3((pos.y/5.0f), 0, 0)+norm, 1);
+	// vec3 terrainCol = vec3((pos.y/5.0f), 0, 0) + norm;
 
 	// directional light from the Sun
 	DirLight theSun;
 	theSun.colour = theSunColour;
-	theSun.dir = theSunDir;
+	theSun.dir = normalize(theSunDir);
 	theSun.intensity = theSunIntensity;
 
-	float kd = max(0.0, dot(norm, -theSun.dir));
-	vec4 temp = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	// float kd = max(0.0, dot(norm, -theSun.dir));
+	// vec4 temp = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
 	// fragColor = terrainCol * vec4( theSun.colour*(theSun.intensity + kd), 1);
-	fragColor = texture(theTexture, 0.05f*tex) * vec4( theSun.colour*(theSun.intensity + kd), 1);
+	// fragColor = texture(theTexture, 0.05f*tex) * vec4( theSun.colour*(theSun.intensity + kd), 1);
 	// fragColor = texture(theTexture, tex) + 0.001f*temp;
+
+	vec4 sunlight = vec4(theSun.intensity * theSun.colour, 1);
+	vec3 lightDir = normalize(theSun.dir - pos);
+
+	// diffuse light
+	vec3 normal = normalize(norm);
+	float diffgeo = max(0.0f, dot(normal, lightDir));
+	// no attenuation of direction lights
+	float kd = 0.8f; // hard-core kd of object for now
+	vec4 diffuse = sunlight * diffgeo;
+
+	// specular light
+	vec3 h = normalize(normalize(eye) + lightDir);
+	float ks = 0.5f;
+	float specterm = pow(max(0.0, dot(h, normal)), 3);
+	vec4 spec = specterm * sunlight * ks;
+
+
+	// ambient light
+	vec4 ambient = vec4(0.2f * globalAmbientLight, 1);
+
+	float scale = 0.0000001;
+	// float scale = 1;
+	fragColor = texture(theTexture, 0.05f*tex)*(scale*ambient + diffuse + scale*spec);
+
 }

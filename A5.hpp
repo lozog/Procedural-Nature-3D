@@ -71,11 +71,14 @@ private:
 	GLint theSunColour_uni;   					// Uniform location for the Sun colour
 	GLint theSunDir_uni;   						// Uniform location for the Sun direction
 	GLint theSunIntensity_uni;   				// Uniform location for the Sun intensity
+	GLint globalAmbientLight_uni;   			// Uniform location for global ambient light
+	GLint eye_uni;   							// Uniform location for eye position
 
 	// Lighting
 	glm::vec3 m_theSunColour;
 	glm::vec3 m_theSunDir;
 	float m_theSunIntensity;
+	glm::vec3 m_globalAmbientLight;
 
 	// Texture
 	GLuint m_ground_texture;

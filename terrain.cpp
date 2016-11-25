@@ -77,6 +77,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 				amp *= 0.5f;
 				freq *= 2.0f;
 			} // for
+			// TODO: prevent these from ever being negative!
 			if (fractalSum < 0.0f) cout << fractalSum << endl;
 			if ( fractalSum > maxVal ) maxVal = fractalSum;
 			heightMap[x][z] = pow(fractalSum, redist);
@@ -106,7 +107,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	size_t numTriangles = 2 * ((m_length-1)*(m_width-1));
 
 	size_t heightMapVertDataSZ = 3 * numVerts;					// x, y, and z for each vertex
-	float heightMapVertData[ heightMapVertDataSZ ];
+	// float heightMapVertData[ heightMapVertDataSZ ];
+	float* heightMapVertData = new float[ heightMapVertDataSZ ];
 
 	size_t idx = 0;
 	for (int x = 0; x < m_length; x += 1) {
@@ -131,7 +133,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	 */
 
 	// one normal per vertex -> same size as vertex
-	float normalMap[ heightMapVertDataSZ ];
+	// float normalMap[ heightMapVertDataSZ ];
+	float* normalMap = new float[ heightMapVertDataSZ ];
 
 	idx = 0;
 	for (int x = 0; x < m_length; x += 1) {
@@ -181,7 +184,6 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Collect vertex info into Vertex structs
-	 * this one is allocated on the heap, since we pass it to OpenGL
 	 */
 
 	idx = 0;
@@ -296,8 +298,10 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 	// OpenGL has the buffers now, there's no need for us to keep any copies
+	delete [] normalMap;
 	delete [] verts;
 	delete [] heightMapIndexData;
+	delete [] heightMapVertData;
 
 	CHECK_GL_ERRORS;
 }
