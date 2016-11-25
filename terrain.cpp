@@ -3,15 +3,10 @@
 #include "terrain.hpp"
 #include "simplexnoise.hpp"
 #include "perlinnoise.hpp"
+#include "vertex.hpp"
 
 #include <iostream>
 using namespace std;
-
-struct Vertex {
-	float x, y, z;			// coordinates of this vertex
-	float Nx, Ny, Nz;		// normal at this vertex
-	int u, v;				// texture coordinates
-};
 
 Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
 	: m_length( length ),
@@ -189,7 +184,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	idx = 0;
 	size_t idx2 = 0;
 	size_t vertexDataSZ = sizeof(Vertex) * numVerts;
-	Vertex* verts = new Vertex[ vertexDataSZ ];
+	Vertex* verts = new Vertex[ numVerts ];
 	for (int i = 0; i < numVerts; i += 1) {
 		verts[i].x = heightMapVertData[idx    ];
 		verts[i].y = heightMapVertData[idx + 1];
@@ -267,7 +262,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	// Create the terrain vertex buffer
 	glGenBuffers( 1, &m_terrain_vbo );
 	glBindBuffer( GL_ARRAY_BUFFER, m_terrain_vbo );
-	glBufferData( GL_ARRAY_BUFFER, vertexDataSZ*sizeof(Vertex),
+	glBufferData( GL_ARRAY_BUFFER, numVerts*sizeof(Vertex),
 		verts, GL_STATIC_DRAW );
 
 	// Create the terrain index buffer
@@ -307,7 +302,6 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 }
 
 void Terrain::draw() {
-
 	glBindTexture(GL_TEXTURE_2D, m_ground_texture);
 	glBindVertexArray( m_terrain_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );

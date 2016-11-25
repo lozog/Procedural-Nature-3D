@@ -48,15 +48,15 @@ A5::~A5()
 
 //----------------------------------------------------------------------------------------
 // Load textures
-void A5::loadTextures() {
+void A5::loadTexture( const char* filename, GLuint* texture ) {
 
 	// load texture image with SOIL
 	int width, height;
-	unsigned char* image = SOIL_load_image("res/grass.png", &width, &height, 0, SOIL_LOAD_RGB);
+	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
 	
 	// generate texture
-	glGenTextures(1, &m_ground_texture);
-	glBindTexture(GL_TEXTURE_2D, m_ground_texture);
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_2D, *texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -112,6 +112,7 @@ void A5::resetCamera() {
 	cameraFront 	= glm::vec3( 0.579f, -0.363f, 0.496f );
 	pitch = -22.3f;
 	yaw = 33.4f;
+	cameraSpeed = 1.5f;
 	#endif
 	#if 0
 	// position camera to have a view of 512x512 grid by default
@@ -128,7 +129,7 @@ void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
 	m_theSunDir = glm::vec3(0.5f, -0.5f, 0.0f);
 	m_theSunIntensity = 0.8f;
-	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.1f);
+	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
 }
 
 //----------------------------------------------------------------------------------------
@@ -159,10 +160,11 @@ void A5::init()
 	eye_uni 				= m_shader.getUniformLocation( "eye" );
 
 	// load textures
-	loadTextures();
+	loadTexture("res/grass.png", &m_ground_texture);
+	loadTexture("res/water.png", &m_water_texture);
 
-	// initialize terrain
-	initTerrain();
+	// initialize environment
+	initEnvironment();
 
 	proj = glm::perspective( 
 		glm::radians( 45.0f ),
@@ -173,8 +175,9 @@ void A5::init()
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
 }
 
-void A5::initTerrain() {
+void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
+	// theWater.init( m_shader, m_water_texture );
 }
 
 //----------------------------------------------------------------------------------------
@@ -483,60 +486,60 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		if (key == GLFW_KEY_O) {
 			theTerrain.numOctaves += 1;
 			cout << theTerrain.numOctaves << " octaves" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_I) {
 			if ( theTerrain.numOctaves > 0)
 				theTerrain.numOctaves -= 1;
 			cout << theTerrain.numOctaves << " octaves" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_L) {
 			theTerrain.mode += 1;
 			theTerrain.mode %= theTerrain.numModes; // cycle through terrain modes
 			cout << "mode: " << theTerrain.mode << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_K) {
 			m_theSunIntensity += 0.1f;;
 			cout << m_theSunIntensity << " intensity" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_J) {
 			if ( m_theSunIntensity > 0.1f)
 				m_theSunIntensity -= 0.1f;
 			cout << m_theSunIntensity << " intensity" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_M) {
 			theTerrain.redist += 0.05f;
 			cout << theTerrain.redist << " redist power" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_N) {
 			if ( theTerrain.redist > 0.01f)
 				theTerrain.redist -= 0.05f;
 			cout << theTerrain.redist << " redist power" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_U) {
 			m_theSunDir += glm::vec3(0.5f, 0.0f, 0.0f);
 			cout << m_theSunDir << " sun direction" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_Y) {
 			if ( m_theSunDir.x > 0.0f)
 				m_theSunDir -= glm::vec3(0.5f, 0.0f, 0.0f);
 			cout << m_theSunDir << " sun direction" << endl;
-			initTerrain();
+			initEnvironment();
 			eventHandled = true;
 		}
 	} // if

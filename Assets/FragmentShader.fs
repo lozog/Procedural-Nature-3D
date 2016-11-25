@@ -50,10 +50,10 @@ void main() {
 
 	// diffuse light
 	vec3 normal = normalize(norm);
-	float diffgeo = max(0.0f, dot(normal, lightDir));
+	float diffterm = max(0.0f, dot(normal, lightDir));
 	// no attenuation of direction lights
-	float kd = 0.8f; // hard-core kd of object for now
-	vec4 diffuse = sunlight * diffgeo;
+	float kd = 0.8f; // hard-cord kd of object for now
+	vec4 diffuse = sunlight * diffterm;
 
 	// specular light
 	vec3 h = normalize(normalize(eye) + lightDir);
@@ -63,10 +63,10 @@ void main() {
 
 
 	// ambient light
-	vec4 ambient = vec4(0.2f * globalAmbientLight, 1);
+	vec4 ambient = vec4(0.8f * globalAmbientLight, 1);
 
-	float scale = 0.0000001;
-	// float scale = 1;
+	// float scale = 0.0000001;
+	float scale = 1;
 	fragColor = texture(theTexture, 0.05f*tex)*(scale*ambient + diffuse + scale*spec);
 
 }

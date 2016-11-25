@@ -28,12 +28,12 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
-	void loadTextures();
+	void loadTexture( const char* filename, GLuint* texture );
+	void initEnvironment();
 
 	void reset();
 	void resetCamera();
 	void resetLight();
-	void initTerrain();
 
 	// Camera controls
 	void moveCameraForward();
@@ -82,6 +82,7 @@ private:
 
 	// Texture
 	GLuint m_ground_texture;
+	GLuint m_water_texture;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
