@@ -29,6 +29,7 @@ A5::A5()
 	: current_col( 0 ),
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
+	theSkybox(),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -49,17 +50,20 @@ A5::~A5()
 {}
 
 //----------------------------------------------------------------------------------------
-// Load textures
+// Load object texture
 void A5::loadTexture( const char* filename, GLuint* texture ) {
+
+	// generate texture
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_2D, *texture);
 
 	// load texture image with SOIL
 	int width, height;
 	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
 	
-	// generate texture
-	glGenTextures(1, texture);
-	glBindTexture(GL_TEXTURE_2D, *texture);
+	// bind image to OpenGL
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	#if 1
@@ -76,6 +80,43 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 	// free image and unbind texture
 	SOIL_free_image_data(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// Load skybox textures
+void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture ) {
+
+	// load texture image with SOIL
+	int width, height;
+	unsigned char* image;
+	
+	// generate texture
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, *texture);
+
+	unsigned int numFaces = filenames.size();
+	for ( GLuint i = 0; i < numFaces; i += 1 ) {
+
+		const char* filename = filenames.at(i).c_str();
+		image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
+
+		glTexImage2D(
+			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 
+			GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
+			);
+
+		// free image and unbind texture
+		SOIL_free_image_data(image);
+	} // for
+	// glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 //----------------------------------------------------------------------------------------
@@ -145,7 +186,7 @@ void A5::init()
 	// Set the background colour.
 	glClearColor( 0.1, 0.1, 0.1, 1.0 );
 
-	// Build the shader
+	// Build the vertex shader
 	m_shader.generateProgramObject();
 	m_shader.attachVertexShader(
 		getAssetFilePath( "VertexShader.vs" ).c_str() );
@@ -153,7 +194,7 @@ void A5::init()
 		getAssetFilePath( "FragmentShader.fs" ).c_str() );
 	m_shader.link();
 
-	// Set up the uniforms
+	// Set up vertex uniforms
 	P_uni = m_shader.getUniformLocation( "P" );
 	V_uni = m_shader.getUniformLocation( "V" );
 	M_uni = m_shader.getUniformLocation( "M" );
@@ -163,9 +204,31 @@ void A5::init()
 	globalAmbientLight_uni 	= m_shader.getUniformLocation( "globalAmbientLight" );
 	eye_uni 				= m_shader.getUniformLocation( "eye" );
 
+	// Build the skybox shader
+	m_skybox_shader.generateProgramObject();
+	m_skybox_shader.attachVertexShader(
+		getAssetFilePath( "skyboxVertexShader.vs" ).c_str() );
+	m_skybox_shader.attachFragmentShader(
+		getAssetFilePath( "skyboxFragmentShader.fs" ).c_str() );
+	m_skybox_shader.link();
+
+	// Set up skybox uniforms
+	P_skybox_uni = m_skybox_shader.getUniformLocation( "P" );
+	V_skybox_uni = m_skybox_shader.getUniformLocation( "V" );
+
 	// load textures
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
+	const std::vector<std::string> skyboxTextureFiles {
+		"res/grass.png",
+		// "res/skybox/rt.png",
+		"res/skybox/lf.png",
+		"res/skybox/up.png",
+		"res/skybox/dn.png",
+		"res/skybox/bk.png",
+		"res/skybox/ft.png"
+	};
+	loadSkybox( skyboxTextureFiles, &m_skybox_texture );
 
 	// initialize environment
 	initEnvironment();
@@ -182,6 +245,7 @@ void A5::init()
 void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
+	theSkybox.init(m_skybox_shader, m_skybox_texture );
 }
 
 //----------------------------------------------------------------------------------------
@@ -282,11 +346,21 @@ void A5::draw()
 	mat4 W;
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 
+	glEnable( GL_DEPTH_TEST );
+
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
+	m_skybox_shader.enable();
+		// set skybox matrix uniforms
+		glm::mat4 translateOnlyView = glm::mat4(glm::mat3(view));
+		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
+		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( translateOnlyView ) );
+
+		theSkybox.draw(); 			// skybox first
+
+	m_skybox_shader.disable();
 	
 	m_shader.enable();
 
-		glEnable( GL_DEPTH_TEST );
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
@@ -297,6 +371,8 @@ void A5::draw()
 		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
 		glUniform3fv( theSunDir_uni, 1, value_ptr( m_theSunDir ) );
 		glUniform1f( theSunIntensity_uni, m_theSunIntensity );
+
+		
 
 		// ambient light uniform
 		glUniform3fv( globalAmbientLight_uni, 1, value_ptr( m_globalAmbientLight ) );

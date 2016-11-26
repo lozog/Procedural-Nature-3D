@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <glm/glm.hpp>
 
 #include "cs488-framework/CS488Window.hpp"
@@ -8,6 +10,7 @@
 
 #include "terrain.hpp"
 #include "water.hpp"
+#include "skybox.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -30,6 +33,7 @@ protected:
 
 private:
 	void loadTexture( const char* filename, GLuint* texture );
+	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
 
 	void reset();
@@ -64,7 +68,7 @@ private:
 	bool firstMouseMove;						// prevents jump on first mouse movement
 	double pitch, yaw;
 
-	// Fields related to the shader and uniforms.
+	// Fields related to the object vertex shader and uniforms.
 	ShaderProgram m_shader;
 	GLint P_uni; 								// Uniform location for Projection matrix.
 	GLint V_uni; 								// Uniform location for View matrix.
@@ -75,6 +79,11 @@ private:
 	GLint globalAmbientLight_uni;   			// Uniform location for global ambient light
 	GLint eye_uni;   							// Uniform location for eye position
 
+	// Fields related to the skybox vertex shader and uniforms.
+	ShaderProgram m_skybox_shader;
+	GLint P_skybox_uni; 						// Uniform location for Projection matrix.
+	GLint V_skybox_uni; 						// Uniform location for View matrix.
+
 	// Lighting
 	glm::vec3 m_theSunColour;
 	glm::vec3 m_theSunDir;
@@ -84,6 +93,7 @@ private:
 	// Texture
 	GLuint m_ground_texture;
 	GLuint m_water_texture;
+	GLuint m_skybox_texture;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
@@ -92,6 +102,7 @@ private:
 	// models
 	Terrain theTerrain;
 	Water theWater;
+	Skybox theSkybox;
 
 	float colour[3];
 	int current_col;

@@ -24,6 +24,7 @@ http://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/proced
 Skyboxes
 http://learnopengl.com/#!Advanced-OpenGL/Cubemaps
 http://ogldev.atspace.co.uk/www/tutorial25/tutorial25.html
+http://www.custommapmakers.org/skyboxes.php
 
 Billboards
 http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billboards/
