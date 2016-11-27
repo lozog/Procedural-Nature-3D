@@ -85,37 +85,37 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 // Load skybox textures
 void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture ) {
 
-	// load texture image with SOIL
-	int width, height;
-	unsigned char* image;
-	
 	// generate texture
 	glGenTextures(1, texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, *texture);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+	// load texture image with SOIL
+	int width, height;
+	unsigned char* image;
 
 	unsigned int numFaces = filenames.size();
 	for ( GLuint i = 0; i < numFaces; i += 1 ) {
 
 		const char* filename = filenames.at(i).c_str();
 		image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
-
+		// cout << filename << " " << width << " " << height << endl;
 		glTexImage2D(
 			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 
 			GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
 			);
 
 		// free image and unbind texture
-		SOIL_free_image_data(image);
 	} // for
 	// glGenerateMipmap(GL_TEXTURE_2D);
 
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	SOIL_free_image_data(image);
 
-	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
@@ -215,13 +215,14 @@ void A5::init()
 	// Set up skybox uniforms
 	P_skybox_uni = m_skybox_shader.getUniformLocation( "P" );
 	V_skybox_uni = m_skybox_shader.getUniformLocation( "V" );
+	// M_skybox_uni = m_skybox_shader.getUniformLocation( "M" );
 
 	// load textures
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
 	const std::vector<std::string> skyboxTextureFiles {
-		"res/grass.png",
-		// "res/skybox/rt.png",
+		// "res/grass.png",
+		"res/skybox/rt.png",
 		"res/skybox/lf.png",
 		"res/skybox/up.png",
 		"res/skybox/dn.png",
@@ -354,6 +355,7 @@ void A5::draw()
 		glm::mat4 translateOnlyView = glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( translateOnlyView ) );
+		// glUniformMatrix4fv( M_skybox_uni, 1, GL_FALSE, value_ptr( W ) );
 
 		theSkybox.draw(); 			// skybox first
 
