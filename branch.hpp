@@ -11,7 +11,7 @@ class Branch
 public:
 	Branch( float bottomRadius,
 			float topRadius,
-			float height,
+			float length,
 			glm::vec3 origin,
 			unsigned int levelOfDetail );
 	~Branch();
@@ -20,7 +20,7 @@ public:
 	void draw();
 
 private:
-	float bottomRadius, topRadius, height;
+	float bottomRadius, topRadius, length;
 	unsigned int detail;
 	glm::vec3 origin;
 

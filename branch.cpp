@@ -7,12 +7,12 @@ using namespace std;
 
 Branch::Branch( float bottomRadius,
 				float topRadius,
-				float height,
+				float length,
 				glm::vec3 origin,
 				unsigned int levelOfDetail )
 	: bottomRadius( bottomRadius ),
 	  topRadius( topRadius ),
-	  height( height ),
+	  length( length ),
 	  origin( origin ),
 	  detail( levelOfDetail )
 {
@@ -31,7 +31,7 @@ Branch::Branch( float bottomRadius,
 		verts[idx].y = origin.y;
 		verts[idx].z = origin.z + (bottomRadius * sin(angle*(x+1)));
 		verts[idx].Nx = verts[idx].x;
-		verts[idx].Ny = 0;
+		verts[idx].Ny = origin.y;
 		verts[idx].Nz = verts[idx].z;
 		verts[idx].u = x;
 		verts[idx].v = 0;
@@ -47,13 +47,13 @@ Branch::Branch( float bottomRadius,
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
 		// do stuff
 		verts[idx].x = origin.x + (topRadius * cos(angle*(x+1)));
-		verts[idx].y = origin.y + height;
+		verts[idx].y = origin.y + length;
 		verts[idx].z = origin.z + (topRadius * sin(angle*(x+1)));
 		verts[idx].Nx = verts[idx].x;
-		verts[idx].Ny = 0;
+		verts[idx].Ny = origin.y;
 		verts[idx].Nz = verts[idx].z;
 		verts[idx].u = x;
-		verts[idx].v = 20;
+		verts[idx].v = 10;
 		#if 0
 		cout << verts[idx].x << ", ";
 		cout << verts[idx].y << ", ";
@@ -78,7 +78,7 @@ Branch::Branch( float bottomRadius,
 	// last two triangles wrap around to beginning to make closed shape
 	indexBuffer[idx] = 0;
 	indexBuffer[idx+1] = vertsPerRow;
-	#if 1
+	#if 0
 	cout << indexBuffer[idx] << " ";
 	cout << indexBuffer[idx+1] << endl;
 	#endif

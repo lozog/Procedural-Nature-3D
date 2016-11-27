@@ -30,7 +30,8 @@ A5::A5()
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
-	tree(3.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 1),
+	tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2),
+	tree2(1.0f, 0.5f, 5.0f, glm::vec3(25.0f, 35.0f, 25.0f), 2),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -249,6 +250,7 @@ void A5::initEnvironment() {
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
 	tree.init(m_shader, m_tree_texture );
+	tree2.init(m_shader, m_tree_texture );
 
 	theSkybox.init(m_skybox_shader, m_skybox_texture );
 }
@@ -389,6 +391,7 @@ void A5::draw()
 		theTerrain.draw();
 		theWater.draw();
 		tree.draw();
+		tree2.draw();
 
 	m_shader.disable();
 
