@@ -16,24 +16,10 @@ Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double r
 	  mode(1),
 	  numModes(2),
 	  redist(redist)
-{
-	reset();
-}
-
-void Terrain::reset()
-{
-}
+{}
 
 Terrain::~Terrain()
 {}
-
-GLuint Terrain::getVAO() {
-	return m_terrain_vao;
-}
-
-GLuint Terrain::getVBO() {
-	return m_terrain_vbo;
-}
 
 size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;

@@ -4,8 +4,9 @@ Camera:
 http://learnopengl.com/#!Getting-started/Camera
 
 L-systems
-http://www.allenpike.com/modeling-plants-with-l-systems/
 - randomness in lengths, angles, probabilities on which rule to use
+http://www.allenpike.com/modeling-plants-with-l-systems/
+http://pcgbook.com/wp-content/uploads/chapter05.pdf (sections 5.2-5.4, 5.7)
 
 Bloom
 http://prideout.net/archive/bloom/

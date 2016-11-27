@@ -8,24 +8,10 @@ Water::Water( size_t length, size_t width )
 	: m_length( length ),
 	  m_width( width ),
 	  numVerts(4)
-{
-	reset();
-}
-
-void Water::reset()
-{
-}
+{}
 
 Water::~Water()
 {}
-
-GLuint Water::getVAO() {
-	return m_water_vao;
-}
-
-GLuint Water::getVBO() {
-	return m_water_vbo;
-}
 
 // generates water to be rendered with GL_TRIANGLES
 void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) {

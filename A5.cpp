@@ -110,12 +110,11 @@ void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture )
 			GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
 			);
 
-		// free image and unbind texture
 	} // for
-	// glGenerateMipmap(GL_TEXTURE_2D);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
+	// free image and unbind texture
 	SOIL_free_image_data(image);
-
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
@@ -153,10 +152,10 @@ void A5::resetCamera() {
 	#endif
 	#if 1
 	// position camera to have a view of 200x200 grid by default
-	cameraPos 		= glm::vec3( -171.0f, 72.0f, -103.0f );
-	cameraFront 	= glm::vec3( 0.579f, -0.363f, 0.496f );
-	pitch = -22.3f;
-	yaw = 33.4f;
+	cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
+	cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
+	pitch = -99.1f;
+	yaw = 35.9f;
 	cameraSpeed = 1.5f;
 	#endif
 	#if 0

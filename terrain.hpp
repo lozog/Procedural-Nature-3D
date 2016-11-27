@@ -10,10 +10,6 @@ public:
 	Terrain( size_t m_length, size_t m_width, unsigned int numOctaves, double redist );
 	~Terrain();
 
-	void reset();
-
-	GLuint getVAO();
-	GLuint getVBO();
 	size_t getBufferIndexCount();
 
 	void init( ShaderProgram& m_shader, GLuint m_ground_texture );
