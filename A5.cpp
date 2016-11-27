@@ -30,7 +30,7 @@ A5::A5()
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
-	tree(3.0f, 1.0f, 5.0f, glm::vec3(-71.645, 28.692, -59.164), 1),
+	tree(3.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 1),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),

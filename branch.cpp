@@ -27,34 +27,38 @@ Branch::Branch( float bottomRadius,
 	// bottom row of verts
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
 		// do stuff
-		verts[idx].x = origin.x + (bottomRadius * sin(angle*(x+1)));
+		verts[idx].x = origin.x + (bottomRadius * cos(angle*(x+1)));
 		verts[idx].y = origin.y;
-		verts[idx].z = origin.z + (bottomRadius * cos(angle*(x+1)));
+		verts[idx].z = origin.z + (bottomRadius * sin(angle*(x+1)));
 		verts[idx].Nx = verts[idx].x;
 		verts[idx].Ny = 0;
 		verts[idx].Nz = verts[idx].z;
 		verts[idx].u = x;
 		verts[idx].v = 0;
+		#if 0
 		cout << verts[idx].x << ", ";
 		cout << verts[idx].y << ", ";
 		cout << verts[idx].z << endl;
+		#endif
 		idx += 1;
 	} // for
 
 	// top row of verts
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
 		// do stuff
-		verts[idx].x = origin.x + (topRadius * sin(angle*(x+1)));
+		verts[idx].x = origin.x + (topRadius * cos(angle*(x+1)));
 		verts[idx].y = origin.y + height;
-		verts[idx].z = origin.z + (topRadius * cos(angle*(x+1)));
+		verts[idx].z = origin.z + (topRadius * sin(angle*(x+1)));
 		verts[idx].Nx = verts[idx].x;
 		verts[idx].Ny = 0;
 		verts[idx].Nz = verts[idx].z;
 		verts[idx].u = x;
 		verts[idx].v = 20;
+		#if 0
 		cout << verts[idx].x << ", ";
 		cout << verts[idx].y << ", ";
 		cout << verts[idx].z << endl;
+		#endif
 		idx += 1;
 	} // for
 
@@ -64,15 +68,17 @@ Branch::Branch( float bottomRadius,
 	for( unsigned int x = 0; x < vertsPerRow; x+= 1 ) {
 		indexBuffer[idx] = x;
 		indexBuffer[idx + 1] = x + vertsPerRow;
+	#if 0
 		cout << indexBuffer[idx] << " ";
 		cout << indexBuffer[idx+1] << " ";
+	#endif
 		idx += 2;
 	} // for
 
 	// last two triangles wrap around to beginning to make closed shape
-	#if 1
 	indexBuffer[idx] = 0;
 	indexBuffer[idx+1] = vertsPerRow;
+	#if 1
 	cout << indexBuffer[idx] << " ";
 	cout << indexBuffer[idx+1] << endl;
 	#endif
