@@ -11,6 +11,7 @@
 #include "terrain.hpp"
 #include "water.hpp"
 #include "skybox.hpp"
+#include "branch.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -95,6 +96,7 @@ private:
 	GLuint m_ground_texture;
 	GLuint m_water_texture;
 	GLuint m_skybox_texture;
+	GLuint m_tree_texture;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
@@ -104,6 +106,7 @@ private:
 	Terrain theTerrain;
 	Water theWater;
 	Skybox theSkybox;
+	Branch tree;
 
 	float colour[3];
 	int current_col;

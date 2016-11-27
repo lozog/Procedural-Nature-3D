@@ -18,8 +18,7 @@ Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double r
 	  redist(redist)
 {}
 
-Terrain::~Terrain()
-{}
+Terrain::~Terrain() {}
 
 size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;
