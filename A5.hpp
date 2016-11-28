@@ -107,7 +107,7 @@ private:
 	Water theWater;
 	Skybox theSkybox;
 	Branch tree;
-	Branch tree2;
+	// Branch tree2;
 
 	float colour[3];
 	int current_col;

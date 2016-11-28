@@ -9,11 +9,13 @@
 class Branch
 {
 public:
-	Branch( float bottomRadius,
-			float topRadius,
-			float length,
-			glm::vec3 origin,
-			unsigned int levelOfDetail );
+	Branch( float bottomRadius,				// girth of branch at first (connecting) end
+			float topRadius,				// girth of branch at second (end) end
+			float length,					// length of branch
+			glm::vec3 origin,				// origin point of branch
+			unsigned int levelOfDetail,
+			glm::vec3 heading,
+			glm::vec3 left );
 	~Branch();
 
 	void init( ShaderProgram& m_shader, GLuint m_texture );
@@ -24,14 +26,16 @@ private:
 	unsigned int detail;
 	glm::vec3 origin;
 
+	glm::vec3 heading, left, up;
+
 	GLuint m_texture;
 
 	// Fields related to geometry.
-	GLuint m_vao; 								// Vertex Array Object
-	GLuint m_vertex_vbo; 						// Vertex Buffer Object
-	GLuint m_normal_vbo; 						// vertex normal Buffer Object
-	GLuint m_texture_vbo; 						// vertex texture Buffer Object
-	GLuint m_ibo; 								// Index Buffer Object
+	GLuint m_vao; 							// Vertex Array Object
+	GLuint m_vertex_vbo; 					// Vertex Buffer Object
+	GLuint m_normal_vbo; 					// vertex normal Buffer Object
+	GLuint m_texture_vbo; 					// vertex texture Buffer Object
+	GLuint m_ibo; 							// Index Buffer Object
 
 	unsigned int numVerts;
 	Vertex* verts;

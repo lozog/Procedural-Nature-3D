@@ -9,27 +9,40 @@ Branch::Branch( float bottomRadius,
 				float topRadius,
 				float length,
 				glm::vec3 origin,
-				unsigned int levelOfDetail )
+				unsigned int levelOfDetail,
+				glm::vec3 heading,
+				glm::vec3 left )
 	: bottomRadius( bottomRadius ),
 	  topRadius( topRadius ),
 	  length( length ),
 	  origin( origin ),
-	  detail( levelOfDetail )
+	  detail( levelOfDetail ),
+	  heading( heading ),
+	  left( left )
 {
+	up = glm::normalize(glm::cross(heading, left));
+
 	// allocate vertex array for this branch
 	unsigned int vertsPerRow = 4 * pow(2, detail-1);
 	unsigned int numVerts = 2 * vertsPerRow;
 	verts = new Vertex[ numVerts ];
 
 	float angle = glm::radians(90.0f / (float)detail);
-
 	size_t idx = 0;
 	// bottom row of verts
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
-		// do stuff
-		verts[idx].x = origin.x + (bottomRadius * cos(angle*(x+1)));
+		#if 0
+		verts[idx].x = origin.x + (bottomRadius * cos(x*angle));
 		verts[idx].y = origin.y;
-		verts[idx].z = origin.z + (bottomRadius * sin(angle*(x+1)));
+		verts[idx].z = origin.z + (bottomRadius * sin(x*angle));
+		#else
+		verts[idx].x = origin.x + (heading.x * bottomRadius * cos(x*angle))
+								+ (left.x    * bottomRadius * sin(x*angle));
+		verts[idx].y = origin.y + (heading.y * bottomRadius * cos(x*angle))
+								+ (left.y    * bottomRadius * sin(x*angle));
+		verts[idx].z = origin.z + (heading.z * bottomRadius * cos(x*angle))
+								+ (left.z    * bottomRadius * sin(x*angle));
+		#endif
 		verts[idx].Nx = verts[idx].x;
 		verts[idx].Ny = origin.y;
 		verts[idx].Nz = verts[idx].z;
@@ -39,16 +52,28 @@ Branch::Branch( float bottomRadius,
 		cout << verts[idx].x << ", ";
 		cout << verts[idx].y << ", ";
 		cout << verts[idx].z << endl;
+		cout << origin.x + (bottomRadius * cos(x*angle)) << ", ";
+		cout << origin.y << ", ";
+		cout << origin.z + (bottomRadius * sin(x*angle)) << endl;
+		cout << endl;
 		#endif
 		idx += 1;
 	} // for
 
 	// top row of verts
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
-		// do stuff
-		verts[idx].x = origin.x + (topRadius * cos(angle*(x+1)));
+		#if 0
+		verts[idx].x = origin.x + (topRadius * cos(x*angle));
 		verts[idx].y = origin.y + length;
-		verts[idx].z = origin.z + (topRadius * sin(angle*(x+1)));
+		verts[idx].z = origin.z + (topRadius * sin(x*angle));
+		#else
+		verts[idx].x = origin.x + (heading.x * topRadius * cos(x*angle))
+								+ (left.x    * topRadius * sin(x*angle));
+		verts[idx].y = origin.y + length + (heading.y * topRadius * cos(x*angle))
+										 + (left.y    * topRadius * sin(x*angle));
+		verts[idx].z = origin.z + (heading.z * topRadius * cos(x*angle))
+								+ (left.z    * topRadius * sin(x*angle));
+		#endif
 		verts[idx].Nx = verts[idx].x;
 		verts[idx].Ny = origin.y;
 		verts[idx].Nz = verts[idx].z;
