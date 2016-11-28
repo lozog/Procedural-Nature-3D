@@ -97,6 +97,39 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				up		= newHLU[2];
 				// cout << "new: " << heading << left << up << endl;
 			} break; // +
+			case '-': {
+				// cout << "old: " << heading << left << up << endl;
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Ru(-a0);
+				heading = newHLU[0];
+				left 	= newHLU[1];
+				up		= newHLU[2];
+				// cout << "new: " << heading << left << up << endl;
+			} break; // -
+			case '&': {
+				// cout << "old: " << heading << left << up << endl;
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(a0);
+				heading = newHLU[0];
+				left 	= newHLU[1];
+				up		= newHLU[2];
+				// cout << "new: " << heading << left << up << endl;
+			} break; // &
+			case '^': {
+				// cout << "old: " << heading << left << up << endl;
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(-a0);
+				heading = newHLU[0];
+				left 	= newHLU[1];
+				up		= newHLU[2];
+				// cout << "new: " << heading << left << up << endl;
+			} break; // ^
+			// TODO: if the next two cases are swapped, there is a compile error. WHY?
+			case '/': {
+				// cout << "old: " << heading << left << up << endl;
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(-a0);
+				heading = newHLU[0];
+				left 	= newHLU[1];
+				up		= newHLU[2];
+				// cout << "new: " << heading << left << up << endl;
+			} break; // /
 			case '\\': {
 				// cout << "old: " << heading << left << up << endl;
 				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(a0);
@@ -104,7 +137,8 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				left 	= newHLU[1];
 				up		= newHLU[2];
 				// cout << "new: " << heading << left << up << endl;
-			} break; // +
+			} break; // \
+			
 			default:
 				cout << "skipping unrecognized symbol: " << symbol << endl;
 		} // switch
