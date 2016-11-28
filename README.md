@@ -42,7 +42,6 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
     $ premake4 gmake
     $ make
 
-
 ----
 
 ## Other Resources
