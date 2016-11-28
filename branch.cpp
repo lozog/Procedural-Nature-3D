@@ -16,10 +16,10 @@ Branch::Branch( float bottomRadius,
 	  topRadius( topRadius ),
 	  length( length ),
 	  origin( origin ),
-	  detail( levelOfDetail ),
-	  heading( heading ),
-	  left( left )
+	  detail( levelOfDetail )
 {
+	Branch::heading = glm::normalize(heading);
+	Branch::left = glm::normalize(left);
 	up = glm::normalize(glm::cross(heading, left));
 }
 
@@ -50,9 +50,11 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].z = origin.z + (heading.z * bottomRadius * cos(x*angle))
 								+ (left.z    * bottomRadius * sin(x*angle));
 		#endif
-		verts[idx].Nx = verts[idx].x;
-		verts[idx].Ny = origin.y;
-		verts[idx].Nz = verts[idx].z;
+		// probably don't need to do this here, the fragment shader normalizes the normals
+		glm::vec3 normal = glm::normalize(glm::vec3(verts[idx].x, verts[idx].y, verts[idx].z));
+		verts[idx].Nx = normal.x;
+		verts[idx].Ny = normal.y;
+		verts[idx].Nz = normal.z;
 		verts[idx].u = x;
 		verts[idx].v = 0;
 		#if 0
@@ -82,15 +84,16 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].z = topOrigin.z + (heading.z * topRadius * cos(x*angle))
 								   + (left.z    * topRadius * sin(x*angle));
 		#endif
-		verts[idx].Nx = verts[idx].x;
-		verts[idx].Ny = origin.y;
-		verts[idx].Nz = verts[idx].z;
+		glm::vec3 normal = glm::normalize(glm::vec3(verts[idx].x, verts[idx].y, verts[idx].z));
+		verts[idx].Nx = normal.x;
+		verts[idx].Ny = normal.y;
+		verts[idx].Nz = normal.z;
 		verts[idx].u = x;
 		verts[idx].v = 10;
 		#if 0
-		cout << verts[idx].x << ", ";
-		cout << verts[idx].y << ", ";
-		cout << verts[idx].z << endl;
+		cout << verts[idx].Nx << ", ";
+		cout << verts[idx].Ny << ", ";
+		cout << verts[idx].Nz << endl;
 		#endif
 		idx += 1;
 	} // for

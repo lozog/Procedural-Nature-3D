@@ -30,7 +30,7 @@ A5::A5()
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
-	tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+	tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2, glm::vec3(0.0f, 0.5f, 0.5f), glm::vec3(0.5f, 0.5f, 0.0f)),
 	// tree2(1.0f, 0.5f, 5.0f, glm::vec3(25.0f, 35.0f, 25.0f), 2),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
@@ -176,6 +176,7 @@ void A5::resetLight() {
 	m_theSunDir = glm::vec3(0.5f, -0.5f, 0.0f);
 	m_theSunIntensity = 0.8f;
 	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
+	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
 }
 
 //----------------------------------------------------------------------------------------
@@ -216,14 +217,14 @@ void A5::init()
 	// Set up skybox uniforms
 	P_skybox_uni = m_skybox_shader.getUniformLocation( "P" );
 	V_skybox_uni = m_skybox_shader.getUniformLocation( "V" );
-	// M_skybox_uni = m_skybox_shader.getUniformLocation( "M" );
 
-	// load textures
+	// load model textures
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
-	loadTexture("res/tree.png", &m_tree_texture);
+	loadTexture("res/bark.png", &m_tree_texture);
+
+	// load skybox texture
 	const std::vector<std::string> skyboxTextureFiles {
-		// "res/grass.png",
 		"res/skybox/rt.png",
 		"res/skybox/lf.png",
 		"res/skybox/up.png",
@@ -361,7 +362,6 @@ void A5::draw()
 		glm::mat4 rotateOnlyView = glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( rotateOnlyView ) );
-		// glUniformMatrix4fv( M_skybox_uni, 1, GL_FALSE, value_ptr( W ) );
 
 		theSkybox.draw(); 			// skybox first
 

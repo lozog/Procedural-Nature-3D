@@ -52,7 +52,7 @@ void main() {
 	vec3 normal = normalize(norm);
 	float diffterm = max(0.0f, dot(normal, lightDir));
 	// no attenuation of direction lights
-	float kd = 0.8f; // hard-cord kd of object for now
+	float kd = 0.8f; // hard-code kd of object for now
 	vec4 diffuse = sunlight * diffterm;
 
 	// specular light

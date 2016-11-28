@@ -84,7 +84,6 @@ private:
 	ShaderProgram m_skybox_shader;
 	GLint P_skybox_uni; 						// Uniform location for Projection matrix.
 	GLint V_skybox_uni; 						// Uniform location for View matrix.
-	GLint M_skybox_uni; 						// Uniform location for Model matrix.
 
 	// Lighting
 	glm::vec3 m_theSunColour;
