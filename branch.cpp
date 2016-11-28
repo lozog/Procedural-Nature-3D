@@ -89,7 +89,7 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].Ny = normal.y;
 		verts[idx].Nz = normal.z;
 		verts[idx].u = x;
-		verts[idx].v = 10;
+		verts[idx].v = 5;
 		#if 0
 		cout << verts[idx].Nx << ", ";
 		cout << verts[idx].Ny << ", ";
