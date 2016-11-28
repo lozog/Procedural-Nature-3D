@@ -106,7 +106,6 @@ private:
 	Terrain theTerrain;
 	Water theWater;
 	Skybox theSkybox;
-	// BranchNode tree;
 	LTree ltree;
 
 	float colour[3];

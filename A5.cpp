@@ -30,8 +30,6 @@ A5::A5()
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
-	// tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
-	// tree2(1.0f, 0.5f, 5.0f, glm::vec3(25.0f, 35.0f, 25.0f), 2),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -68,15 +66,10 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	#if 1
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	#else
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	#endif
 
-	// colours seem more saturated WITHOUT this
+	// colours seem more saturated (better) WITHOUT this
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// free image and unbind texture
@@ -279,11 +272,10 @@ void A5::appLogic()
 	if ( rightPress ) moveCameraRight();
 	if ( upPress ) moveCameraUp();
 	if ( downPress ) moveCameraDown();
-	// view = glm::lookAt( cameraPos, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, 1.0f, 0.0f ) );
+
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-	// cout << glfwGetInputMode( m_window, GLFW_CURSOR ) << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -373,7 +365,7 @@ void A5::draw()
 		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( rotateOnlyView ) );
 
-		theSkybox.draw(); 			// skybox first
+		theSkybox.draw(); 			// draw skybox first
 
 	m_skybox_shader.disable();
 	
@@ -400,8 +392,6 @@ void A5::draw()
 		// draw environment
 		theTerrain.draw();
 		theWater.draw();
-		// tree.draw();
-		// tree2.draw();
 		ltree.draw();
 
 	m_shader.disable();
