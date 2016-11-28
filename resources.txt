@@ -7,6 +7,7 @@ L-systems
 - randomness in lengths, angles, probabilities on which rule to use
 http://www.allenpike.com/modeling-plants-with-l-systems/
 http://pcgbook.com/wp-content/uploads/chapter05.pdf (sections 5.2-5.4, 5.7)
+http://math.stackexchange.com/questions/73237/parametric-equation-of-a-circle-in-3d-space
 
 Bloom
 http://prideout.net/archive/bloom/

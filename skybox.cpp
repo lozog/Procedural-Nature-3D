@@ -11,50 +11,51 @@ Skybox::~Skybox() {}
 void Skybox::init( ShaderProgram& m_shader, GLuint texture ) {
 	m_texture = texture;
 
+	float r = 5.0f;
 	// vertex data from http://learnopengl.com/code_viewer.php?code=advanced/cubemaps_skybox_data
 	GLfloat skyboxVertices[] = {
 	    // Positions          
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
+	    -r,  r, -r,
+	    -r, -r, -r,
+	     r, -r, -r,
+	     r, -r, -r,
+	     r,  r, -r,
+	    -r,  r, -r,
 
-	    -1.0f, -1.0f,  1.0f,
-	    -1.0f, -1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	    -1.0f, -1.0f,  1.0f,
+	    -r, -r,  r,
+	    -r, -r, -r,
+	    -r,  r, -r,
+	    -r,  r, -r,
+	    -r,  r,  r,
+	    -r, -r,  r,
 
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
+	     r, -r, -r,
+	     r, -r,  r,
+	     r,  r,  r,
+	     r,  r,  r,
+	     r,  r, -r,
+	     r, -r, -r,
 
-	    -1.0f, -1.0f,  1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f, -1.0f,  1.0f,
-	    -1.0f, -1.0f,  1.0f,
+	    -r, -r,  r,
+	    -r,  r,  r,
+	     r,  r,  r,
+	     r,  r,  r,
+	     r, -r,  r,
+	    -r, -r,  r,
 
-	    -1.0f,  1.0f, -1.0f,
-	     1.0f,  1.0f, -1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	    -1.0f,  1.0f, -1.0f,
+	    -r,  r, -r,
+	     r,  r, -r,
+	     r,  r,  r,
+	     r,  r,  r,
+	    -r,  r,  r,
+	    -r,  r, -r,
 
-	    -1.0f, -1.0f, -1.0f,
-	    -1.0f, -1.0f,  1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	    -1.0f, -1.0f,  1.0f,
-	     1.0f, -1.0f,  1.0f
+	    -r, -r, -r,
+	    -r, -r,  r,
+	     r, -r, -r,
+	     r, -r, -r,
+	    -r, -r,  r,
+	     r, -r,  r
 	};
 
 

@@ -358,9 +358,9 @@ void A5::draw()
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	m_skybox_shader.enable();
 		// set skybox matrix uniforms
-		glm::mat4 translateOnlyView = glm::mat4(glm::mat3(view));
+		glm::mat4 rotateOnlyView = glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
-		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( translateOnlyView ) );
+		glUniformMatrix4fv( V_skybox_uni, 1, GL_FALSE, value_ptr( rotateOnlyView ) );
 		// glUniformMatrix4fv( M_skybox_uni, 1, GL_FALSE, value_ptr( W ) );
 
 		theSkybox.draw(); 			// skybox first
