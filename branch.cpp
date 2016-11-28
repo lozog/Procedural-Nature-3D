@@ -22,6 +22,16 @@ Branch::Branch( float bottomRadius,
 {
 	up = glm::normalize(glm::cross(heading, left));
 
+	
+
+}
+
+Branch::~Branch() {
+	// delete [] verts;
+	// delete [] indexBuffer;
+}
+
+void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	// allocate vertex array for this branch
 	unsigned int vertsPerRow = 4 * pow(2, detail-1);
 	unsigned int numVerts = 2 * vertsPerRow;
@@ -67,12 +77,13 @@ Branch::Branch( float bottomRadius,
 		verts[idx].y = origin.y + length;
 		verts[idx].z = origin.z + (topRadius * sin(x*angle));
 		#else
-		verts[idx].x = origin.x + (heading.x * topRadius * cos(x*angle))
-								+ (left.x    * topRadius * sin(x*angle));
-		verts[idx].y = origin.y + length + (heading.y * topRadius * cos(x*angle))
-										 + (left.y    * topRadius * sin(x*angle));
-		verts[idx].z = origin.z + (heading.z * topRadius * cos(x*angle))
-								+ (left.z    * topRadius * sin(x*angle));
+		glm::vec3 topOrigin = origin + length*up;
+		verts[idx].x = topOrigin.x + (heading.x * topRadius * cos(x*angle))
+								   + (left.x    * topRadius * sin(x*angle));
+		verts[idx].y = topOrigin.y + (heading.y * topRadius * cos(x*angle))
+								   + (left.y    * topRadius * sin(x*angle));
+		verts[idx].z = topOrigin.z + (heading.z * topRadius * cos(x*angle))
+								   + (left.z    * topRadius * sin(x*angle));
 		#endif
 		verts[idx].Nx = verts[idx].x;
 		verts[idx].Ny = origin.y;
@@ -109,15 +120,7 @@ Branch::Branch( float bottomRadius,
 	#endif
 
 	Branch::numVerts = numVerts;
-
-}
-
-Branch::~Branch() {
-	// delete [] verts;
-	// delete [] indexBuffer;
-}
-
-void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
+	
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Set up Vertex arrays, buffers, etc.
