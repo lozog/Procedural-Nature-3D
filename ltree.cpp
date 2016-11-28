@@ -2,9 +2,18 @@
 
 #include <cmath>					// sin, cos
 #include <glm/gtx/io.hpp>
+#include <stack>
 
 #include <iostream>
 using namespace std;
+
+struct BranchInfo {
+	glm::vec3 heading;
+	glm::vec3 left;
+	glm::vec3 up;
+	glm::vec3 origin;
+	float radius, nextRadius, branchLength;
+};
 
 LTree::LTree() {}
 
@@ -62,6 +71,8 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 	float radius = radiusOfStump;
 	float nextRadius = r1 * radius;
 	float branchLength = initialBranchLength;
+
+	stack<BranchInfo*> branchInfoStack;
 
 	for( char& symbol : expr ) {
 		
@@ -121,6 +132,33 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				up		= newHLU[2];
 				// cout << "new: " << heading << left << up << endl;
 			} break; // ^
+			case '[': {
+				BranchInfo* branchInfo = new BranchInfo();
+				branchInfo->heading 		= heading;
+				branchInfo->left 		= left;
+				branchInfo->up 			= up;
+				branchInfo->origin 		= origin;
+				branchInfo->radius 		= radius;
+				branchInfo->nextRadius 	= nextRadius;
+				branchInfo->branchLength = branchLength;
+				branchInfoStack.push(branchInfo);
+				// do stuff
+			} break; // [
+			case ']': {
+				// cout << "old: " << heading << left << up << endl;
+				BranchInfo* branchInfo = branchInfoStack.top();
+				heading 		= branchInfo->heading;
+				left 			= branchInfo->left;
+				up 				= branchInfo->up;
+				origin 			= branchInfo->origin;
+				radius 			= branchInfo->radius;
+				nextRadius 		= branchInfo->nextRadius;
+				branchLength 	= branchInfo->branchLength;
+				delete branchInfo;
+				branchInfoStack.pop();
+				// cout << "new: " << heading << left << up << endl;
+
+			} break; // ]
 			// TODO: if the next two cases are swapped, there is a compile error. WHY?
 			case '/': {
 				// cout << "old: " << heading << left << up << endl;

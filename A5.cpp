@@ -249,7 +249,7 @@ void A5::initEnvironment() {
 		glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
 		glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
 		glm::vec3(25.0f, 30.0f, 25.0f),						// origin
-		"F\\F/F&F+F-F^F",												// L-system expression
+		"F[\\\\&F]F&F+F-F^F",								// L-system expression
 		0.75f,												// contraction ratio
 		18.0f,												// divergence angle
 		0.7f,												// length (width?) decrease ratio,
