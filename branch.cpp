@@ -21,9 +21,6 @@ Branch::Branch( float bottomRadius,
 	  left( left )
 {
 	up = glm::normalize(glm::cross(heading, left));
-
-	
-
 }
 
 Branch::~Branch() {
@@ -120,7 +117,7 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	#endif
 
 	Branch::numVerts = numVerts;
-	
+
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Set up Vertex arrays, buffers, etc.

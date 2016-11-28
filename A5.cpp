@@ -249,7 +249,6 @@ void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
-	// TODO: program crashes when you call tree.init multiple times
 	tree.init(m_shader, m_tree_texture );
 	// tree2.init(m_shader, m_tree_texture );
 
