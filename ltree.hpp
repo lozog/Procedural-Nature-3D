@@ -57,11 +57,17 @@ public:
 	LTree();
 	~LTree();
 
+	// a0 is angle in degrees
 	void init( 	glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::string expr,
 				float r1, /*float r2,*/ float a0, /*float a1, float a2,*/ float wr,
 				ShaderProgram& m_shader, GLuint m_texture );
 	void draw();
 private:
+	// angle in radians
+	glm::mat3 Ru( float angle );
+	glm::mat3 Rl( float angle );
+	glm::mat3 Rh( float angle );
+
 	glm::vec3 origin;
 	std::string expr;					// L-system expression
 	std::vector<BranchNode*> branches;

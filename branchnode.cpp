@@ -64,7 +64,7 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		#endif
 		idx += 1;
 	} // for
-	cout << endl;
+	// cout << endl;
 
 	// top row of verts
 	for ( unsigned int x = 0; x < vertsPerRow; x += 1 ) {
