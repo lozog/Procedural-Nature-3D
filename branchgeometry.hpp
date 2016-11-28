@@ -6,17 +6,17 @@
 
 #include "vertex.hpp"
 
-class Branch
+class BranchGeometry
 {
 public:
-	Branch( float bottomRadius,				// girth of branch at first (connecting) end
+	BranchGeometry( float bottomRadius,				// girth of branch at first (connecting) end
 			float topRadius,				// girth of branch at second (end) end
 			float length,					// length of branch
 			glm::vec3 origin,				// origin point of branch
 			unsigned int levelOfDetail,
 			glm::vec3 heading,
 			glm::vec3 left );
-	~Branch();
+	~BranchGeometry();
 
 	void init( ShaderProgram& m_shader, GLuint m_texture );
 	void draw();

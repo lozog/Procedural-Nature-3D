@@ -11,7 +11,7 @@
 #include "terrain.hpp"
 #include "water.hpp"
 #include "skybox.hpp"
-#include "branch.hpp"
+#include "branchgeometry.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -105,8 +105,7 @@ private:
 	Terrain theTerrain;
 	Water theWater;
 	Skybox theSkybox;
-	Branch tree;
-	// Branch tree2;
+	BranchGeometry tree;
 
 	float colour[3];
 	int current_col;

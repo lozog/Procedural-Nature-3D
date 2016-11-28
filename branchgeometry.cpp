@@ -1,11 +1,11 @@
-#include "branch.hpp"
+#include "branchgeometry.hpp"
 
 #include <cmath>					// sin, cos
 
 #include <iostream>
 using namespace std;
 
-Branch::Branch( float bottomRadius,
+BranchGeometry::BranchGeometry( float bottomRadius,
 				float topRadius,
 				float length,
 				glm::vec3 origin,
@@ -18,17 +18,17 @@ Branch::Branch( float bottomRadius,
 	  origin( origin ),
 	  detail( levelOfDetail )
 {
-	Branch::heading = glm::normalize(heading);
-	Branch::left = glm::normalize(left);
+	BranchGeometry::heading = glm::normalize(heading);
+	BranchGeometry::left = glm::normalize(left);
 	up = glm::normalize(glm::cross(heading, left));
 }
 
-Branch::~Branch() {
+BranchGeometry::~BranchGeometry() {
 	// delete [] verts;
 	// delete [] indexBuffer;
 }
 
-void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
+void BranchGeometry::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	// allocate vertex array for this branch
 	unsigned int vertsPerRow = 4 * pow(2, detail-1);
 	unsigned int numVerts = 2 * vertsPerRow;
@@ -119,14 +119,14 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	cout << indexBuffer[idx+1] << endl;
 	#endif
 
-	Branch::numVerts = numVerts;
+	BranchGeometry::numVerts = numVerts;
 
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Set up Vertex arrays, buffers, etc.
 	 */
 
-	Branch::m_texture = m_texture;
+	BranchGeometry::m_texture = m_texture;
 
 	// Create the vertex array to record buffer assignments.
 	glGenVertexArrays( 1, &m_vao );
@@ -172,7 +172,7 @@ void Branch::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	CHECK_GL_ERRORS;
 }
 
-void Branch::draw() {
+void BranchGeometry::draw() {
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glBindVertexArray( m_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, numVerts+2, GL_UNSIGNED_INT, 0 );

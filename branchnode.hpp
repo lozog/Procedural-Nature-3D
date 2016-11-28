@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "branch.hpp"
+#include "branchgeometry.hpp"
 
 /***********************
 From The Algorithmic Beauty of Plants, Chapter 1 (section 1.5, Modeling in Three Dimensions)
@@ -44,16 +44,16 @@ For simplicity, only use r1, a0, and wr
 
 ************************/
 
-class Tree {
+class BranchNode {
 public:
-	Tree();
-	~Tree();
+	BranchNode();
+	~BranchNode();
 
-	void init( glm::mat3 HLU, glm::vec3 origin, string expr,
+	void init( glm::mat3 HLU, glm::vec3 origin, std::string expr,
 		float r1, /*float r2,*/ float a0, /*float a1, float a2,*/ float wr );
-	Branch* getRoot();
+	BranchGeometry* getRoot();
 private:
-	Branch* rootSegment;
+	BranchGeometry* rootSegment;
 	glm::vec3 origin;
-	string expr;					// L-system expression
+	std::string expr;					// L-system expression
 };
