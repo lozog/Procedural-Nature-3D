@@ -30,7 +30,7 @@ A5::A5()
 	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
-	tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2, glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+	// tree(2.0f, 1.0f, 5.0f, glm::vec3(25.0f, 30.0f, 25.0f), 2, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),
 	// tree2(1.0f, 0.5f, 5.0f, glm::vec3(25.0f, 35.0f, 25.0f), 2),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
@@ -250,8 +250,18 @@ void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
-	tree.init(m_shader, m_tree_texture );
+	// tree.init(m_shader, m_tree_texture );
 	// tree2.init(m_shader, m_tree_texture );
+	ltree.init(
+		glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
+		glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
+		glm::vec3(25.0f, 30.0f, 25.0f),						// origin
+		"FFFFFFF",												// L-system expression
+		0.75f,												// contraction ratio
+		18.0f,												// divergence angle
+		0.7f,												// length (width?) decrease ratio,
+		m_shader, m_tree_texture
+	);
 
 	theSkybox.init(m_skybox_shader, m_skybox_texture );
 }
@@ -390,8 +400,9 @@ void A5::draw()
 		// draw environment
 		theTerrain.draw();
 		theWater.draw();
-		tree.draw();
+		// tree.draw();
 		// tree2.draw();
+		ltree.draw();
 
 	m_shader.disable();
 

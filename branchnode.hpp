@@ -1,59 +1,43 @@
 #pragma once
 
-#include <string>
+#include <glm/glm.hpp>							// glm::vec3
+#include "cs488-framework/GlErrorCheck.hpp"		// CHECK_GL_ERRORS
+#include "cs488-framework/ShaderProgram.hpp"	// ShaderProgram
 
-#include "branchgeometry.hpp"
+#include "vertex.hpp"
 
-/***********************
-From The Algorithmic Beauty of Plants, Chapter 1 (section 1.5, Modeling in Three Dimensions)
-
-Symbols:
-+		turn left by angle a using matrix Ru(a)
--		turn right by angle a using matrix Ru(-a)
-&		pitch down by angle a using matrix Rl(a)
-^		pitch up by angle a using matrix Rl(-a)
-\		roll left by angle a using matrix Rl(a)
-/		roll right by angle a using matrix Rl(-a)
-[		push current state of the turtle onto a stack
-]		pop a state from the stack anf make it the current state of the turtle
-
-Matrices:
-
-Ru(a) =  cos a   sin a     0
-		-sin a   cos a     0
-		   0       0       1
-
-Rl(a) =  cos a     0    -sin a
-		   0       1       0
-		 sin a     0     cos a
-
-Rh(a) =    1       0       0
-		   0     cos a  -sin a
-		   0     sin a   cos a
-
-Also need:
-
-r1		contraction ratio for trunk
-r2  	contraction ratio for branches
-a0		branching angle from the trunk
-a1		branching angle for lateral axes (?)
-a2		divergence angle (this is a from above)
-wr		width decrease rate
-
-For simplicity, only use r1, a0, and wr
-
-************************/
-
-class BranchNode {
+class BranchNode
+{
 public:
-	BranchNode();
+	BranchNode( float bottomRadius,				// girth of branch at first (connecting) end
+			float topRadius,				// girth of branch at second (end) end
+			float length,					// length of branch
+			glm::vec3 origin,				// origin point of branch
+			unsigned int levelOfDetail,
+			glm::vec3 heading,
+			glm::vec3 left );
 	~BranchNode();
 
-	void init( glm::mat3 HLU, glm::vec3 origin, std::string expr,
-		float r1, /*float r2,*/ float a0, /*float a1, float a2,*/ float wr );
-	BranchGeometry* getRoot();
+	void init( ShaderProgram& m_shader, GLuint m_texture );
+	void draw();
+
 private:
-	BranchGeometry* rootSegment;
+	float bottomRadius, topRadius, length;
+	unsigned int detail;
 	glm::vec3 origin;
-	std::string expr;					// L-system expression
+
+	glm::vec3 heading, left, up;
+
+	GLuint m_texture;
+
+	// Fields related to geometry.
+	GLuint m_vao; 							// Vertex Array Object
+	GLuint m_vertex_vbo; 					// Vertex Buffer Object
+	GLuint m_normal_vbo; 					// vertex normal Buffer Object
+	GLuint m_texture_vbo; 					// vertex texture Buffer Object
+	GLuint m_ibo; 							// Index Buffer Object
+
+	unsigned int numVerts;
+	Vertex* verts;
+	unsigned int* indexBuffer;
 };
