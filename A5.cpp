@@ -2,6 +2,8 @@
 #include "cs488-framework/GlErrorCheck.hpp"
 
 #include <iostream>
+#include <string>
+#include <vector>
 
 #include <imgui/imgui.h>
 #include <glm/glm.hpp>
@@ -12,6 +14,8 @@
 // Simple OpenGL Image Library
 // http://www.lonesock.net/soil.html
 #include "SOIL.h"
+
+#include "lsystem.hpp"
 
 using namespace glm;
 using namespace std;
@@ -245,11 +249,16 @@ void A5::initEnvironment() {
 
 	// tree.init(m_shader, m_tree_texture );
 	// tree2.init(m_shader, m_tree_texture );
+	Rule rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
+	vector<Rule*> rules;
+	rules.push_back(&rule1);
+	string axiom = "F";
+	string expr = LSystem::generateExpr(axiom, rules, 2);
 	ltree.init(
 		glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
 		glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
 		glm::vec3(25.0f, 30.0f, 25.0f),						// origin
-		"F[\\\\&F]F&F+F-F^F",								// L-system expression
+		expr,												// L-system expression
 		0.75f,												// contraction ratio
 		18.0f,												// divergence angle
 		0.7f,												// length (width?) decrease ratio,

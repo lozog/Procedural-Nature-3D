@@ -77,6 +77,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 	for( char& symbol : expr ) {
 		
 		switch( symbol ) {
+			case 'X':
 			case 'F': {
 				BranchNode* child = 
 							new BranchNode( radius,
@@ -177,8 +178,8 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				// cout << "new: " << heading << left << up << endl;
 			} break; // \
 			
-			default:
-				cout << "skipping unrecognized symbol: " << symbol << endl;
+			default: break;
+				// cout << "skipping unrecognized symbol: " << symbol << endl;
 		} // switch
 	} // for
 }
