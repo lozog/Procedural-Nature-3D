@@ -7,8 +7,8 @@
 class Grass
 {
 public:
-	Grass();
-	~Grass();
+	Grass() : numVerts(4) {}
+	~Grass() {}
 
 	void init( ShaderProgram& m_shader, GLuint m_texture, glm::vec3 position );
 
@@ -20,9 +20,9 @@ private:
 	// Fields related to geometry.
 	GLuint m_vao; 						// Vertex Array Object
 	GLuint m_vertex_vbo; 				// Vertex Buffer Object
-	GLuint m_normal_vbo; 				// vertex normal Buffer Object
+	// GLuint m_normal_vbo; 				// vertex normal Buffer Object
 	GLuint m_texture_vbo; 				// vertex texture Buffer Object
-	GLuint m_ibo; 						// Index Buffer Object
+	// GLuint m_ibo; 						// Index Buffer Object
 
 	// texture
 	GLuint m_texture; 					// water texture
