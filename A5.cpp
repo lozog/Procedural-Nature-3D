@@ -242,6 +242,7 @@ void A5::init()
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);
+	loadTexture("res/sgrass5-1.png", &m_grass_texture);
 
 	// load skybox texture
 	const std::vector<std::string> skyboxTextureFiles {
@@ -460,6 +461,7 @@ void A5::draw()
 
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	m_skybox_shader.enable();
+
 		// set skybox matrix uniforms
 		glm::mat4 rotateOnlyView = glm::mat4(glm::mat3(view));
 		glUniformMatrix4fv( P_skybox_uni, 1, GL_FALSE, value_ptr( proj ) );
@@ -471,7 +473,6 @@ void A5::draw()
 	
 	m_shader.enable();
 
-
 		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
@@ -481,8 +482,6 @@ void A5::draw()
 		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
 		glUniform3fv( theSunDir_uni, 1, value_ptr( m_theSunDir ) );
 		glUniform1f( theSunIntensity_uni, m_theSunIntensity );
-
-		
 
 		// ambient light uniform
 		glUniform3fv( globalAmbientLight_uni, 1, value_ptr( m_globalAmbientLight ) );
@@ -561,6 +560,10 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		cameraFront = glm::normalize(front);
+
+		// calculate new up vector for camera
+		glm::vec3 cameraRight = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
+		cameraUp = glm::cross(cameraFront, cameraRight);
 
 		xPosPrev = xPos;
 		yPosPrev = yPos;

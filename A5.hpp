@@ -98,6 +98,7 @@ private:
 	GLuint m_water_texture;
 	GLuint m_skybox_texture;
 	GLuint m_tree_texture;
+	GLuint m_grass_texture;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
