@@ -109,4 +109,8 @@ private:
 	Skybox theSkybox;
 	std::vector<LTree*> theTrees;
 
+	// useful maps that keep track of object placement
+	bool** treeMap;
+	bool** grassMap;
+
 };

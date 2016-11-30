@@ -44,15 +44,36 @@ A5::A5()
 	downPress(false)
 {
 	reset();
+	treeMap = new bool*[TERRAIN_LENGTH];
+	grassMap = new bool*[TERRAIN_LENGTH];
+	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
+		treeMap[i] = new bool[TERRAIN_WIDTH];
+		grassMap[i] = new bool[TERRAIN_WIDTH];
+	} // for
+	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
+		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
+			treeMap[x][z] = false;
+			grassMap[x][z] = false;
+		} // for
+	} // for
 }
 
 //----------------------------------------------------------------------------------------
 // Destructor
 A5::~A5()
 {
+	// delete trees
 	for (LTree* tree : theTrees) {
 		delete tree;
 	} // for
+
+	// delete maps
+	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
+		delete [] treeMap[i];
+		delete [] grassMap[i];
+	} // for
+	delete [] treeMap;
+	delete [] grassMap;
 }
 
 //----------------------------------------------------------------------------------------
@@ -271,14 +292,13 @@ void A5::initTrees() {
 	Rules sys3rules;
 	sys3rules.push_back(&sys3rule1);
 
-
 	treeLSystems.push_back(sys1rules);
 	treeLSystems.push_back(sys2rules);
 	treeLSystems.push_back(sys3rules);
 
 	const unsigned int numTreeLSystems = treeLSystems.size();
 
-
+	// TODO: more complicated rules might not all have the same axiom
 	string axiom = "F";
 
 	unsigned int numTrees = 0;
@@ -302,15 +322,26 @@ void A5::initTrees() {
 				// make sure tree isn't underwater
 				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
 				// TODO: check normal of terrain
-				// TODO: make sure no trees immediately around this tree
+				
+				// make sure tree has breathing room (ha!)
+				if (treeMap[x-1][z] ||
+					treeMap[x][z-1] ||
+					treeMap[x-1][z-1] ) {
+					// cout << "skipping tree at " << x << ", " << z << endl;
+					continue;
+				}
 
-				// generate seed for this tree
+				treeMap[x][z] = true;
+
+				// generate seed for this tree (get it? seed?!)
 				int treetype = random % numTreeLSystems;
 				Rules treeRules = treeLSystems.at(treetype);
 				string seed = LSystem::generateExpr(axiom, treeRules, 3);		
 
 				glm::vec3 position = glm::vec3((float)x, heightMap[x][z], (float)z);
 				LTree* tree = new LTree();
+
+				// TODO: encapsulate randomness of angles, etc. with treetype prods in treetype object
 				tree->init(
 					glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
 					glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
