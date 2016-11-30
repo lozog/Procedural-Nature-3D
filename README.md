@@ -47,20 +47,19 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 ## Other Resources
 
 * grass.png
-    copyright Blender Foundation | apricot.blender.org
-
+    * copyright Blender Foundation | apricot.blender.org
 * water.png
-    retrieved from http://opengameart.org/content/3-live-proceduraly-generated-tiling-water-textures-512px-running-brushes
+    * retrieved from http://opengameart.org/content/3-live-proceduraly-generated-tiling-water-textures-512px-running-brushes
 
 * skybox textures
-    created by Jockun Skoglund
-    retrieved from http://opengameart.org/content/interstellar-skybox
+    * created by Jockun Skoglund
+    * retrieved from http://opengameart.org/content/interstellar-skybox
 
 * bark.png
-    created by Bart. K
-    retrieved from http://opengameart.org/content/seamless-tiling-tree-bark-texture
+    * created by Bart. K
+    * retrieved from http://opengameart.org/content/seamless-tiling-tree-bark-texture
 
 * sgrass5-1.png
 * sgrass5-3.png
-    created by virtushda
-    retrieved from http://opengameart.org/content/grass-2-0
+    * created by virtushda
+    * retrieved from http://opengameart.org/content/grass-2-0
