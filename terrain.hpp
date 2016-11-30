@@ -16,6 +16,8 @@ public:
 
 	void draw();
 
+	double** getHeightMap();
+
 	int mode, numModes;							// 0 == SimplexNoise1234, 1 == my impl
 	unsigned int numOctaves;					// fractalization factor
 	double redist;								// raise elevation to pow of redist
@@ -23,6 +25,8 @@ public:
 private:
 	size_t m_length, m_width;
 	size_t bufferIndexCount;
+
+	double** m_heightmap;						// x,y,z coords of terrain vertices
 
 	// Fields related to terrain geometry.
 	GLuint m_terrain_vao; 						// Vertex Array Object

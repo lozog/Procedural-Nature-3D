@@ -23,7 +23,7 @@ string LSystem::generateExpr( string axiom,
 		for ( Rule* rule : rules ) {
 			ReplaceString( result, rule->LHS, rule->RHS );
 		} // for
-		cout << result << endl;
+		// cout << result << endl;
 	} // for
 	return result;
 }

@@ -16,9 +16,24 @@ Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double r
 	  mode(1),
 	  numModes(2),
 	  redist(redist)
-{}
+{
+	m_heightmap = new double*[m_length];
+	for ( int i = 0; i < m_length; i += 1 ) {
+		m_heightmap[i] = new double[m_width];
+	} // for
+}
 
-Terrain::~Terrain() {}
+Terrain::~Terrain() {
+	for ( int i = 0; i < m_length; i += 1 ) {
+		delete [] m_heightmap[i];
+	} // for
+	delete [] m_heightmap;
+}
+
+double** Terrain::getHeightMap() {
+	return m_heightmap;
+}
+
 
 size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;
@@ -61,6 +76,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 			if (fractalSum < 0.0f) cout << fractalSum << endl;
 			if ( fractalSum > maxVal ) maxVal = fractalSum;
 			heightMap[x][z] = pow(fractalSum, redist);
+
+			m_heightmap[x][z] = heightMap[x][z];
 
 		} // for
 	} // for

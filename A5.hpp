@@ -37,6 +37,7 @@ private:
 	void loadTexture( const char* filename, GLuint* texture );
 	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
+	void initTrees();
 
 	void reset();
 	void resetCamera();
@@ -106,8 +107,6 @@ private:
 	Terrain theTerrain;
 	Water theWater;
 	Skybox theSkybox;
-	LTree ltree;
+	std::vector<LTree*> theTrees;
 
-	float colour[3];
-	int current_col;
 };

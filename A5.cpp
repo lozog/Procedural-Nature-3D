@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>								// rand, srand
 
 #include <imgui/imgui.h>
 #include <glm/glm.hpp>
@@ -26,12 +27,12 @@ static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static const double REDIST = 1.05f;
+static const unsigned int TREE_DENSITY = 1500; // density of forest (lower->denser)
 
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
-	: current_col( 0 ),
-	theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
+	: theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
 	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
 	theSkybox(),
 	mouseSensitivity(0.05f),
@@ -43,15 +44,16 @@ A5::A5()
 	downPress(false)
 {
 	reset();
-	colour[0] = 0.0f;
-	colour[1] = 0.0f;
-	colour[2] = 0.0f;
 }
 
 //----------------------------------------------------------------------------------------
 // Destructor
 A5::~A5()
-{}
+{
+	for (LTree* tree : theTrees) {
+		delete tree;
+	} // for
+}
 
 //----------------------------------------------------------------------------------------
 // Load object texture
@@ -247,25 +249,60 @@ void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
-	// tree.init(m_shader, m_tree_texture );
-	// tree2.init(m_shader, m_tree_texture );
+	initTrees();
+
+	theSkybox.init(m_skybox_shader, m_skybox_texture );
+}
+
+void A5::initTrees() {
+	// all this is just for one type of tree
+	// TODO: more tree types
 	Rule rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
 	vector<Rule*> rules;
 	rules.push_back(&rule1);
-	string axiom = "F";
-	string expr = LSystem::generateExpr(axiom, rules, 2);
-	ltree.init(
-		glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
-		glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
-		glm::vec3(25.0f, 30.0f, 25.0f),						// origin
-		expr,												// L-system expression
-		0.75f,												// contraction ratio
-		18.0f,												// divergence angle
-		0.7f,												// length (width?) decrease ratio,
-		m_shader, m_tree_texture
-	);
 
-	theSkybox.init(m_skybox_shader, m_skybox_texture );
+	string axiom = "F";
+	string seed = LSystem::generateExpr(axiom, rules, 2);		// generate seed for this tree
+
+	unsigned int numTrees = 0;
+	double** heightMap = theTerrain.getHeightMap();
+	srand(1995);
+	for (int x = 1; x < TERRAIN_LENGTH-1; x += 1) {
+		for (int z = 1; z < TERRAIN_WIDTH-1; z += 1) {
+			double scale = 0.5f;
+			double gridX = ((double)x / ((double)TERRAIN_LENGTH * scale)) - 0.5f;
+			double gridY = ((double)z / ((double)TERRAIN_WIDTH * scale)) - 0.5f;
+
+			// randomly pick spots to plant trees
+			// in the future, could use a random perturbation scatter to pick spots
+			int random = rand() % TREE_DENSITY;
+			bool randPlacement = (random < 5 ? true : false);
+
+			if( randPlacement ) {
+				// decide if chosen position is suitable for tree
+				// not underwater, slope not too steep, not too close to another tree
+
+				// make sure tree isn't underwater
+				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
+				// TODO: check normal of terrain
+				// TODO: make sure no trees immediately around this tree
+
+				glm::vec3 position = glm::vec3((float)x, heightMap[x][z], (float)z);
+				LTree* tree = new LTree();
+				tree->init(
+					glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
+					glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
+					position,						// tree position
+					seed,												// L-system expression
+					0.75f,												// contraction ratio
+					18.0f,												// divergence angle
+					0.7f,												// length (width?) decrease ratio,
+					m_shader, m_tree_texture
+				);
+				theTrees.push_back(tree);
+			}
+		} // for
+	} // for
 }
 
 //----------------------------------------------------------------------------------------
@@ -401,7 +438,10 @@ void A5::draw()
 		// draw environment
 		theTerrain.draw();
 		theWater.draw();
-		ltree.draw();
+
+		for( LTree* tree : theTrees ) {
+			tree->draw();
+		} // for
 
 	m_shader.disable();
 
