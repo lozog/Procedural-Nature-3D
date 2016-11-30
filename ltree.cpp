@@ -3,6 +3,7 @@
 #include <cmath>					// sin, cos
 #include <glm/gtx/io.hpp>
 #include <stack>
+#include <cstdlib>					// rand, srand
 
 #include <iostream>
 using namespace std;
@@ -54,12 +55,17 @@ glm::mat3 LTree::Rh( float a ) {
 	return result;
 }
 void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::string expr,
-				 float r1, /*float r2,*/ float a0, /*float a1, float a2,*/ float wr,
+				 float r1, /*float r2,*/ float angle, float angleRange, /*float a2,*/ float wr,
 				 ShaderProgram& m_shader, GLuint m_texture ) {
+	srand(1995 + origin.x);
 	LTree::origin = origin;
 	LTree::expr = expr;
 
-	a0 = glm::radians(a0);
+	float angleMin = angle - angleRange;
+	float angleMax = angle + angleRange;
+	float divergeAngleDeg = angleMin +  static_cast<float>(rand()) / 
+									(static_cast<float>(RAND_MAX/(angleMax-angleMin)));
+	float divergeAngle = glm::radians(divergeAngleDeg);
 
 	glm::vec3 left 	= glm::normalize(glm::cross(-1.0f * down, heading));
 	glm::vec3 up 	= glm::cross(heading, left);
@@ -103,7 +109,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			} break; // F
 			case '+': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Ru(a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Ru(divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];
@@ -111,7 +117,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			} break; // +
 			case '-': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Ru(-a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Ru(-divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];
@@ -119,7 +125,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			} break; // -
 			case '&': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];
@@ -127,7 +133,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			} break; // &
 			case '^': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(-a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rl(-divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];
@@ -163,7 +169,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			// TODO: if the next two cases are swapped, there is a compile error. WHY?
 			case '/': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(-a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(-divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];
@@ -171,7 +177,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 			} break; // /
 			case '\\': {
 				// cout << "old: " << heading << left << up << endl;
-				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(a0);
+				glm::mat3 newHLU = glm::mat3(heading, left, up) * Rh(divergeAngle);
 				heading = newHLU[0];
 				left 	= newHLU[1];
 				up		= newHLU[2];

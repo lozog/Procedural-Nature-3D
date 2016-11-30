@@ -27,7 +27,7 @@ static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static const double REDIST = 1.05f;
-static const unsigned int TREE_DENSITY = 3000; // density of forest (lower->denser)
+static const unsigned int TREE_DENSITY = 2000; // density of forest (lower->denser)
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -288,7 +288,7 @@ void A5::initTrees() {
 			// randomly pick spots to plant trees
 			// in the future, could use a random perturbation scatter to pick spots
 			int random = rand() % TREE_DENSITY;
-			bool randPlacement = (random < 5 ? true : false);
+			bool randPlacement = (random < 3 || random > TREE_DENSITY - 2 ? true : false);
 
 			if( randPlacement ) {
 				// decide if chosen position is suitable for tree
@@ -313,6 +313,7 @@ void A5::initTrees() {
 					seed,												// L-system expression
 					0.75f,												// contraction ratio
 					18.0f,												// divergence angle
+					10.0f,												// range of divergence
 					0.9f,												// length (width?) decrease ratio,
 					m_shader, m_tree_texture
 				);
