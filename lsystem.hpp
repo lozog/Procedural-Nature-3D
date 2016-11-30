@@ -11,12 +11,14 @@ public:
 	std::string RHS;
 };
 
+typedef std::vector<Rule*> Rules;
+
 class LSystem {
 public:
 	LSystem() {}
 	~LSystem() {}
 
 	static std::string generateExpr( std::string axiom,
-									 std::vector<Rule*> rules,
+									 Rules rules,
 									 unsigned int depth );
 };

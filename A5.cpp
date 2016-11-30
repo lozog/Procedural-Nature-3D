@@ -27,7 +27,7 @@ static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static const double REDIST = 1.05f;
-static const unsigned int TREE_DENSITY = 1500; // density of forest (lower->denser)
+static const unsigned int TREE_DENSITY = 3000; // density of forest (lower->denser)
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -255,14 +255,26 @@ void A5::initEnvironment() {
 }
 
 void A5::initTrees() {
+
+	vector<Rules> treeLSystems;
 	// all this is just for one type of tree
 	// TODO: more tree types
-	Rule rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
-	vector<Rule*> rules;
-	rules.push_back(&rule1);
+	Rule sys1rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
+	Rules sys1rules;
+	sys1rules.push_back(&sys1rule1);
+
+	Rule sys2rule1("F", "F[&F[//F^+F]]+F[\\F]");
+	Rules sys2rules;
+	sys2rules.push_back(&sys2rule1);
+
+
+	treeLSystems.push_back(sys1rules);
+	treeLSystems.push_back(sys2rules);
+
+	const unsigned int numTreeLSystems = treeLSystems.size();
+
 
 	string axiom = "F";
-	string seed = LSystem::generateExpr(axiom, rules, 2);		// generate seed for this tree
 
 	unsigned int numTrees = 0;
 	double** heightMap = theTerrain.getHeightMap();
@@ -287,6 +299,11 @@ void A5::initTrees() {
 				// TODO: check normal of terrain
 				// TODO: make sure no trees immediately around this tree
 
+				// generate seed for this tree
+				int treetype = random % numTreeLSystems;
+				Rules treeRules = treeLSystems.at(treetype);
+				string seed = LSystem::generateExpr(axiom, treeRules, 2);		
+
 				glm::vec3 position = glm::vec3((float)x, heightMap[x][z], (float)z);
 				LTree* tree = new LTree();
 				tree->init(
@@ -296,7 +313,7 @@ void A5::initTrees() {
 					seed,												// L-system expression
 					0.75f,												// contraction ratio
 					18.0f,												// divergence angle
-					0.7f,												// length (width?) decrease ratio,
+					0.9f,												// length (width?) decrease ratio,
 					m_shader, m_tree_texture
 				);
 				theTrees.push_back(tree);

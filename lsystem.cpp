@@ -16,7 +16,7 @@ void ReplaceString(string& subject, const string& search,
 }
 
 string LSystem::generateExpr( string axiom,
-									 vector<Rule*> rules,
+									 Rules rules,
 									 unsigned int depth ) {
 	string result = axiom;
 	for ( unsigned int i = 0; i < depth; i += 1 ) {

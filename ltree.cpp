@@ -66,7 +66,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 
 	unsigned int levelOfDetail = 2;
 	float radiusOfStump = 1.0f;
-	float initialBranchLength = 5.0f;
+	float initialBranchLength = 3.5f;
 
 	float radius = radiusOfStump;
 	float nextRadius = r1 * radius;
