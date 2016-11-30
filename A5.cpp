@@ -267,9 +267,14 @@ void A5::initTrees() {
 	Rules sys2rules;
 	sys2rules.push_back(&sys2rule1);
 
+	Rule sys3rule1("F", "FF[F//F][&\\F]");
+	Rules sys3rules;
+	sys3rules.push_back(&sys3rule1);
+
 
 	treeLSystems.push_back(sys1rules);
 	treeLSystems.push_back(sys2rules);
+	treeLSystems.push_back(sys3rules);
 
 	const unsigned int numTreeLSystems = treeLSystems.size();
 
@@ -302,7 +307,7 @@ void A5::initTrees() {
 				// generate seed for this tree
 				int treetype = random % numTreeLSystems;
 				Rules treeRules = treeLSystems.at(treetype);
-				string seed = LSystem::generateExpr(axiom, treeRules, 2);		
+				string seed = LSystem::generateExpr(axiom, treeRules, 3);		
 
 				glm::vec3 position = glm::vec3((float)x, heightMap[x][z], (float)z);
 				LTree* tree = new LTree();
