@@ -553,6 +553,8 @@ void A5::draw()
 	m_shader.disable();
 
 	m_billboard_shader.enable();
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_billboard_uni, 1, GL_FALSE, value_ptr( proj ) );
