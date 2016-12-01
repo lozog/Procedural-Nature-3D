@@ -34,6 +34,7 @@ private:
 	GLuint m_vao; 							// Vertex Array Object
 	GLuint m_vertex_vbo; 					// Vertex Buffer Object
 	GLuint m_normal_vbo; 					// vertex normal Buffer Object
+	GLuint m_colour_vbo; 					// vertex colour Buffer Object
 	GLuint m_texture_vbo; 					// vertex texture Buffer Object
 	GLuint m_ibo; 							// Index Buffer Object
 

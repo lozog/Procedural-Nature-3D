@@ -2,6 +2,7 @@
 
 in vec3 pos;
 in vec3 norm;
+in vec4 col;
 in vec2 tex;
 
 uniform sampler2D theTexture;
@@ -53,7 +54,7 @@ void main() {
 	float diffterm = max(0.0f, dot(normal, lightDir));
 	// no attenuation of direction lights
 	float kd = 0.8f; // hard-code kd of object for now
-	vec4 diffuse = sunlight * diffterm;
+	vec4 diffuse = sunlight * diffterm + (0.000001f*col);
 
 	// specular light
 	vec3 h = normalize(normalize(eye) + lightDir);

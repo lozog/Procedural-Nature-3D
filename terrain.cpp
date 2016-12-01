@@ -163,6 +163,24 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 
 	//----------------------------------------------------------------------------------------
 	/*
+	 * Calculate colour for each vertex
+	 */
+	size_t colourMapVertDataSZ = 4 * numVerts;				// 4 channels of colour per vertex
+	float* colourMap = new float[ colourMapVertDataSZ ];
+	idx = 0;
+	for (int x = 0; x < m_length; x += 1) {
+		for (int z = 0; z < m_width; z += 1) {
+			colourMap[idx] 	 = 0.5f;
+			colourMap[idx+1] = 0.5f;						// use placeholder colour for now
+			colourMap[idx+2] = 0.5f;
+			colourMap[idx+3] = 1.0f;						// terrain is completely opaque
+			idx += 4;
+		} // for
+	} // for
+
+
+	//----------------------------------------------------------------------------------------
+	/*
 	 * Calculate terrain (u, v) coordinates for each vertex
 	 */
 
@@ -194,6 +212,10 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 		verts[i].Nx = normalMap[idx];
 		verts[i].Ny = normalMap[idx + 1];
 		verts[i].Nz = normalMap[idx + 2];
+		verts[i].r = colourMap[idx];
+		verts[i].g = colourMap[idx + 1];
+		verts[i].b = colourMap[idx + 2];
+		verts[i].a = colourMap[idx + 3];
 		verts[i].u = terrainMap[idx2];
 		verts[i].v = terrainMap[idx2 + 1];
 		// if ( i < 4 ) cout << verts[i].u << ", " << verts[i].v << endl;
@@ -283,10 +305,15 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	glEnableVertexAttribArray( normAttrib );
 	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
 
+	// Specify the means of extracting the colours properly.
+	GLint colAttrib = m_shader.getAttribLocation( "colour" );
+	glEnableVertexAttribArray( colAttrib );
+	glVertexAttribPointer( colAttrib, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+
 	// Specify the means of extracting the textures properly.
 	GLint texAttrib = m_shader.getAttribLocation( "texture" );
 	glEnableVertexAttribArray( texAttrib );
-	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*10) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!
@@ -299,6 +326,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	delete [] verts;
 	delete [] heightMapIndexData;
 	delete [] heightMapVertData;
+	delete [] colourMap;
 
 	CHECK_GL_ERRORS;
 }

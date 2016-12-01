@@ -10,6 +10,16 @@ void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
 	// vertices for a square quad
 	Vertex* verts = new Vertex[numVerts];
 
+	// vertex indices
+	unsigned int* vertIndices = new unsigned int[numVerts];
+	for ( unsigned int i = 0; i < numVerts; i += 1 ) {
+		vertIndices[i] = i;
+		verts[i].r = 0.05f;
+		verts[i].g = 0.1f;
+		verts[i].b = 0.0f;
+		verts[i].a = 0.0f;
+	} // for
+
 	verts[0].x = -0.5f;
 	verts[0].y = -0.5f;
 	verts[0].z =  0.0f;
@@ -34,10 +44,7 @@ void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
 	verts[3].u =  0;
 	verts[3].v =  0;
 	
-	unsigned int* vertIndices = new unsigned int[numVerts];
-	for ( unsigned int i = 0; i < numVerts; i += 1 ) {
-		vertIndices[i] = i;
-	} // for
+	
 
 
 	//----------------------------------------------------------------------------------------
@@ -66,10 +73,15 @@ void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
 	glEnableVertexAttribArray( posAttrib );
 	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr );
 
+	// Specify the means of extracting the colours properly.
+	GLint colAttrib = m_shader.getAttribLocation( "colour" );
+	glEnableVertexAttribArray( colAttrib );
+	glVertexAttribPointer( colAttrib, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+
 	// Specify the means of extracting the textures properly.
 	GLint texAttrib = m_shader.getAttribLocation( "texture" );
 	glEnableVertexAttribArray( texAttrib );
-	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*10) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!

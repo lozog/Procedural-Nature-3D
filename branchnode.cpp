@@ -55,6 +55,10 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].Nx = normal.x;
 		verts[idx].Ny = normal.y;
 		verts[idx].Nz = normal.z;
+		verts[idx].r = 0.5f;
+		verts[idx].g = 0.5f;
+		verts[idx].b = 0.5f;
+		verts[idx].a = 1.0f;
 		verts[idx].u = x;
 		verts[idx].v = 0;
 		#if 0
@@ -85,6 +89,10 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].Nx = normal.x;
 		verts[idx].Ny = normal.y;
 		verts[idx].Nz = normal.z;
+		verts[idx].r = 0.5f;
+		verts[idx].g = 0.5f;
+		verts[idx].b = 0.5f;
+		verts[idx].a = 1.0f;
 		verts[idx].u = x;
 		verts[idx].v = 5;
 		#if 0
@@ -151,10 +159,15 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 	glEnableVertexAttribArray( normAttrib );
 	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
 
+	// Specify the means of extracting the colours properly.
+	GLint colAttrib = m_shader.getAttribLocation( "colour" );
+	glEnableVertexAttribArray( colAttrib );
+	glVertexAttribPointer( colAttrib, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+
 	// Specify the means of extracting the textures properly.
 	GLint texAttrib = m_shader.getAttribLocation( "texture" );
 	glEnableVertexAttribArray( texAttrib );
-	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*10) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!

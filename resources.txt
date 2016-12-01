@@ -33,6 +33,7 @@ http://www.opengl-tutorial.org/intermediate-tutorials/billboards-particles/billb
 
 Screen-Door Transparency
 http://digitalrune.github.io/DigitalRune-Documentation/html/fa431d48-b457-4c70-a590-d44b0840ab1e.htm
+https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter01.html
 
 Water
 http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/realistic-natural-effect-rendering-water-i-r2138

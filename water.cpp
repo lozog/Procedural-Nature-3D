@@ -27,6 +27,10 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) 
 		verts[i].Nx = 1;
 		verts[i].Ny = 0;
 		verts[i].Nz = 0;
+		verts[i].r  = 0.5f;
+		verts[i].g  = 0.5f;
+		verts[i].b  = 0.5f;
+		verts[i].a  = 1.0f;
 
 		// vertex index buffer
 		vertIndices[i] = i;
@@ -83,10 +87,15 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) 
 	glEnableVertexAttribArray( normAttrib );
 	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
 
+	// Specify the means of extracting the colours properly.
+	GLint colAttrib = m_shader.getAttribLocation( "colour" );
+	glEnableVertexAttribArray( colAttrib );
+	glVertexAttribPointer( colAttrib, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+
 	// Specify the means of extracting the textures properly.
 	GLint texAttrib = m_shader.getAttribLocation( "texture" );
 	glEnableVertexAttribArray( texAttrib );
-	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*6) );
+	glVertexAttribPointer( texAttrib, 2, GL_INT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*10) );
 
 	// Reset state to prevent rogue code from messing with *my* 
 	// stuff!

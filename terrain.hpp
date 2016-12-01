@@ -32,6 +32,7 @@ private:
 	GLuint m_terrain_vao; 						// Vertex Array Object
 	GLuint m_terrain_vbo; 						// Vertex Buffer Object
 	GLuint m_normal_vbo; 						// vertex normal Buffer Object
+	GLuint m_colour_vbo; 						// vertex colour Buffer Object
 	GLuint m_texture_vbo; 						// vertex texture Buffer Object
 	GLuint m_terrain_ibo; 						// Index Buffer Object
 

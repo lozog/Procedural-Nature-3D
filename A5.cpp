@@ -71,6 +71,91 @@ A5::~A5()
 }
 
 //----------------------------------------------------------------------------------------
+// Reset things
+void A5::reset() {
+	resetCamera();
+	resetLight();
+	resetFoliage();
+
+	cout << "controls:" << endl;
+	cout << "U/Y: raise/lower x position of the Sun" << endl;
+	cout << "O/I: raise/lower # of octaves in terrain" << endl;
+	cout << "H/G: raise/lower water level" << endl;
+	cout << "K/J: raise/lower sun intensity" << endl;
+	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
+	cout << "M/N: raise/lower distribution power" << endl;
+}
+
+//----------------------------------------------------------------------------------------
+// Reset camera position
+void A5::resetCamera() {
+	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
+	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
+	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
+	firstMouseMove 	= false;
+	pitch 			= 0.0f;
+	yaw 			= 0.0f;
+	cameraSpeed 	= 1.0f;
+	REDIST 			= 1.05f;
+
+	switch( TERRAIN_LENGTH ) {
+		case 512:
+			// position camera to have a view of 512x512 grid by default
+			cout << "grid is 512x512" << endl;
+			cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
+			cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
+			pitch = -16.5f;
+			yaw = 52.42f;
+		break;
+		case 200:
+			cout << "grid is 200x200" << endl;
+			// position camera to have a view of 200x200 grid by default
+			cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
+			cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
+			pitch = -27.0f;
+			yaw = 10.1f;
+			cameraSpeed = 1.5f;
+		break;
+		case 100:
+			cout << "grid is 100x100" << endl;
+			// position camera to have a view of 100x100 grid by default
+			cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
+			cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
+
+			// cameraPos 		= glm::vec3( 134.0f, 45.0f, 20.0f );
+			// cameraFront 	= glm::vec3( -0.962, -0.176, -0.208f );
+
+			pitch = -23.77f;
+			yaw = 18.13f;
+			cameraSpeed = 1.5f;
+			REDIST = 0.95f;
+		break;
+	} // switch
+}
+
+void A5::resetFoliage() {
+	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
+		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
+			treeMap[x][z] = false;
+			grassMap[x][z] = false;
+		} // for
+	} // for
+
+	theTrees.clear();
+	theGrass.clear();
+}
+
+//----------------------------------------------------------------------------------------
+// Reset lights
+void A5::resetLight() {
+	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
+	m_theSunDir = glm::vec3(0.25f, 0.25f, 0.25f);
+	m_theSunIntensity = 0.8f;
+	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
+	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
+}
+
+//----------------------------------------------------------------------------------------
 // Load object texture with RGB
 void A5::loadTexture( const char* filename, GLuint* texture ) {
 
@@ -161,86 +246,6 @@ void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture )
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-//----------------------------------------------------------------------------------------
-// Reset things
-void A5::reset() {
-	resetCamera();
-	resetLight();
-	resetFoliage();
-	cout << "controls:" << endl;
-	
-	cout << "U/Y: raise/lower x position of the Sun" << endl;
-	cout << "O/I: raise/lower # of octaves in terrain" << endl;
-	cout << "H/G: raise/lower water level" << endl;
-	cout << "K/J: raise/lower sun intensity" << endl;
-	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
-	cout << "M/N: raise/lower distribution power" << endl;
-}
-
-//----------------------------------------------------------------------------------------
-// Reset camera position
-void A5::resetCamera() {
-	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
-	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
-	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
-	firstMouseMove = false;
-	pitch = 0.0f;
-	yaw = 0.0f;
-	cameraSpeed = 0.3f;
-	REDIST = 1.05f;
-
-	switch( TERRAIN_LENGTH ) {
-		case 512:
-			// position camera to have a view of 512x512 grid by default
-			cout << "grid is 512x512" << endl;
-			cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
-			cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
-			pitch = -16.5f;
-			yaw = 52.42f;
-		break;
-		case 200:
-			cout << "grid is 200x200" << endl;
-			// position camera to have a view of 200x200 grid by default
-			cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
-			cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
-			pitch = -27.0f;
-			yaw = 10.1f;
-			cameraSpeed = 1.5f;
-		break;
-		case 100:
-			cout << "grid is 100x100" << endl;
-			// position camera to have a view of 100x100 grid by default
-			cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
-			cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
-			pitch = -23.77f;
-			yaw = 18.13f;
-			cameraSpeed = 1.5f;
-			REDIST = 0.95f;
-		break;
-	} // switch
-}
-
-void A5::resetFoliage() {
-	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
-		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
-			treeMap[x][z] = false;
-			grassMap[x][z] = false;
-		} // for
-	} // for
-
-	theTrees.clear();
-	theGrass.clear();
-}
-
-//----------------------------------------------------------------------------------------
-// Reset lights
-void A5::resetLight() {
-	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
-	m_theSunDir = glm::vec3(0.5f, -0.5f, 0.0f);
-	m_theSunIntensity = 0.8f;
-	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
-	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
-}
 
 //----------------------------------------------------------------------------------------
 /*
@@ -303,14 +308,26 @@ void A5::init()
 	loadTexture("res/bark.png", &m_tree_texture);
 	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
 
-	// load skybox texture
+	// load skybox texture - CAUTION: order matters!
 	const std::vector<std::string> skyboxTextureFiles {
-		"res/skybox/rt.png",
+		/*"res/skybox/rt.png",
 		"res/skybox/lf.png",
 		"res/skybox/up.png",
 		"res/skybox/dn.png",
 		"res/skybox/bk.png",
-		"res/skybox/ft.png"
+		"res/skybox/ft.png"*/
+		/*"res/skybox/arid2/arid2_rt.jpg",
+		"res/skybox/arid2/arid2_lf.jpg",
+		"res/skybox/arid2/arid2_up.jpg",
+		"res/skybox/arid2/arid2_dn.jpg",
+		"res/skybox/arid2/arid2_bk.jpg",
+		"res/skybox/arid2/arid2_ft.jpg"*/
+		"res/skybox/desertdawn/desertdawn_ft.jpg",
+		"res/skybox/desertdawn/desertdawn_bk.jpg",
+		"res/skybox/desertdawn/desertdawn_up.jpg",
+		"res/skybox/desertdawn/desertdawn_dn.jpg",
+		"res/skybox/desertdawn/desertdawn_rt.jpg",
+		"res/skybox/desertdawn/desertdawn_lf.jpg"
 	};
 	loadSkybox( skyboxTextureFiles, &m_skybox_texture );
 
@@ -405,7 +422,7 @@ void A5::initFoliage() {
 				Rules treeRules = treeLSystems.at(treetype);
 				string seed = LSystem::generateExpr(axiom, treeRules, 3);		
 
-				glm::vec3 position = glm::vec3((float)x, heightMap[x][z], (float)z);
+				glm::vec3 position = glm::vec3((float)x, heightMap[x][z]-0.25f, (float)z);
 				LTree* tree = new LTree();
 
 				// TODO: encapsulate randomness of angles, etc. with treetype prods in treetype object
@@ -435,7 +452,7 @@ void A5::initFoliage() {
 
 				grassMap[x][z] = true;
 
-				glm::vec3* position = new glm::vec3((float)x, heightMap[x][z]+0.5f, (float)z);
+				glm::vec3* position = new glm::vec3((float)x, heightMap[x][z]+0.4f, (float)z);
 				theGrass.push_back(position);
 			} // if
 		} // for
