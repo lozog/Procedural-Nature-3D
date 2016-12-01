@@ -40,11 +40,17 @@ private:
 	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
 	void initFoliage();
+	void initShadowMap( GLuint* texture );
 
 	void reset();
 	void resetCamera();
 	void resetLight();
 	void resetFoliage();
+
+	void drawShadowMap( glm::mat4* W );
+	void drawSkybox();
+	void drawObjects( glm::mat4* W );
+	void drawBillboards( glm::mat4* W );
 
 	// Camera controls
 	void moveCameraForward();
@@ -91,13 +97,20 @@ private:
 	GLint P_skybox_uni; 						// Uniform location for Projection matrix.
 	GLint V_skybox_uni; 						// Uniform location for View matrix.
 
+	// Fields related to the billboard vertex shader and uniforms.
 	ShaderProgram m_billboard_shader;
 	GLint grass_position_uni;   				// Uniform location for grass position
 	GLint P_billboard_uni; 						// Uniform location for Projection matrix.
 	GLint V_billboard_uni; 						// Uniform location for View matrix.
 	GLint M_billboard_uni; 						// Uniform location for Model matrix.
-	GLint cameraUp_uni; 						// Uniform location for 
-	GLint cameraRight_uni; 						// Uniform location for 
+	GLint cameraUp_uni; 						// Uniform location for camera up vector
+	GLint cameraRight_uni; 						// Uniform location for camera right vector
+
+	// Fields related to the shadow map vertex shader and uniforms.
+	ShaderProgram m_shadow_shader;
+	GLint P_shadow_uni; 								// Uniform location for Projection matrix.
+	GLint V_shadow_uni; 								// Uniform location for View matrix.
+	GLint M_shadow_uni; 								// Uniform location for Model matrix.
 
 	// Lighting
 	glm::vec3 m_theSunColour;
@@ -105,13 +118,14 @@ private:
 	float m_theSunIntensity;
 	glm::vec3 m_globalAmbientLight;
 
-	// Texture
+	// Textures
 	GLuint m_ground_texture;
 	GLuint m_water_texture;
 	GLuint m_skybox_texture;
 	GLuint m_tree_texture;
 	GLuint m_grass_texture;
 	GLuint m_screendoor_texture;
+	GLuint m_shadow_texture;
 
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;

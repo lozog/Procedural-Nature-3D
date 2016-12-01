@@ -18,6 +18,9 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) 
 	m_height = waterHeight;
 	m_texture = texture;
 
+	size_t length = m_length - 1;
+	size_t width = m_width - 1;
+
 	Vertex* verts = new Vertex[ numVerts ];
 	unsigned int* vertIndices = new unsigned int[numVerts];
 	for (unsigned int i = 0; i < numVerts; i += 1 ) {
@@ -40,20 +43,20 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) 
 	verts[0].u = 0;
 	verts[0].v = 0;
 
-	verts[1].x = m_length;
+	verts[1].x = length;
 	verts[1].z = 0;
-	verts[1].u = m_length;
+	verts[1].u = length;
 	verts[1].v = 0;
 
 	verts[2].x = 0;
-	verts[2].z = m_width;
+	verts[2].z = width;
 	verts[2].u = 0;
-	verts[2].v = m_width;
+	verts[2].v = width;
 
-	verts[3].x = m_length;
-	verts[3].z = m_width;
-	verts[3].u = m_length;
-	verts[3].v = m_width;
+	verts[3].x = length;
+	verts[3].z = width;
+	verts[3].u = length;
+	verts[3].v = width;
 
 
 	//----------------------------------------------------------------------------------------
