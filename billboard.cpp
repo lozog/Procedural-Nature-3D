@@ -1,54 +1,43 @@
 #include "vertex.hpp"
-#include "grass.hpp"
+#include "billboard.hpp"
 
 #include <iostream>
 using namespace std;
 
-// generates water to be rendered with GL_TRIANGLES
-void Water::init( ShaderProgram& m_shader, GLuint texture, glm::vec3 position ) {
+void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
 	m_texture = texture;
 
-	#if 0
+	// vertices for a square quad
+	Vertex* verts = new Vertex[numVerts];
 
-	float width  = 1.0f;
-	float height = width;
+	verts[0].x = -0.5f;
+	verts[0].y = -0.5f;
+	verts[0].z =  0.0f;
+	verts[0].u =  1;
+	verts[0].v =  1;
 
-	Vertex* verts = new Vertex[ numVerts ];
+	verts[1].x =  0.5f;
+	verts[1].y = -0.5f;
+	verts[1].z =  0.0f;
+	verts[1].u =  0;
+	verts[1].v =  1;
+
+	verts[2].x = -0.5f;
+	verts[2].y =  0.5f;
+	verts[2].z =  0.0f;
+	verts[2].u =  1;
+	verts[2].v =  0;
+
+	verts[3].x =  0.5f;
+	verts[3].y =  0.5f;
+	verts[3].z =  0.0f;
+	verts[3].u =  0;
+	verts[3].v =  0;
+	
 	unsigned int* vertIndices = new unsigned int[numVerts];
-	for (unsigned int i = 0; i < numVerts; i += 1 ) {
-		verts[i].y = m_height;
-
-		// normals will be calculated from the view matrix
-		// we don't need to put anything here
-		verts[i].Nx = 0;
-		verts[i].Ny = 0;
-		verts[i].Nz = 0;
-
-		// vertex index buffer
+	for ( unsigned int i = 0; i < numVerts; i += 1 ) {
 		vertIndices[i] = i;
 	} // for
-	verts[0].x = position.x - width;
-	verts[0].y = position.y;
-	verts[0].z = position.z - width;
-	verts[0].u = 0;
-	verts[0].v = 0;
-
-	verts[1].x = m_length;
-	verts[1].z = 0;
-	verts[1].u = m_length;
-	verts[1].v = 0;
-
-	verts[2].x = 0;
-	verts[2].z = m_width;
-	verts[2].u = 0;
-	verts[2].v = m_width;
-
-	verts[3].x = m_length;
-	verts[3].z = m_width;
-	verts[3].u = m_length;
-	verts[3].v = m_width;
-
-	#endif
 
 
 	//----------------------------------------------------------------------------------------
@@ -57,18 +46,18 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, glm::vec3 position ) 
 	 */
 
 	// Create the vertex array to record buffer assignments.
-	glGenVertexArrays( 1, &m_water_vao );
-	glBindVertexArray( m_water_vao );
+	glGenVertexArrays( 1, &m_vao );
+	glBindVertexArray( m_vao );
 
-	// Create the water vertex buffer
-	glGenBuffers( 1, &m_water_vbo );
-	glBindBuffer( GL_ARRAY_BUFFER, m_water_vbo );
+	// Create the vertex buffer
+	glGenBuffers( 1, &m_vertex_vbo );
+	glBindBuffer( GL_ARRAY_BUFFER, m_vertex_vbo );
 	glBufferData( GL_ARRAY_BUFFER, numVerts*sizeof(Vertex),
 		verts, GL_STATIC_DRAW );
 
 	// Create the water index buffer
-	glGenBuffers( 1, &m_water_ibo );
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_water_ibo );
+	glGenBuffers( 1, &m_ibo );
+	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, m_ibo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, numVerts*sizeof(unsigned int),
 		vertIndices, GL_STATIC_DRAW );
 
@@ -76,11 +65,6 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, glm::vec3 position ) 
 	GLint posAttrib = m_shader.getAttribLocation( "position" );
 	glEnableVertexAttribArray( posAttrib );
 	glVertexAttribPointer( posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), nullptr );
-
-	// Specify the means of extracting the normals properly.
-	GLint normAttrib = m_shader.getAttribLocation( "normal" );
-	glEnableVertexAttribArray( normAttrib );
-	glVertexAttribPointer( normAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(float)*3) );
 
 	// Specify the means of extracting the textures properly.
 	GLint texAttrib = m_shader.getAttribLocation( "texture" );
@@ -100,9 +84,9 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, glm::vec3 position ) 
 	CHECK_GL_ERRORS;
 }
 
-void Water::draw() {
+void Billboard::draw() {
 	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glBindVertexArray( m_water_vao );
+	glBindVertexArray( m_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, numVerts, GL_UNSIGNED_INT, 0 );
 	glBindVertexArray( 0 );									// Restore defaults
 

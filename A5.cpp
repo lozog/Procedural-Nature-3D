@@ -22,11 +22,11 @@ using namespace glm;
 using namespace std;
 
 // terrain needs to be square or terrain map vertices get all hecked up
-static const size_t TERRAIN_WIDTH = 200;
+static const size_t TERRAIN_WIDTH = 100;
 static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
-static const double REDIST = 1.05f;
+static double REDIST = 0.9f; // 1.05f;
 static const unsigned int TREE_DENSITY = 2000; // density of forest (lower->denser)
 
 //----------------------------------------------------------------------------------------
@@ -165,28 +165,37 @@ void A5::resetCamera() {
 	pitch = 0.0f;
 	yaw = 0.0f;
 	cameraSpeed = 0.3f;
-	#if 0
-	// position camera to have a view of 100x100 grid by default
-	cameraPos 		= glm::vec3( -54.0f, 20.0f, -64.0f );
-	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
-	pitch = -15.77f;
-	yaw = 51.72f;
-	#endif
-	#if 1
-	// position camera to have a view of 200x200 grid by default
-	cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
-	cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
-	pitch = -27.0f;
-	yaw = 10.1f;
-	cameraSpeed = 1.5f;
-	#endif
-	#if 0
-	// position camera to have a view of 512x512 grid by default
-	cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
-	cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
-	pitch = -16.5f;
-	yaw = 52.42f;
-	#endif
+	REDIST = 1.05f;
+
+	switch( TERRAIN_LENGTH ) {
+		case 512:
+			// position camera to have a view of 512x512 grid by default
+			cout << "grid is 512x512" << endl;
+			cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
+			cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
+			pitch = -16.5f;
+			yaw = 52.42f;
+		break;
+		case 200:
+			cout << "grid is 200x200" << endl;
+			// position camera to have a view of 200x200 grid by default
+			cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
+			cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
+			pitch = -27.0f;
+			yaw = 10.1f;
+			cameraSpeed = 1.5f;
+		break;
+		case 100:
+			cout << "grid is 100x100" << endl;
+			// position camera to have a view of 100x100 grid by default
+			cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
+			cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
+			pitch = -23.77f;
+			yaw = 18.13f;
+			cameraSpeed = 1.5f;
+			REDIST = 0.95f;
+		break;
+	} // switch
 }
 
 //----------------------------------------------------------------------------------------
@@ -238,6 +247,22 @@ void A5::init()
 	P_skybox_uni = m_skybox_shader.getUniformLocation( "P" );
 	V_skybox_uni = m_skybox_shader.getUniformLocation( "V" );
 
+	// Build the billboard shader
+	m_billboard_shader.generateProgramObject();
+	m_billboard_shader.attachVertexShader(
+		getAssetFilePath( "billboardVertexShader.vs" ).c_str() );
+	m_billboard_shader.attachFragmentShader(
+		getAssetFilePath( "billboardFragmentShader.fs" ).c_str() );
+	m_billboard_shader.link();
+
+	// Set up billboard uniforms
+	grass_position_uni 	= m_billboard_shader.getUniformLocation( "grass_position" );
+	cameraUp_uni 		= m_billboard_shader.getUniformLocation( "cameraUp" );
+	cameraRight_uni 	= m_billboard_shader.getUniformLocation( "cameraRight" );
+	P_billboard_uni 	= m_billboard_shader.getUniformLocation( "P" );
+	V_billboard_uni 	= m_billboard_shader.getUniformLocation( "V" );
+	M_billboard_uni 	= m_billboard_shader.getUniformLocation( "M" );
+
 	// load model textures
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
@@ -273,7 +298,9 @@ void A5::initEnvironment() {
 
 	initTrees();
 
-	theSkybox.init(m_skybox_shader, m_skybox_texture );
+	grass.init( m_billboard_shader, m_grass_texture );
+
+	theSkybox.init( m_skybox_shader, m_skybox_texture );
 }
 
 void A5::initTrees() {
@@ -493,10 +520,27 @@ void A5::draw()
 		theWater.draw();
 
 		for( LTree* tree : theTrees ) {
-			tree->draw();
+			// tree->draw();
 		} // for
 
 	m_shader.disable();
+
+	m_billboard_shader.enable();
+
+		// set matrix uniforms
+		glUniformMatrix4fv( P_billboard_uni, 1, GL_FALSE, value_ptr( proj ) );
+		glUniformMatrix4fv( V_billboard_uni, 1, GL_FALSE, value_ptr( view ) );
+		glUniformMatrix4fv( M_billboard_uni, 1, GL_FALSE, value_ptr( W ) );
+
+		// grass billboard uniform
+		glm::vec3 grassPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+		// glm::vec3 grassPosition = glm::vec3(13.0f, 18.0f, 0.0f);
+		glUniform3fv( grass_position_uni, 1, value_ptr( grassPosition ) );
+		glUniform3fv( cameraUp_uni, 1, value_ptr( cameraUp ) );
+		glUniform3fv( cameraRight_uni, 1, value_ptr( cameraRight ) );
+		grass.draw();
+
+	m_billboard_shader.disable();
 
 	CHECK_GL_ERRORS;
 }
@@ -561,8 +605,8 @@ bool A5::mouseMoveEvent(double xPos, double yPos)
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		cameraFront = glm::normalize(front);
 
-		// calculate new up vector for camera
-		glm::vec3 cameraRight = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
+		// calculate new up & right vectors for camera
+		cameraRight = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
 		cameraUp = glm::cross(cameraFront, cameraRight);
 
 		xPosPrev = xPos;

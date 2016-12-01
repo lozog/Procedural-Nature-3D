@@ -13,6 +13,7 @@
 #include "skybox.hpp"
 #include "branchnode.hpp"
 #include "ltree.hpp"
+#include "billboard.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -57,6 +58,7 @@ private:
 	glm::vec3 cameraPos;						// position of camera
 	glm::vec3 cameraFront;						// point camera is looking at
 	glm::vec3 cameraUp;							// "up" relative to cameraFront
+	glm::vec3 cameraRight;							// "right" relative to cameraFront
 	float cameraSpeed;							// movement speed of camera
 	float mouseSensitivity;						// sensitivity of mouse control of pitch/yaw
 
@@ -87,6 +89,14 @@ private:
 	GLint P_skybox_uni; 						// Uniform location for Projection matrix.
 	GLint V_skybox_uni; 						// Uniform location for View matrix.
 
+	ShaderProgram m_billboard_shader;
+	GLint grass_position_uni;   				// Uniform location for grass position
+	GLint P_billboard_uni; 						// Uniform location for Projection matrix.
+	GLint V_billboard_uni; 						// Uniform location for View matrix.
+	GLint M_billboard_uni; 						// Uniform location for Model matrix.
+	GLint cameraUp_uni; 						// Uniform location for 
+	GLint cameraRight_uni; 						// Uniform location for 
+
 	// Lighting
 	glm::vec3 m_theSunColour;
 	glm::vec3 m_theSunDir;
@@ -109,6 +119,7 @@ private:
 	Water theWater;
 	Skybox theSkybox;
 	std::vector<LTree*> theTrees;
+	Billboard grass;
 
 	// useful maps that keep track of object placement
 	bool** treeMap;
