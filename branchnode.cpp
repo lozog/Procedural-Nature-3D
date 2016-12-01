@@ -55,9 +55,9 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].Nx = normal.x;
 		verts[idx].Ny = normal.y;
 		verts[idx].Nz = normal.z;
-		verts[idx].r = 0.5f;
-		verts[idx].g = 0.5f;
-		verts[idx].b = 0.5f;
+		verts[idx].r = 0.11f;
+		verts[idx].g = 0.05f;
+		verts[idx].b = 0.0f;
 		verts[idx].a = 1.0f;
 		verts[idx].u = x;
 		verts[idx].v = 0;

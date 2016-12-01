@@ -149,10 +149,10 @@ void A5::resetFoliage() {
 //----------------------------------------------------------------------------------------
 // Reset lights
 void A5::resetLight() {
-	m_theSunColour = glm::vec3(1.0f, 1.0f, 0.0f);
-	m_theSunDir = glm::vec3(0.25f, 0.25f, 0.25f);
-	m_theSunIntensity = 0.8f;
-	m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
+	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
+	m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
+	m_theSunIntensity = 0.7f;
+	// m_globalAmbientLight = glm::vec3(0.3f, 0.5f, 0.9f);
 	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
 }
 

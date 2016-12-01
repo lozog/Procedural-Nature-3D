@@ -170,8 +170,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 	idx = 0;
 	for (int x = 0; x < m_length; x += 1) {
 		for (int z = 0; z < m_width; z += 1) {
-			colourMap[idx] 	 = 0.5f;
-			colourMap[idx+1] = 0.5f;						// use placeholder colour for now
+			colourMap[idx] 	 = 0.6f;
+			colourMap[idx+1] = 0.7f;
 			colourMap[idx+2] = 0.5f;
 			colourMap[idx+3] = 1.0f;						// terrain is completely opaque
 			idx += 4;
@@ -203,6 +203,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 
 	idx = 0;
 	size_t idx2 = 0;
+	size_t idx3 = 0;
 	size_t vertexDataSZ = sizeof(Vertex) * numVerts;
 	Vertex* verts = new Vertex[ numVerts ];
 	for (int i = 0; i < numVerts; i += 1) {
@@ -212,15 +213,16 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 		verts[i].Nx = normalMap[idx];
 		verts[i].Ny = normalMap[idx + 1];
 		verts[i].Nz = normalMap[idx + 2];
-		verts[i].r = colourMap[idx];
-		verts[i].g = colourMap[idx + 1];
-		verts[i].b = colourMap[idx + 2];
-		verts[i].a = colourMap[idx + 3];
+		verts[i].r = colourMap[idx3];
+		verts[i].g = colourMap[idx3 + 1];
+		verts[i].b = colourMap[idx3 + 2];
+		verts[i].a = colourMap[idx3 + 3];
 		verts[i].u = terrainMap[idx2];
 		verts[i].v = terrainMap[idx2 + 1];
 		// if ( i < 4 ) cout << verts[i].u << ", " << verts[i].v << endl;
 		idx += 3;
 		idx2 += 2;
+		idx3 += 4;
 	} // for
 
 	//----------------------------------------------------------------------------------------
