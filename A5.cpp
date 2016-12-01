@@ -27,7 +27,7 @@ static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 17;
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.9f; // 1.05f;
-static const unsigned int TREE_DENSITY = 2000; // density of forest (lower->denser)
+static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -57,10 +57,9 @@ A5::A5()
 // Destructor
 A5::~A5()
 {
-	// delete trees
-	for (LTree* tree : theTrees) {
-		delete tree;
-	} // for
+	// delete foliage
+	theTrees.clear();
+	theGrass.clear();
 
 	// delete maps
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
@@ -230,6 +229,7 @@ void A5::resetFoliage() {
 	} // for
 
 	theTrees.clear();
+	theGrass.clear();
 }
 
 //----------------------------------------------------------------------------------------
@@ -334,18 +334,17 @@ void A5::initEnvironment() {
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
 	resetFoliage();
-	initTrees();
+	initFoliage();
 
 	grass.init( m_billboard_shader, m_grass_texture );
 
 	theSkybox.init( m_skybox_shader, m_skybox_texture );
 }
 
-void A5::initTrees() {
+void A5::initFoliage() {
 
-	vector<Rules> treeLSystems;
-	// all this is just for one type of tree
-	// TODO: more tree types
+	// define some L-Systems
+	// each system guides the generation of different "species"
 	Rule sys1rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
 	Rules sys1rules;
 	sys1rules.push_back(&sys1rule1);
@@ -358,6 +357,7 @@ void A5::initTrees() {
 	Rules sys3rules;
 	sys3rules.push_back(&sys3rule1);
 
+	vector<Rules> treeLSystems;
 	treeLSystems.push_back(sys1rules);
 	treeLSystems.push_back(sys2rules);
 	treeLSystems.push_back(sys3rules);
@@ -378,14 +378,15 @@ void A5::initTrees() {
 
 			// randomly pick spots to plant trees
 			// in the future, could use a random perturbation scatter to pick spots
-			int random = rand() % TREE_DENSITY;
-			bool randPlacement = (random < 3 || random > TREE_DENSITY - 2 ? true : false);
+			int random = rand() % PLANT_DENSITY;
+			bool plantTree = ( random < 3 || random > PLANT_DENSITY - 2 ? true : false );
+			bool plantGrass = ( random > 3 && random <= 1000 ? true : false );
 
-			if( randPlacement ) {
+			if( plantTree ) {
 				// decide if chosen position is suitable for tree
-				// not underwater, slope not too steep, not too close to another tree
+				// not underwater, slope not too steep, not "too close" to another tree
 
-				// make sure tree isn't underwater
+				// make sure above water
 				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
 				// TODO: check normal of terrain
 				
@@ -420,7 +421,23 @@ void A5::initTrees() {
 					m_shader, m_tree_texture
 				);
 				theTrees.push_back(tree);
-			}
+
+			} else if( plantGrass ) {
+				if ( x == 1 || z == 1 || x == TERRAIN_LENGTH - 1 || z == TERRAIN_WIDTH - 1)
+					continue;
+				// decide if chosen position is suitable for grass
+				// not *in* tree, not underwater, slope not too steep
+
+				// make sure above underwater
+				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
+				// TODO: check normal of terrain
+				if ( treeMap[x][z] ) continue;
+
+				grassMap[x][z] = true;
+
+				glm::vec3* position = new glm::vec3((float)x, heightMap[x][z]+0.5f, (float)z);
+				theGrass.push_back(position);
+			} // if
 		} // for
 	} // for
 }
@@ -571,13 +588,14 @@ void A5::draw()
 		glUniformMatrix4fv( V_billboard_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_billboard_uni, 1, GL_FALSE, value_ptr( W ) );
 
-		// grass billboard uniform
-		// glm::vec3 grassPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 grassPosition = glm::vec3(18.0f, 21.0f, 18.0f);
-		glUniform3fv( grass_position_uni, 1, value_ptr( grassPosition ) );
+		
 		glUniform3fv( cameraUp_uni, 1, value_ptr( cameraUp ) );
 		glUniform3fv( cameraRight_uni, 1, value_ptr( cameraRight ) );
-		grass.draw();
+
+		for( glm::vec3* grassPosition : theGrass ) {
+			glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
+			grass.draw();
+		} // for
 
 	glDisable( GL_BLEND );
 	m_billboard_shader.disable();

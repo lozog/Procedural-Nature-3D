@@ -39,7 +39,7 @@ private:
 	void loadTextureAlpha( const char* filename, GLuint* texture );
 	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
-	void initTrees();
+	void initFoliage();
 
 	void reset();
 	void resetCamera();
@@ -121,6 +121,7 @@ private:
 	Water theWater;
 	Skybox theSkybox;
 	std::vector<LTree*> theTrees;
+	std::vector<glm::vec3*> theGrass;
 	Billboard grass;
 
 	// useful maps that keep track of object placement
