@@ -36,6 +36,7 @@ protected:
 
 private:
 	void loadTexture( const char* filename, GLuint* texture );
+	void loadTextureAlpha( const char* filename, GLuint* texture );
 	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
 	void initTrees();

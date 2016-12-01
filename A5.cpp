@@ -77,7 +77,7 @@ A5::~A5()
 }
 
 //----------------------------------------------------------------------------------------
-// Load object texture
+// Load object texture with RGB
 void A5::loadTexture( const char* filename, GLuint* texture ) {
 
 	// generate texture
@@ -98,6 +98,33 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 
 	// colours seem more saturated (better) WITHOUT this
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// free image and unbind texture
+	SOIL_free_image_data(image);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+// Load object texture with RGBA
+void A5::loadTextureAlpha( const char* filename, GLuint* texture ) {
+
+	// generate texture
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_2D, *texture);
+
+	// load texture image with SOIL
+	int width, height;
+	unsigned char* image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
+
+	// bind image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
+	// colours seem more saturated (better) WITHOUT this
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// free image and unbind texture
 	SOIL_free_image_data(image);
@@ -267,7 +294,7 @@ void A5::init()
 	loadTexture("res/grass.png", &m_ground_texture);
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);
-	loadTexture("res/sgrass5-1.png", &m_grass_texture);
+	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
 
 	// load skybox texture
 	const std::vector<std::string> skyboxTextureFiles {
@@ -533,8 +560,8 @@ void A5::draw()
 		glUniformMatrix4fv( M_billboard_uni, 1, GL_FALSE, value_ptr( W ) );
 
 		// grass billboard uniform
-		glm::vec3 grassPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-		// glm::vec3 grassPosition = glm::vec3(13.0f, 18.0f, 0.0f);
+		// glm::vec3 grassPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec3 grassPosition = glm::vec3(18.0f, 23.0f, 18.0f);
 		glUniform3fv( grass_position_uni, 1, value_ptr( grassPosition ) );
 		glUniform3fv( cameraUp_uni, 1, value_ptr( cameraUp ) );
 		glUniform3fv( cameraRight_uni, 1, value_ptr( cameraRight ) );

@@ -37,6 +37,9 @@ http://digitalrune.github.io/DigitalRune-Documentation/html/fa431d48-b457-4c70-a
 Water
 http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/realistic-natural-effect-rendering-water-i-r2138
 
+Texture
+https://www.opengl.org/wiki/Sampler_(GLSL)
+
 http://www.tomdalling.com/blog/modern-opengl
 https://developer.nvidia.com/gpugems/GPUGems2/gpugems2_chapter01.html
 http://pcg.wikidot.com/category-pcg-algorithms
