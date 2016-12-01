@@ -3,10 +3,9 @@
 #include <string>
 #include <vector>
 
-class Rule {
+struct Rule {
 public:
 	Rule( std::string LHS, std::string RHS ) : LHS(LHS), RHS(RHS) {}
-	~Rule() {}
 	std::string LHS;
 	std::string RHS;
 };
