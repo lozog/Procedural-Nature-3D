@@ -10,7 +10,7 @@ public:
 	Billboard() : numVerts(4) {}
 	~Billboard() {}
 
-	void init( ShaderProgram& m_shader, GLuint m_texture );
+	void init( ShaderProgram& m_shader, GLuint m_texture, GLuint m_screendoor_texture );
 
 	void draw();
 
@@ -26,5 +26,6 @@ private:
 	GLuint m_ibo; 					// Index Buffer Object
 
 	GLuint m_texture; 					// texture ID
+	GLuint m_screendoor_texture; 		// screendoor texture ID
 
 };

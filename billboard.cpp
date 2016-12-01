@@ -4,8 +4,9 @@
 #include <iostream>
 using namespace std;
 
-void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
+void Billboard::init( ShaderProgram& m_shader, GLuint texture, GLuint screendoor_texture ) {
 	m_texture = texture;
+	m_screendoor_texture = screendoor_texture;
 
 	// vertices for a square quad
 	Vertex* verts = new Vertex[numVerts];
@@ -97,9 +98,16 @@ void Billboard::init( ShaderProgram& m_shader, GLuint texture ) {
 }
 
 void Billboard::draw() {
+	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
+
+	glActiveTexture(GL_TEXTURE0 + 1);
+	glBindTexture(GL_TEXTURE_2D, m_screendoor_texture);
+	// glBindTexture(GL_TEXTURE_2D, m_texture);
+
 	glBindVertexArray( m_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, numVerts, GL_UNSIGNED_INT, 0 );
 	glBindVertexArray( 0 );									// Restore defaults
+	CHECK_GL_ERRORS;
 
 }

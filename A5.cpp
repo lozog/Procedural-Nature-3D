@@ -307,6 +307,7 @@ void A5::init()
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);
 	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
+	loadTextureAlpha("res/grass-screendoor.png", &m_screendoor_texture);
 
 	// load skybox texture - CAUTION: order matters!
 	const std::vector<std::string> skyboxTextureFiles {
@@ -353,7 +354,7 @@ void A5::initEnvironment() {
 	resetFoliage();
 	initFoliage();
 
-	grass.init( m_billboard_shader, m_grass_texture );
+	grass.init( m_billboard_shader, m_grass_texture, m_screendoor_texture );
 
 	theSkybox.init( m_skybox_shader, m_skybox_texture );
 }
@@ -596,26 +597,30 @@ void A5::draw()
 		} // for
 
 	m_shader.disable();
-
+	#if 1
 	m_billboard_shader.enable();
-	glEnable( GL_BLEND );
+	// glEnable( GL_BLEND );
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_billboard_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_billboard_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_billboard_uni, 1, GL_FALSE, value_ptr( W ) );
 
-		
+		// pass in camera vectors for billboard calculations
 		glUniform3fv( cameraUp_uni, 1, value_ptr( cameraUp ) );
 		glUniform3fv( cameraRight_uni, 1, value_ptr( cameraRight ) );
+
+		glUniform1i(m_billboard_shader.getUniformLocation("billboard"), 0);
+		glUniform1i(m_billboard_shader.getUniformLocation("screendoor"), 1);
 
 		for( glm::vec3* grassPosition : theGrass ) {
 			glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
 			grass.draw();
 		} // for
 
-	glDisable( GL_BLEND );
+	// glDisable( GL_BLEND );
 	m_billboard_shader.disable();
+	#endif
 
 	CHECK_GL_ERRORS;
 }
