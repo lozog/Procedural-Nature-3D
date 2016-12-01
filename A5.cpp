@@ -91,6 +91,7 @@ void A5::reset() {
 void A5::resetCamera() {
 	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
 	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
+	cameraRight = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove 	= false;
 	pitch 			= 0.0f;
@@ -561,6 +562,8 @@ void A5::draw()
 
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
 	m_skybox_shader.enable();
+
+		// glUniform1i(m_skybox_shader.getUniformLocation("billboard"), 0);
 
 		// set skybox matrix uniforms
 		glm::mat4 rotateOnlyView = glm::mat4(glm::mat3(view));

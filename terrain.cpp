@@ -332,6 +332,7 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
 }
 
 void Terrain::draw() {
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_ground_texture);
 	glBindVertexArray( m_terrain_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, bufferIndexCount, GL_UNSIGNED_INT, 0 );

@@ -111,6 +111,7 @@ void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) 
 }
 
 void Water::draw() {
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glBindVertexArray( m_water_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, numVerts, GL_UNSIGNED_INT, 0 );

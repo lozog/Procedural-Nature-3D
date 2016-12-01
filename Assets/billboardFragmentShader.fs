@@ -10,8 +10,14 @@ out vec4 fragColor;
 
 void main() {
 	vec4 screen = texture(screendoor, texCoords);
-	if (screen.r < 0.5f) 
+	if (screen.a < 0.6f) {
+		// alpha test -> discards pixels with alpha less than 0.6
 		discard;
+	}
+	if (screen.r < 0.5f) {
+		// screen door effect -> alpha test against the screendoor texture
+		discard;
+	}
 	vec4 outColor = texture(billboard, texCoords);
 	fragColor = outColor + col - vec4(0.0f, 0.1f, 0.3f, 0.0f);
 	// fragColor = texture(billboard, texCoords);
