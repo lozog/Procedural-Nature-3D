@@ -43,19 +43,14 @@ A5::A5()
 	upPress(false),
 	downPress(false)
 {
-	reset();
 	treeMap = new bool*[TERRAIN_LENGTH];
 	grassMap = new bool*[TERRAIN_LENGTH];
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
 		treeMap[i] = new bool[TERRAIN_WIDTH];
 		grassMap[i] = new bool[TERRAIN_WIDTH];
 	} // for
-	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
-		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
-			treeMap[x][z] = false;
-			grassMap[x][z] = false;
-		} // for
-	} // for
+
+	reset();
 }
 
 //----------------------------------------------------------------------------------------
@@ -172,6 +167,7 @@ void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture )
 void A5::reset() {
 	resetCamera();
 	resetLight();
+	resetFoliage();
 	cout << "controls:" << endl;
 	
 	cout << "U/Y: raise/lower x position of the Sun" << endl;
@@ -223,6 +219,17 @@ void A5::resetCamera() {
 			REDIST = 0.95f;
 		break;
 	} // switch
+}
+
+void A5::resetFoliage() {
+	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
+		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
+			treeMap[x][z] = false;
+			grassMap[x][z] = false;
+		} // for
+	} // for
+
+	theTrees.clear();
 }
 
 //----------------------------------------------------------------------------------------
@@ -317,12 +324,16 @@ void A5::init()
 
 	// grab and hide the cursor for first-person mode
 	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
+
+	// specify the blending function to be used (in this application, used for billboards)
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void A5::initEnvironment() {
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
 
+	resetFoliage();
 	initTrees();
 
 	grass.init( m_billboard_shader, m_grass_texture );
@@ -547,14 +558,13 @@ void A5::draw()
 		theWater.draw();
 
 		for( LTree* tree : theTrees ) {
-			// tree->draw();
+			tree->draw();
 		} // for
 
 	m_shader.disable();
 
 	m_billboard_shader.enable();
 	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_billboard_uni, 1, GL_FALSE, value_ptr( proj ) );
@@ -563,12 +573,13 @@ void A5::draw()
 
 		// grass billboard uniform
 		// glm::vec3 grassPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 grassPosition = glm::vec3(18.0f, 23.0f, 18.0f);
+		glm::vec3 grassPosition = glm::vec3(18.0f, 21.0f, 18.0f);
 		glUniform3fv( grass_position_uni, 1, value_ptr( grassPosition ) );
 		glUniform3fv( cameraUp_uni, 1, value_ptr( cameraUp ) );
 		glUniform3fv( cameraRight_uni, 1, value_ptr( cameraRight ) );
 		grass.draw();
 
+	glDisable( GL_BLEND );
 	m_billboard_shader.disable();
 
 	CHECK_GL_ERRORS;

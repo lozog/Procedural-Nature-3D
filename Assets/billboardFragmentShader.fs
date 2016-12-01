@@ -8,7 +8,6 @@ out vec4 fragColor;
 
 void main() {
 	vec4 outColor = texture(billboard, texCoords);
-
-	fragColor = outColor;
-	// fragColor = vec4(texCoords.x, 0, texCoords.y, 1);
+	fragColor = outColor + vec4(0.1f, 0.0f, 0.0f, 0.0f);
+	// fragColor = texture(billboard, texCoords);
 }

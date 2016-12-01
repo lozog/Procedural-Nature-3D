@@ -44,6 +44,7 @@ private:
 	void reset();
 	void resetCamera();
 	void resetLight();
+	void resetFoliage();
 
 	// Camera controls
 	void moveCameraForward();
