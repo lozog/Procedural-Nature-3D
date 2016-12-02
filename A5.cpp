@@ -747,7 +747,9 @@ void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, 
 		} // for
 
 		
+		#if 0
 		glEnable(GL_STENCIL_TEST);
+			glClear(GL_STENCIL_BUFFER_BIT);
 			// draw the water
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
@@ -759,20 +761,24 @@ void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, 
 			glStencilFunc(GL_EQUAL, 1, 0xFF);
 			glStencilMask(0x00);
 			glDepthMask(GL_TRUE);
-#if 1
 
 			glm::mat4 reflectModel = glm::scale(
-							glm::translate(*W, glm::vec3(0.0f, 0.0f, -1.0f)),
-							glm::vec3(1.0f, 1.0f, -1.0f)
+							glm::translate(*W, glm::vec3(0.0f, -1.0f, 0.0f)),
+							glm::vec3(1.0f, 1.0f, 1.0f)
 			);
 			glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( reflectModel ) );
-			theTerrain.draw();
+			// theTerrain.draw();
 			for( LTree* tree : theTrees ) {
 				tree->draw();
 			} // for
-		#endif
 
 		glDisable(GL_STENCIL_TEST);
+		#else
+			// glActiveTexture(GL_TEXTURE0+2);
+			// glBindTexture(GL_TEXTURE_2D, m_skybox_texture);
+			// glUniform1i(m_shader.getUniformLocation("skybox"), 2);
+			theWater.draw();
+		#endif
 
 
 	m_shader.disable();

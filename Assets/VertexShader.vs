@@ -19,10 +19,13 @@ out vec2 tex;
 out vec4 posLightspace;
 
 void main() {
+	// regular ol' vertex calculations
 	gl_Position = P * V * M * vec4(position, 1.0);
 	pos = position;
 	norm = normal;
 	col = colour;
 	tex = texture;
+
+	// shadow calculations
 	posLightspace = lightProj * lightView *  M * vec4( position, 1.0f);
 }
