@@ -28,7 +28,10 @@ static size_t WATER_HEIGHT = 9; // 17
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
-static bool drawShadowDebugQuad = false;
+static bool drawShadowDebugQuad = true;
+float shadowX = 39.0f;
+float shadowY = 30.0f;
+float shadowZ = 36.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -86,6 +89,9 @@ void A5::reset() {
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;
 	cout << "B: toggle shadow map debug quad" << endl;
+	cout << "1/2: change shadowMap X direction" << endl;
+	cout << "3/4: change shadowMap Y direction" << endl;
+	cout << "5/6: change shadowMap Z direction" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -680,7 +686,7 @@ void A5::drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap_FBO);
 
 	theTerrain.draw();
-	// theWater.draw();
+	theWater.draw();
 	for( LTree* tree : theTrees ) {
 		tree->draw();
 	} // for
@@ -776,11 +782,11 @@ void A5::draw()
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 
 	// calculate ortho projection matrix for light's POV
-	glm::mat4 lightProj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
+	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 100.0f);
 	glm::mat4 lightView = glm::lookAt(
-									  glm::vec3(-10.0f, 4.0f, 5.0f),
+									  glm::vec3(shadowX, shadowY, shadowZ),
 									  // -m_theSunDir,
-									  glm::vec3(20.0f, 0.0f, 20.0f),
+									  glm::vec3(20.0f, 20.0f, 20.0f),
 									  glm::vec3(0.0f, 1.0f, 0.0f)
 									 );
 
@@ -1067,6 +1073,42 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		}
 		if (key == GLFW_KEY_B) {
 			drawShadowDebugQuad = !drawShadowDebugQuad;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_1) {
+			shadowX += 1.0f;
+			cout << "shadowX: " << shadowX << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_2) {
+			shadowX -= 1.0f;
+			cout << "shadowX: " << shadowX << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_3) {
+			shadowY += 1.0f;
+			cout << "shadowY: " << shadowY << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_4) {
+			shadowY -= 1.0f;
+			cout << "shadowY: " << shadowY << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_5) {
+			shadowZ += 1.0f;
+			cout << "shadowZ: " << shadowZ << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_6) {
+			shadowZ -= 1.0f;
+			cout << "shadowZ: " << shadowZ << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
