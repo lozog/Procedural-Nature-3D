@@ -425,13 +425,11 @@ void A5::initEnvironment() {
 void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 	// GLuint shadowMap_frameBuffer = 0;
 	glGenFramebuffers(1, fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
-	// cout << "shadow: " << *texture << endl;
 
 	glGenTextures(1, texture);
 	glBindTexture(GL_TEXTURE_2D, *texture);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		m_framebufferWidth, m_framebufferHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -439,8 +437,8 @@ void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *texture, 0);
-
+	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, *texture, 0);
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -681,12 +679,12 @@ void A5::drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView
 
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap_FBO);
 
-	/*theTerrain.draw();
+	theTerrain.draw();
 	// theWater.draw();
 	for( LTree* tree : theTrees ) {
 		tree->draw();
 	} // for
-	for( glm::vec3* grassPosition : theGrass ) {
+	/*for( glm::vec3* grassPosition : theGrass ) {
 		glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
 		grass.draw();
 	} // for*/
@@ -780,8 +778,8 @@ void A5::draw()
 	// calculate ortho projection matrix for light's POV
 	glm::mat4 lightProj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
 	glm::mat4 lightView = glm::lookAt(
-									  // glm::vec3(-10.0f, 4.0f, 5.0f),
-									  -m_theSunDir,
+									  glm::vec3(-10.0f, 4.0f, 5.0f),
+									  // -m_theSunDir,
 									  glm::vec3(20.0f, 0.0f, 20.0f),
 									  glm::vec3(0.0f, 1.0f, 0.0f)
 									 );
