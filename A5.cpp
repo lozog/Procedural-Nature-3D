@@ -29,9 +29,9 @@ static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generatio
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 static bool drawShadowDebugQuad = false;
-float shadowX = 48.0f;
-float shadowY = 35.0f;
-float shadowZ = 29.0f;
+float lightX = 48.0f;
+float lightY = 35.0f;
+float lightZ = 29.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -89,9 +89,9 @@ void A5::reset() {
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;
 	cout << "B: toggle shadow map debug quad" << endl;
-	cout << "1/2: change shadowMap X direction" << endl;
-	cout << "3/4: change shadowMap Y direction" << endl;
-	cout << "5/6: change shadowMap Z direction" << endl;
+	cout << "1/2: change sunlight X direction" << endl;
+	cout << "3/4: change sunlight Y direction" << endl;
+	cout << "5/6: change sunlight Z direction" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -159,7 +159,7 @@ void A5::resetFoliage() {
 void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
 	// m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
-	m_theSunDir = glm::vec3(shadowX, shadowY, shadowZ);
+	m_theSunDir = glm::vec3(lightX, lightY, lightZ);
 	m_theSunIntensity = 0.5f;
 	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
 }
@@ -742,11 +742,38 @@ void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, 
 
 		// draw environment
 		theTerrain.draw();
-		theWater.draw();
-
 		for( LTree* tree : theTrees ) {
 			tree->draw();
 		} // for
+
+		
+		glEnable(GL_STENCIL_TEST);
+			// draw the water
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilMask(0xFF);
+			glDepthMask(GL_FALSE);
+			glClear(GL_STENCIL_BUFFER_BIT);
+			theWater.draw();
+			// draw reflections
+			glStencilFunc(GL_EQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDepthMask(GL_TRUE);
+#if 1
+
+			glm::mat4 reflectModel = glm::scale(
+							glm::translate(*W, glm::vec3(0.0f, 0.0f, -1.0f)),
+							glm::vec3(1.0f, 1.0f, -1.0f)
+			);
+			glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( reflectModel ) );
+			theTerrain.draw();
+			for( LTree* tree : theTrees ) {
+				tree->draw();
+			} // for
+		#endif
+
+		glDisable(GL_STENCIL_TEST);
+
 
 	m_shader.disable();
 }
@@ -790,7 +817,7 @@ void A5::draw()
 	// TODO: this should be based on the terrain size
 	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 150.0f);
 	glm::mat4 lightView = glm::lookAt(
-									  glm::vec3(shadowX, shadowY, shadowZ),
+									  glm::vec3(lightX, lightY, lightZ),
 									  // -m_theSunDir,
 									  glm::vec3(20.0f, 20.0f, 20.0f),
 									  glm::vec3(0.0f, 1.0f, 0.0f)
@@ -1083,38 +1110,38 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_1) {
-			shadowX += 1.0f;
-			cout << "shadowX: " << shadowX << endl;
+			lightX += 1.0f;
+			cout << "lightX: " << lightX << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_2) {
-			shadowX -= 1.0f;
-			cout << "shadowX: " << shadowX << endl;
+			lightX -= 1.0f;
+			cout << "lightX: " << lightX << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_3) {
-			shadowY += 1.0f;
-			cout << "shadowY: " << shadowY << endl;
+			lightY += 1.0f;
+			cout << "lightY: " << lightY << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_4) {
-			shadowY -= 1.0f;
-			cout << "shadowY: " << shadowY << endl;
+			lightY -= 1.0f;
+			cout << "lightY: " << lightY << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_5) {
-			shadowZ += 1.0f;
-			cout << "shadowZ: " << shadowZ << endl;
+			lightZ += 1.0f;
+			cout << "lightZ: " << lightZ << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_6) {
-			shadowZ -= 1.0f;
-			cout << "shadowZ: " << shadowZ << endl;
+			lightZ -= 1.0f;
+			cout << "lightZ: " << lightZ << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
