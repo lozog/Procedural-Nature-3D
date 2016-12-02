@@ -293,6 +293,31 @@ void A5::init()
 
 	//----------------------------------------------------------------------------------------
 	/*
+	 * Set up water shader
+	 */
+
+	// Build the water shader
+	m_water_shader.generateProgramObject();
+	m_water_shader.attachVertexShader(
+		getAssetFilePath( "waterVertexShader.vs" ).c_str() );
+	m_water_shader.attachFragmentShader(
+		getAssetFilePath( "waterFragmentShader.fs" ).c_str() );
+	m_water_shader.link();
+
+	// Set up water uniforms
+	P_water_uni = m_water_shader.getUniformLocation( "P" );
+	V_water_uni = m_water_shader.getUniformLocation( "V" );
+	M_water_uni = m_water_shader.getUniformLocation( "M" );
+	theSunColour_water_uni		= m_water_shader.getUniformLocation( "theSunColour" );
+	theSunDir_water_uni 			= m_water_shader.getUniformLocation( "theSunDir" );
+	theSunIntensity_water_uni 	= m_water_shader.getUniformLocation( "theSunIntensity" );
+	globalAmbientLight_water_uni 	= m_water_shader.getUniformLocation( "globalAmbientLight" );
+	eye_water_uni 				= m_water_shader.getUniformLocation( "eye" );
+	P_water_lightspace_uni = m_water_shader.getUniformLocation( "lightProj" );
+	V_water_lightspace_uni = m_water_shader.getUniformLocation( "lightView" );
+
+	//----------------------------------------------------------------------------------------
+	/*
 	 * Set up skybox shader
 	 */
 
@@ -419,7 +444,7 @@ void A5::initEnvironment() {
 	initShadowMap( &m_shadow_texture, &shadowMap_FBO );
 
 	theTerrain.init( m_shader, m_ground_texture );
-	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
+	theWater.init( m_water_shader, m_water_texture, WATER_HEIGHT );
 
 	resetFoliage();
 	initFoliage();
@@ -777,11 +802,76 @@ void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, 
 			// glActiveTexture(GL_TEXTURE0+2);
 			// glBindTexture(GL_TEXTURE_2D, m_skybox_texture);
 			// glUniform1i(m_shader.getUniformLocation("skybox"), 2);
-			theWater.draw();
+			// theWater.draw();
 		#endif
 
 
 	m_shader.disable();
+}
+
+void A5::drawWater( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture ) {
+	m_water_shader.enable();
+
+		glActiveTexture(GL_TEXTURE0+1);
+		glBindTexture(GL_TEXTURE_2D, *shadowmapTexture);
+		glUniform1i(m_water_shader.getUniformLocation("shadowMap"), 1);
+
+		// set matrix uniforms
+		glUniformMatrix4fv( P_water_uni, 1, GL_FALSE, value_ptr( proj ) );
+		glUniformMatrix4fv( V_water_uni, 1, GL_FALSE, value_ptr( view ) );
+		glUniformMatrix4fv( M_water_uni, 1, GL_FALSE, value_ptr( *W ) );
+
+		glUniformMatrix4fv( P_water_lightspace_uni, 1, GL_FALSE, value_ptr( *lightProj ) );
+		glUniformMatrix4fv( V_water_lightspace_uni, 1, GL_FALSE, value_ptr( *lightView ) );
+
+		// set uniforms for theSun
+		glUniform3fv( theSunColour_water_uni, 1, value_ptr( m_theSunColour ) );
+		glUniform3fv( theSunDir_water_uni, 1, value_ptr( m_theSunDir ) );
+		glUniform1f( theSunIntensity_water_uni, m_theSunIntensity );
+
+		// ambient light uniform
+		glUniform3fv( globalAmbientLight_water_uni, 1, value_ptr( m_globalAmbientLight ) );
+
+		glUniform3fv( eye_water_uni, 1, value_ptr( cameraPos ) );
+
+		glActiveTexture(GL_TEXTURE0+2);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, m_skybox_texture);
+		glUniform1i(m_water_shader.getUniformLocation("skybox"), 2);
+		theWater.draw();
+
+		
+		#if 0
+		glEnable(GL_STENCIL_TEST);
+			glClear(GL_STENCIL_BUFFER_BIT);
+			// draw the water
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilMask(0xFF);
+			glDepthMask(GL_FALSE);
+			glClear(GL_STENCIL_BUFFER_BIT);
+			theWater.draw();
+			// draw reflections
+			glStencilFunc(GL_EQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			glDepthMask(GL_TRUE);
+
+			glm::mat4 reflectModel = glm::scale(
+							glm::translate(*W, glm::vec3(0.0f, -1.0f, 0.0f)),
+							glm::vec3(1.0f, 1.0f, 1.0f)
+			);
+			glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( reflectModel ) );
+			// theTerrain.draw();
+			for( LTree* tree : theTrees ) {
+				tree->draw();
+			} // for
+
+		glDisable(GL_STENCIL_TEST);
+		#else
+			
+		#endif
+
+
+	m_water_shader.disable();
 }
 
 void A5::drawBillboards( glm::mat4* W ) {
@@ -852,6 +942,7 @@ void A5::draw()
 		// draw scene normally
 		drawSkybox();
 		drawObjects( &W, &lightProj, &lightView, &m_shadow_texture );
+		drawWater( &W, &lightProj, &lightView, &m_shadow_texture );
 		drawBillboards( &W );
 	}
 	

@@ -50,6 +50,7 @@ private:
 	void drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
 	void drawSkybox();
 	void drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture );
+	void drawWater( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture );
 	void drawBillboards( glm::mat4* W );
 
 	// Camera controls
@@ -93,6 +94,19 @@ private:
 	GLint eye_uni;   							// Uniform location for eye position
 	GLint P_lightspace_uni;
 	GLint V_lightspace_uni;
+
+	// Fields related to the water vertex shader and uniforms.
+	ShaderProgram m_water_shader;
+	GLint P_water_uni; 								// Uniform location for Projection matrix.
+	GLint V_water_uni; 								// Uniform location for View matrix.
+	GLint M_water_uni; 								// Uniform location for Model matrix.
+	GLint theSunColour_water_uni;   					// Uniform location for the Sun colour
+	GLint theSunDir_water_uni;   						// Uniform location for the Sun direction
+	GLint theSunIntensity_water_uni;   				// Uniform location for the Sun intensity
+	GLint globalAmbientLight_water_uni;   			// Uniform location for global ambient light
+	GLint eye_water_uni;   							// Uniform location for eye position
+	GLint P_water_lightspace_uni;
+	GLint V_water_lightspace_uni;
 
 	// Fields related to the skybox vertex shader and uniforms.
 	ShaderProgram m_skybox_shader;
