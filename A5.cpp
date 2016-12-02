@@ -652,23 +652,23 @@ void RenderQuad()
 	GLuint quadVAO = 0;
 	GLuint quadVBO;
  
-        GLfloat quadVertices[] = {
-            // Positions        // Texture Coords
-            -1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
-            -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
-             1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
-        };
-        // Setup plane VAO
-        glGenVertexArrays(1, &quadVAO);
-        glGenBuffers(1, &quadVBO);
-        glBindVertexArray(quadVAO);
-        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+    GLfloat quadVertices[] = {
+        // Positions        // Texture Coords
+        -1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+    };
+    // Setup plane VAO
+    glGenVertexArrays(1, &quadVAO);
+    glGenBuffers(1, &quadVBO);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 
     glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -715,8 +715,12 @@ void A5::drawSkybox() {
 	m_skybox_shader.disable();
 }
 
-void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView ) {
+void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture ) {
 	m_shader.enable();
+
+		glActiveTexture(GL_TEXTURE0+1);
+		glBindTexture(GL_TEXTURE_2D, *shadowmapTexture);
+		glUniform1i(m_shader.getUniformLocation("shadowMap"), 1);
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
@@ -804,16 +808,16 @@ void A5::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if ( drawShadowDebugQuad ) {
+		// display the shadow map
 		m_debugquad_shader.enable();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
 		RenderQuad();
 		m_debugquad_shader.disable();
 	} else {
-		glActiveTexture(GL_TEXTURE0+1);
-		glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
+		// draw scene normally
 		drawSkybox();
-		drawObjects( &W, &lightProj, &lightView );
+		drawObjects( &W, &lightProj, &lightView, &m_shadow_texture );
 		drawBillboards( &W );
 	}
 	

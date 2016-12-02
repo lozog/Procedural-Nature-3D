@@ -49,7 +49,7 @@ private:
 
 	void drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
 	void drawSkybox();
-	void drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
+	void drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture );
 	void drawBillboards( glm::mat4* W );
 
 	// Camera controls
