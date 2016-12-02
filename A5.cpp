@@ -28,6 +28,7 @@ static size_t WATER_HEIGHT = 9; // 17
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
+static bool drawShadowDebugQuad = false;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -84,6 +85,7 @@ void A5::reset() {
 	cout << "K/J: raise/lower sun intensity" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "M/N: raise/lower distribution power" << endl;
+	cout << "B: toggle shadow map debug quad" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -279,6 +281,8 @@ void A5::init()
 	theSunIntensity_uni 	= m_shader.getUniformLocation( "theSunIntensity" );
 	globalAmbientLight_uni 	= m_shader.getUniformLocation( "globalAmbientLight" );
 	eye_uni 				= m_shader.getUniformLocation( "eye" );
+	P_lightspace_uni = m_shader.getUniformLocation( "lightProj" );
+	V_lightspace_uni = m_shader.getUniformLocation( "lightView" );
 
 	//----------------------------------------------------------------------------------------
 	/*
@@ -405,7 +409,7 @@ void A5::init()
 }
 
 void A5::initEnvironment() {
-	initShadowMap( &m_shadow_texture );
+	initShadowMap( &m_shadow_texture, &shadowMap_FBO );
 
 	theTerrain.init( m_shader, m_ground_texture );
 	theWater.init( m_shader, m_water_texture, WATER_HEIGHT );
@@ -418,14 +422,14 @@ void A5::initEnvironment() {
 	theSkybox.init( m_skybox_shader, m_skybox_texture );
 }
 
-void A5::initShadowMap( GLuint* texture ) {
+void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 	// GLuint shadowMap_frameBuffer = 0;
-	glGenFramebuffers(1, texture);
-	glBindFramebuffer(GL_FRAMEBUFFER, *texture);
+	glGenFramebuffers(1, fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, *fbo);
+	// cout << "shadow: " << *texture << endl;
 
-	GLuint depthTexture;
-	glGenTextures(1, &depthTexture);
-	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glGenTextures(1, texture);
+	glBindTexture(GL_TEXTURE_2D, *texture);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16,
 		m_framebufferWidth, m_framebufferHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
@@ -435,7 +439,7 @@ void A5::initShadowMap( GLuint* texture ) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, *texture, 0);
 
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
@@ -666,31 +670,29 @@ void RenderQuad()
     glBindVertexArray(0);
 }
 
-void A5::drawShadowMap( glm::mat4* W ) {
+void A5::drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView ) {
 	// render depth of scene from light's perspective
 
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	// calculate ortho projection matrix for light's POV
-	glm::mat4 lightProj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 20.0f);
-	glm::mat4 lightView = glm::lookAt(-m_theSunDir,
-									  glm::vec3(0.0f, 0.0f, 0.0f),
-									  glm::vec3(0.0f, 1.0f, 0.0f)
-									 );
-
-	glUniformMatrix4fv( P_shadow_uni, 1, GL_FALSE, value_ptr( lightProj ) );
-	glUniformMatrix4fv( V_shadow_uni, 1, GL_FALSE, value_ptr( lightView ) );
+	glUniformMatrix4fv( P_shadow_uni, 1, GL_FALSE, value_ptr( *lightProj ) );
+	glUniformMatrix4fv( V_shadow_uni, 1, GL_FALSE, value_ptr( *lightView ) );
 	glUniformMatrix4fv( M_shadow_uni, 1, GL_FALSE, value_ptr( *W ) );
 
-	theTerrain.draw();
-	theWater.draw();
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap_FBO);
+
+	/*theTerrain.draw();
+	// theWater.draw();
 	for( LTree* tree : theTrees ) {
 		tree->draw();
 	} // for
-	/*for( glm::vec3* grassPosition : theGrass ) {
+	for( glm::vec3* grassPosition : theGrass ) {
 		glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
 		grass.draw();
 	} // for*/
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void A5::drawSkybox() {
@@ -708,13 +710,16 @@ void A5::drawSkybox() {
 	m_skybox_shader.disable();
 }
 
-void A5::drawObjects( glm::mat4* W ) {
+void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView ) {
 	m_shader.enable();
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );
 		glUniformMatrix4fv( V_uni, 1, GL_FALSE, value_ptr( view ) );
 		glUniformMatrix4fv( M_uni, 1, GL_FALSE, value_ptr( *W ) );
+
+		glUniformMatrix4fv( P_lightspace_uni, 1, GL_FALSE, value_ptr( *lightProj ) );
+		glUniformMatrix4fv( V_lightspace_uni, 1, GL_FALSE, value_ptr( *lightView ) );
 
 		// set uniforms for theSun
 		glUniform3fv( theSunColour_uni, 1, value_ptr( m_theSunColour ) );
@@ -772,11 +777,20 @@ void A5::draw()
 	mat4 W;
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 
+	// calculate ortho projection matrix for light's POV
+	glm::mat4 lightProj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(
+									  // glm::vec3(-10.0f, 4.0f, 5.0f),
+									  -m_theSunDir,
+									  glm::vec3(20.0f, 0.0f, 20.0f),
+									  glm::vec3(0.0f, 1.0f, 0.0f)
+									 );
+
 	glEnable( GL_DEPTH_TEST );
 
 	m_shadow_shader.enable();
 
-		drawShadowMap( &W );
+		drawShadowMap( &W, &lightProj, &lightView );
 
 	m_shadow_shader.disable();
 
@@ -784,18 +798,20 @@ void A5::draw()
 	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	#if 0
-	drawSkybox();
-	drawObjects( &W );
-	drawBillboards( &W );
-	#else
-	m_debugquad_shader.enable();
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
-	RenderQuad();
-	m_debugquad_shader.disable();
-	#endif
-
+	if ( drawShadowDebugQuad ) {
+		m_debugquad_shader.enable();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
+		RenderQuad();
+		m_debugquad_shader.disable();
+	} else {
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
+		drawSkybox();
+		drawObjects( &W, &lightProj, &lightView );
+		drawBillboards( &W );
+	}
+	
 	CHECK_GL_ERRORS;
 }
 
@@ -1047,6 +1063,11 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		if (key == GLFW_KEY_G) {
 			WATER_HEIGHT -= 1;
 			cout << "water height: " << WATER_HEIGHT << endl;
+			initEnvironment();
+			eventHandled = true;
+		}
+		if (key == GLFW_KEY_B) {
+			drawShadowDebugQuad = !drawShadowDebugQuad;
 			initEnvironment();
 			eventHandled = true;
 		}

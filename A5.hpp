@@ -40,16 +40,16 @@ private:
 	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
 	void initEnvironment();
 	void initFoliage();
-	void initShadowMap( GLuint* texture );
+	void initShadowMap( GLuint* texture, GLuint* fbo  );
 
 	void reset();
 	void resetCamera();
 	void resetLight();
 	void resetFoliage();
 
-	void drawShadowMap( glm::mat4* W );
+	void drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
 	void drawSkybox();
-	void drawObjects( glm::mat4* W );
+	void drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
 	void drawBillboards( glm::mat4* W );
 
 	// Camera controls
@@ -91,6 +91,8 @@ private:
 	GLint theSunIntensity_uni;   				// Uniform location for the Sun intensity
 	GLint globalAmbientLight_uni;   			// Uniform location for global ambient light
 	GLint eye_uni;   							// Uniform location for eye position
+	GLint P_lightspace_uni;
+	GLint V_lightspace_uni;
 
 	// Fields related to the skybox vertex shader and uniforms.
 	ShaderProgram m_skybox_shader;
@@ -111,6 +113,7 @@ private:
 	GLint P_shadow_uni; 								// Uniform location for Projection matrix.
 	GLint V_shadow_uni; 								// Uniform location for View matrix.
 	GLint M_shadow_uni; 								// Uniform location for Model matrix.
+	GLuint shadowMap_FBO;
 
 	ShaderProgram m_debugquad_shader;
 

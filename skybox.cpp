@@ -91,6 +91,7 @@ void Skybox::init( ShaderProgram& m_shader, GLuint texture ) {
 void Skybox::draw() {
 
 	glDepthMask(GL_FALSE);
+		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_skybox_vao);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_texture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);

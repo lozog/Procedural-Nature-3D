@@ -4,8 +4,10 @@ in vec3 pos;
 in vec3 norm;
 in vec4 col;
 in vec2 tex;
+in vec4 posLightspace;
 
 uniform sampler2D theTexture;
+uniform sampler2D shadowMap;
 
 out vec4 fragColor;
 
@@ -21,6 +23,16 @@ uniform float theSunIntensity;
 
 uniform vec3 globalAmbientLight;
 uniform vec3 eye;
+
+// returns 1.0 if fragment is in shadow, 0.0 otherwise
+float shadowCalc(vec4 posLightspace) {
+	vec3 projCoords = posLightspace.xyz / posLightspace.w; 		// perspective divide
+	projCoords = projCoords * 0.5f + 0.5f;						// transform range to [0,1]
+	float closestDepth = texture(shadowMap, projCoords.xy).r;	// get closest depth value from light's pov
+	float currentDepth = projCoords.z;							// get depth of current fragment from light's pov
+	float shadow = currentDepth > closestDepth ? 1.0f : 0.0f;	// check whether current fragment is in shadow
+	return shadow;
+}
 
 void main() {
 	// directional light from the Sun
@@ -47,6 +59,10 @@ void main() {
 
 	// ambient light
 	vec4 ambient = vec4(0.8f * globalAmbientLight, 1);
+
+	// shadow
+	float shadow = shadowCalc(posLightspace);
+	ambient *= (0.9f - shadow);
 
 	// float scale = 0.0000001;
 	float scale = 1;
