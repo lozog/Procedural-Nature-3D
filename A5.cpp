@@ -805,7 +805,7 @@ void A5::draw()
 		RenderQuad();
 		m_debugquad_shader.disable();
 	} else {
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE0+1);
 		glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
 		drawSkybox();
 		drawObjects( &W, &lightProj, &lightView );
@@ -944,6 +944,7 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 		if (key == GLFW_KEY_R) {
 			// reset
 			reset();
+			initEnvironment();
 			eventHandled = true;
 		} // if
 
