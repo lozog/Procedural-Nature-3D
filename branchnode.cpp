@@ -50,7 +50,7 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 		verts[idx].z = origin.z + (heading.z * bottomRadius * cos(x*angle))
 								+ (left.z    * bottomRadius * sin(x*angle));
 		#endif
-		// probably don't need to do this here, the fragment shader normalizes the normals
+		// the fragment shader normalizes the normals, so probably don't need to here
 		glm::vec3 normal = glm::normalize(glm::vec3(verts[idx].x, verts[idx].y, verts[idx].z));
 		verts[idx].Nx = normal.x;
 		verts[idx].Ny = normal.y;

@@ -29,9 +29,9 @@ static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generatio
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 static bool drawShadowDebugQuad = false;
-float shadowX = 39.0f;
-float shadowY = 30.0f;
-float shadowZ = 39.0f;
+float shadowX = 48.0f;
+float shadowY = 35.0f;
+float shadowZ = 29.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -160,7 +160,7 @@ void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
 	// m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
 	m_theSunDir = glm::vec3(shadowX, shadowY, shadowZ);
-	m_theSunIntensity = 0.7f;
+	m_theSunIntensity = 0.5f;
 	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
 }
 
@@ -787,7 +787,8 @@ void A5::draw()
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 
 	// calculate ortho projection matrix for light's POV
-	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 100.0f);
+	// TODO: this should be based on the terrain size
+	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 150.0f);
 	glm::mat4 lightView = glm::lookAt(
 									  glm::vec3(shadowX, shadowY, shadowZ),
 									  // -m_theSunDir,

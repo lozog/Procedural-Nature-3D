@@ -25,12 +25,12 @@ uniform vec3 globalAmbientLight;
 uniform vec3 eye;
 
 // returns 1.0 if fragment is in shadow, 0.0 otherwise
-float shadowCalc(vec4 posLightspace) {
-	vec3 projCoords = posLightspace.xyz / posLightspace.w; 		// perspective divide
-	projCoords = projCoords * 0.5f + 0.5f;						// transform range to [0,1]
-	float closestDepth = texture(shadowMap, projCoords.xy).r;	// get closest depth value from light's pov
-	float currentDepth = projCoords.z;							// get depth of current fragment from light's pov
-	float shadow = currentDepth > closestDepth ? 1.0f : 0.0f;	// check whether current fragment is in shadow
+float shadowCalc(vec4 posLightspace, float bias) {
+	vec3 projCoords = posLightspace.xyz / posLightspace.w; 				// perspective divide
+	projCoords = projCoords * 0.5f + 0.5f;								// transform range to [0,1]
+	float closestDepth = texture(shadowMap, projCoords.xy).r;			// get closest depth value from light's pov
+	float currentDepth = projCoords.z;									// get depth of current fragment from light's pov
+	float shadow = currentDepth - bias > closestDepth ? 1.0f : 0.0f;	// check whether current fragment is in shadow
 	return shadow;
 }
 
@@ -61,7 +61,9 @@ void main() {
 	vec4 ambient = vec4(0.8f * globalAmbientLight, 1);
 
 	// shadow
-	float shadow = shadowCalc(posLightspace);
+	// float bias = max(0.05f * (1.0f - dot(normal, lightDir)), 0.005f);
+	float bias = 0.005f; // I've found that this bias is sufficient to eliminate shadow acne with minimal to no peter panning
+	float shadow = shadowCalc(posLightspace, bias);
 	// ambient *= (0.9f - shadow);
 
 
