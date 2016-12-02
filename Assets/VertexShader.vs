@@ -24,5 +24,5 @@ void main() {
 	norm = normal;
 	col = colour;
 	tex = texture;
-	posLightspace = lightProj * lightView * vec4(position, 1.0f);
+	posLightspace = lightProj * lightView *  M * vec4( position, 1.0f);
 }
