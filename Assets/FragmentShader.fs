@@ -62,9 +62,11 @@ void main() {
 
 	// shadow
 	float shadow = shadowCalc(posLightspace);
-	ambient *= (0.9f - shadow);
+	// ambient *= (0.9f - shadow);
+
 
 	// float scale = 0.0000001;
-	float scale = 1;
-	fragColor = texture(theTexture, 0.05f*tex)*(scale*ambient + diffuse + scale*spec);
+	// float scale = 1;
+
+	fragColor = texture(theTexture, 0.05f*tex)*(ambient + (1.0f - shadow)*(diffuse + spec));
 }

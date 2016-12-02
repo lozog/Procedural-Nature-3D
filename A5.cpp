@@ -28,10 +28,10 @@ static size_t WATER_HEIGHT = 9; // 17
 static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
-static bool drawShadowDebugQuad = true;
+static bool drawShadowDebugQuad = false;
 float shadowX = 39.0f;
 float shadowY = 30.0f;
-float shadowZ = 36.0f;
+float shadowZ = 39.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -158,7 +158,8 @@ void A5::resetFoliage() {
 // Reset lights
 void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
-	m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
+	// m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
+	m_theSunDir = glm::vec3(shadowX, shadowY, shadowZ);
 	m_theSunIntensity = 0.7f;
 	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
 }
