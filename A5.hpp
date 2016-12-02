@@ -112,6 +112,8 @@ private:
 	GLint V_shadow_uni; 								// Uniform location for View matrix.
 	GLint M_shadow_uni; 								// Uniform location for Model matrix.
 
+	ShaderProgram m_debugquad_shader;
+
 	// Lighting
 	glm::vec3 m_theSunColour;
 	glm::vec3 m_theSunDir;

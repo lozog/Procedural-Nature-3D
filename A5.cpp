@@ -338,6 +338,19 @@ void A5::init()
 
 	//----------------------------------------------------------------------------------------
 	/*
+	 * Set up debugquad shader
+	 */
+
+	// Build the debugquad shader
+	m_debugquad_shader.generateProgramObject();
+	m_debugquad_shader.attachVertexShader(
+		getAssetFilePath( "debugquadVertexShader.vs" ).c_str() );
+	m_debugquad_shader.attachFragmentShader(
+		getAssetFilePath( "debugquadFragmentShader.fs" ).c_str() );
+	m_debugquad_shader.link();
+
+	//----------------------------------------------------------------------------------------
+	/*
 	 * Load textures from images into OpenGL
 	 */
 
@@ -425,6 +438,7 @@ void A5::initShadowMap( GLuint* texture ) {
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
 
 	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	if( glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE ) {
@@ -621,14 +635,47 @@ void A5::guiLogic()
 	#endif
 }
 
+// RenderQuad() Renders a 1x1 quad in NDC, best used for framebuffer color targets
+// and post-processing effects.
+// FROM: http://learnopengl.com/code_viewer.php?code=advanced-lighting/shadow_mapping_depth_map
+void RenderQuad()
+{
+	GLuint quadVAO = 0;
+	GLuint quadVBO;
+ 
+        GLfloat quadVertices[] = {
+            // Positions        // Texture Coords
+            -1.0f,  1.0f, 0.0f,  0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f,  0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f,  1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f,  1.0f, 0.0f,
+        };
+        // Setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
 void A5::drawShadowMap( glm::mat4* W ) {
 	// render depth of scene from light's perspective
+
+	glClear(GL_DEPTH_BUFFER_BIT);
 
 	// calculate ortho projection matrix for light's POV
 	glm::mat4 lightProj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 20.0f);
 	glm::mat4 lightView = glm::lookAt(-m_theSunDir,
 									  glm::vec3(0.0f, 0.0f, 0.0f),
-									  glm::vec3(0.0f, 0.0f, 0.0f)
+									  glm::vec3(0.0f, 1.0f, 0.0f)
 									 );
 
 	glUniformMatrix4fv( P_shadow_uni, 1, GL_FALSE, value_ptr( lightProj ) );
@@ -734,9 +781,20 @@ void A5::draw()
 	m_shadow_shader.disable();
 
 	// glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE ) ;							// DEBUG
+	
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	#if 0
 	drawSkybox();
 	drawObjects( &W );
 	drawBillboards( &W );
+	#else
+	m_debugquad_shader.enable();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_shadow_texture);
+	RenderQuad();
+	m_debugquad_shader.disable();
+	#endif
 
 	CHECK_GL_ERRORS;
 }
