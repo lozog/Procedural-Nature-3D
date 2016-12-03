@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdlib>								// rand, srand
 #include <fstream>								// ifstream
+#include <sstream>								// stringstream
 
 #include <imgui/imgui.h>
 #include <glm/glm.hpp>
@@ -23,14 +24,14 @@ using namespace glm;
 using namespace std;
 
 // terrain needs to be square or terrain map vertices get all hecked up
-static const size_t TERRAIN_WIDTH = 100;
-static const size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
+static size_t TERRAIN_WIDTH = 100;
+static size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 9; // 17
-static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
+static unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.8f; // 1.05f;
-static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
+static unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 static bool drawShadowDebugQuad = false;
-const string SKYBOX_NAME = "heather";
+string SKYBOX_NAME = "heather";
 float lightX = 48.0f;
 float lightY = 35.0f;
 float lightZ = 29.0f;
@@ -49,8 +50,8 @@ A5::A5( int argc, char **argv )
 {
 	switch( argc ) {
 		case 2:
-			// readInputParams( argv[1] );
-		cout << "gonna read from file " << argv[1] << endl;
+			readInputParams( argv[1] );
+		// cout << "gonna read from file " << argv[1] << endl;
 		break;
 	} // switch
 
@@ -92,8 +93,26 @@ void A5::readInputParams( const char* paramFile ) {
 		if ( infile.is_open() ) {
 			in = &infile;
 		} // if
-	} catch ( ifstream::failure e ) {
-		cout << "Exception opening input paramater file." << endl;
+		for ( ;; ) {									// my CS 343 is showing
+			string inputline;
+			getline(*in, inputline);					// read one line
+
+			if ( in->fail() ) break;					// end of param file
+
+            stringstream inputLineStream(inputline);
+
+			string paramName;
+			inputLineStream >> paramName;
+			if ( paramName == "TERRAIN_SIZE" ) {
+				size_t in;
+				inputLineStream >> in;
+				cout << "terrain size: " << in << endl;
+				TERRAIN_LENGTH = in;
+				TERRAIN_WIDTH = TERRAIN_LENGTH;
+			} // if
+		} // for
+	} catch ( const ifstream::failure e ) {
+		cout << "Exception opening/reading input paramater file." << endl;
 		return;
 	} // try
 
@@ -134,39 +153,35 @@ void A5::resetCamera() {
 	REDIST 			= 1.05f;
 
 	// position camera based on terrain size
-	switch( TERRAIN_LENGTH ) {
-		case 512:
-			// position camera to have a view of 512x512 grid by default
-			cout << "grid is 512x512" << endl;
-			cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
-			cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
-			pitch = -16.5f;
-			yaw = 52.42f;
-		break;
-		case 200:
-			cout << "grid is 200x200" << endl;
-			// position camera to have a view of 200x200 grid by default
-			cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
-			cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
-			pitch = -27.0f;
-			yaw = 10.1f;
-			cameraSpeed = 1.5f;
-		break;
-		case 100:
-			cout << "grid is 100x100" << endl;
-			// position camera to have a view of 100x100 grid by default
-			cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
-			cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
+	if( TERRAIN_LENGTH >= 512 ) {
+		// position camera to have a view of 512x512 grid by default
+		cout << "grid is >= 512x512" << endl;
+		cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
+		cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
+		pitch = -16.5f;
+		yaw = 52.42f;
+	} else if ( TERRAIN_LENGTH >= 200 ) {
+		cout << "grid is >= 200x200 but <= 512x512" << endl;
+		// position camera to have a view of 200x200 grid by default
+		cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
+		cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
+		pitch = -27.0f;
+		yaw = 10.1f;
+		cameraSpeed = 1.5f;
+	} else {
+		cout << "grid is <= 100x100" << endl;
+		// position camera to have a view of 100x100 grid by default
+		cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
+		cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
 
-			// cameraPos 		= glm::vec3( 134.0f, 45.0f, 20.0f );
-			// cameraFront 	= glm::vec3( -0.962, -0.176, -0.208f );
+		// cameraPos 		= glm::vec3( 134.0f, 45.0f, 20.0f );
+		// cameraFront 	= glm::vec3( -0.962, -0.176, -0.208f );
 
-			pitch = -23.77f;
-			yaw = 18.13f;
-			cameraSpeed = 1.5f;
-			REDIST = 0.95f;
-		break;
-	} // switch
+		pitch = -23.77f;
+		yaw = 18.13f;
+		cameraSpeed = 1.5f;
+		REDIST = 0.95f;
+	} // if
 }
 
 //----------------------------------------------------------------------------------------
