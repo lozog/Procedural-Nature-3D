@@ -124,7 +124,7 @@ private:
 
 	// Fields related to the billboard vertex shader and uniforms.
 	ShaderProgram m_billboard_shader;
-	GLint grass_position_uni;   				// Uniform location for grass position
+	GLint billboard_position_uni;   			// Uniform location for grass position
 	GLint P_billboard_uni; 						// Uniform location for Projection matrix.
 	GLint V_billboard_uni; 						// Uniform location for View matrix.
 	GLint M_billboard_uni; 						// Uniform location for Model matrix.
@@ -152,7 +152,9 @@ private:
 	GLuint m_skybox_texture;
 	GLuint m_tree_texture;
 	GLuint m_grass_texture;
-	GLuint m_screendoor_texture;
+	GLuint m_grass_screendoor_texture;
+	GLuint m_leaf_texture;
+	GLuint m_leaf_screendoor_texture;
 	GLuint m_shadow_texture;
 
 	// Matrices controlling the camera and projection.
@@ -166,6 +168,7 @@ private:
 	std::vector<LTree*> theTrees;
 	std::vector<glm::vec3*> theGrass;
 	Billboard grass;
+	Billboard leaf;
 
 	// useful maps that keep track of object placement
 	bool** treeMap;

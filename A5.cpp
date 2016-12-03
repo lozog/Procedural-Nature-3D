@@ -63,8 +63,7 @@ A5::A5()
 A5::~A5()
 {
 	// delete foliage
-	theTrees.clear();
-	theGrass.clear();
+	resetFoliage();
 
 	// delete maps
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
@@ -154,7 +153,13 @@ void A5::resetFoliage() {
 		} // for
 	} // for
 
+	for( LTree* tree : theTrees ) {
+		delete tree;
+	} // for
 	theTrees.clear();
+	for( glm::vec3* grass : theGrass ) {
+		delete grass;
+	} // for
 	theGrass.clear();
 }
 
@@ -364,7 +369,7 @@ void A5::init()
 				"billboardFragmentShader.fs" );
 
 	// Set up billboard uniforms
-	grass_position_uni 	= m_billboard_shader.getUniformLocation( "grass_position" );
+	billboard_position_uni 	= m_billboard_shader.getUniformLocation( "billboard_position" );
 	cameraUp_uni 		= m_billboard_shader.getUniformLocation( "cameraUp" );
 	cameraRight_uni 	= m_billboard_shader.getUniformLocation( "cameraRight" );
 	P_billboard_uni 	= m_billboard_shader.getUniformLocation( "P" );
@@ -406,7 +411,9 @@ void A5::init()
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);
 	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
-	loadTextureAlpha("res/grass-screendoor.png", &m_screendoor_texture);
+	loadTextureAlpha("res/leaf.png", &m_leaf_texture);
+	loadTextureAlpha("res/grass-screendoor.png", &m_grass_screendoor_texture);
+	loadTextureAlpha("res/leaf-screendoor.png", &m_leaf_screendoor_texture);
 
 	loadSkybox( SKYBOX_NAME, &m_skybox_texture );
 
@@ -439,7 +446,8 @@ void A5::initEnvironment() {
 	resetFoliage();
 	initFoliage();
 
-	grass.init( m_billboard_shader, m_grass_texture, m_screendoor_texture );
+	grass.init( m_billboard_shader, m_grass_texture, m_grass_screendoor_texture );
+	leaf.init( m_billboard_shader, m_leaf_texture, m_leaf_screendoor_texture );
 
 	theSkybox.init( m_skybox_shader, m_skybox_texture );
 }
@@ -475,7 +483,7 @@ void A5::initFoliage() {
 
 	// define some L-Systems
 	// each system guides the generation of different "species"
-	Rule sys1rule1("F", "FF/[/F&&F\\F]\\[\\F^F^F]");
+	Rule sys1rule1("F", "FF/[/F&&Fl\\F]\\[\\F^F^F]");
 	Rules sys1rules;
 	sys1rules.push_back(&sys1rule1);
 
@@ -653,7 +661,7 @@ void A5::drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView
 		tree->draw();
 	} // for
 	/*for( glm::vec3* grassPosition : theGrass ) {
-		glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
+		glUniform3fv( billboard_position_uni, 1, value_ptr( *grassPosition ) );
 		grass.draw();
 	} // for*/
 
@@ -793,9 +801,19 @@ void A5::drawBillboards( glm::mat4* W ) {
 		glUniform1i(m_billboard_shader.getUniformLocation("billboard"), 0);
 		glUniform1i(m_billboard_shader.getUniformLocation("screendoor"), 1);
 
+		// draw the grass
 		for( glm::vec3* grassPosition : theGrass ) {
-			glUniform3fv( grass_position_uni, 1, value_ptr( *grassPosition ) );
+			glUniform3fv( billboard_position_uni, 1, value_ptr( *grassPosition ) );
 			grass.draw();
+		} // for
+
+		// draw every tree's leaves
+		for( LTree* tree : theTrees ) {
+			vector<glm::vec3*> leaves = tree->getLeafPositions();
+			for( glm::vec3* leafPosition : leaves ) {
+				glUniform3fv( billboard_position_uni, 1, value_ptr( *leafPosition ) );
+				leaf.draw();
+			} // for
 		} // for
 
 	// glDisable( GL_BLEND );

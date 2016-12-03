@@ -63,3 +63,6 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 * sgrass5-1.png, sgrass5-3.png
     * created by virtushda
     * retrieved from http://opengameart.org/content/grass-2-0
+
+* leaf.png
+    * retrieved from http://www.textures.com/download/leaves0120/27993

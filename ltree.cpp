@@ -18,7 +18,19 @@ struct BranchInfo {
 
 LTree::LTree() {}
 
-LTree::~LTree() {}
+LTree::~LTree() {
+	// delete branches and leaves
+	for( BranchNode* branch : branches ) {
+		delete branch;
+	} // for
+	branches.clear();
+
+	for( glm::vec3* leaf : leaves ) {
+		delete leaf;
+	} // for
+	leaves.clear();
+
+}
 /*
 Ru(a) =  cos a   sin a     0
 		-sin a   cos a     0
@@ -64,7 +76,7 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 	float angleMin = angle - angleRange;
 	float angleMax = angle + angleRange;
 	float divergeAngleDeg = angleMin +  static_cast<float>(rand()) / 
-									(static_cast<float>(RAND_MAX/(angleMax-angleMin)));
+									   (static_cast<float>(RAND_MAX/(angleMax-angleMin)));
 	float divergeAngle = glm::radians(divergeAngleDeg);
 
 	glm::vec3 left 	= glm::normalize(glm::cross(-1.0f * down, heading));
@@ -166,6 +178,12 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				// cout << "new: " << heading << left << up << endl;
 
 			} break; // ]
+			case 'l': {
+				// calculate leaf location (hanging off branch)
+				glm::vec3* leafPosition = new glm::vec3(glm::vec3(0.5f, 0.5f, 0.5f)+origin);
+				leaves.push_back(leafPosition);
+				// cout << "skipping leaf for now" << endl;
+			} break; // l
 			// TODO: if the next two cases are swapped, there is a compile error. WHY?
 			case '/': {
 				// cout << "old: " << heading << left << up << endl;
@@ -188,6 +206,11 @@ void LTree::init( glm::vec3 heading, glm::vec3 down, glm::vec3 origin, std::stri
 				// cout << "skipping unrecognized symbol: " << symbol << endl;
 		} // switch
 	} // for
+
+	// delete branchinfo stack
+	if ( !branchInfoStack.empty() ) {
+		cout << "stack not empty! " << branchInfoStack.size() << endl;
+	} // if
 }
 
 void LTree::draw() {
@@ -196,4 +219,8 @@ void LTree::draw() {
 		child->draw();
 		// cout << "child drawn" << endl;
 	} // for
+}
+
+vector<glm::vec3*>& LTree::getLeafPositions() {
+	return leaves;
 }

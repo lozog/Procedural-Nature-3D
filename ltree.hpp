@@ -3,7 +3,10 @@
 #include <string>
 #include <vector>
 
+#include <glm/glm.hpp>							// vec3
+
 #include "branchnode.hpp"
+#include "billboard.hpp"
 
 /***********************
 Procedural generation of trees using L-systems
@@ -62,6 +65,7 @@ public:
 				float r1, /*float r2,*/ float angle, float angleRange, /*float a2,*/ float wr,
 				ShaderProgram& m_shader, GLuint m_texture );
 	void draw();
+	std::vector<glm::vec3*>& getLeafPositions();
 private:
 	// angle in radians
 	glm::mat3 Ru( float angle );
@@ -71,4 +75,5 @@ private:
 	glm::vec3 origin;
 	std::string expr;					// L-system expression
 	std::vector<BranchNode*> branches;
+	std::vector<glm::vec3*>  leaves;
 };
