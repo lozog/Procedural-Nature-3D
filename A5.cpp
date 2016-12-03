@@ -32,6 +32,17 @@ static double REDIST = 0.8f; // 1.05f;
 static unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 static bool drawShadowDebugQuad = false;
 string SKYBOX_NAME = "heather";
+glm::vec3 SUN_DIRECTION = glm::vec3(48.0f, 35.0f, 29.0f);
+glm::vec3 SUN_COLOUR = glm::vec3(1.0f, 0.7f, 0.0f);
+float SUN_INTENSITY = 0.5f;
+glm::vec3 AMBIENT_COLOUR = glm::vec3(0.3f, 0.3f, 0.3f);
+glm::vec3 CAMERA_POS = glm::vec3( 0.0f, 0.0f, 0.0f );
+glm::vec3 CAMERA_FRONT = glm::vec3( 1.0f, 0.0f, 0.0f );
+float CAMERA_PITCH = 0.0f;
+float CAMERA_YAW = 0.0f;
+float CAMERA_SPEED = 1.0f;
+
+// TODO: keyboard controls change these, but they aren't used
 float lightX = 48.0f;
 float lightY = 35.0f;
 float lightZ = 29.0f;
@@ -54,6 +65,8 @@ A5::A5( int argc, char **argv )
 		// cout << "gonna read from file " << argv[1] << endl;
 		break;
 	} // switch
+
+	// cout << TERRAIN_LENGTH << " " << TERRAIN_WIDTH << " " << NUM_OCTAVES << " " << REDIST << endl;
 
 	theTerrain.create(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST);
 	theWater.create(TERRAIN_WIDTH, TERRAIN_LENGTH);
@@ -103,13 +116,99 @@ void A5::readInputParams( const char* paramFile ) {
 
 			string paramName;
 			inputLineStream >> paramName;
+			// cout << paramName << endl;
 			if ( paramName == "TERRAIN_SIZE" ) {
 				size_t in;
 				inputLineStream >> in;
-				cout << "terrain size: " << in << endl;
-				TERRAIN_LENGTH = in;
-				TERRAIN_WIDTH = TERRAIN_LENGTH;
-			} // if
+				TERRAIN_WIDTH = in;
+				TERRAIN_LENGTH = TERRAIN_WIDTH;
+			} else if ( paramName == "NUM_OCTAVES" ) {
+				unsigned int in;
+				inputLineStream >> in;
+				NUM_OCTAVES = in;
+			} else if ( paramName == "WATER_HEIGHT" ) {
+				size_t in;
+				inputLineStream >> in;
+				WATER_HEIGHT = in;
+			} else if ( paramName == "REDIST" ) {
+				double in;
+				inputLineStream >> in;
+				REDIST = in;
+			} else if ( paramName == "PLANT_DENSITY" ) {
+				unsigned int in;
+				inputLineStream >> in;
+				PLANT_DENSITY = in;
+			} else if ( paramName == "SKYBOX_NAME" ) {
+				string in;
+				inputLineStream >> in;
+				SKYBOX_NAME = in;
+			} else if ( paramName == "SUN_DIRECTION" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				SUN_DIRECTION = vec3f;
+			} else if ( paramName == "SUN_COLOUR" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				SUN_COLOUR = vec3f;
+			} else if ( paramName == "SUN_INTENSITY" ) {
+				float in;
+				inputLineStream >> in;
+				SUN_INTENSITY = in;
+			} else if ( paramName == "AMBIENT_COLOUR" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				AMBIENT_COLOUR = vec3f;
+			} else if ( paramName == "CAMERA_POS" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				CAMERA_POS = vec3f;
+			} else if ( paramName == "CAMERA_FRONT" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				CAMERA_FRONT = vec3f;
+			} else if ( paramName == "CAMERA_PITCH" ) {
+				float in;
+				inputLineStream >> in;
+				CAMERA_PITCH = in;
+			} else if ( paramName == "CAMERA_YAW" ) {
+				float in;
+				inputLineStream >> in;
+				CAMERA_YAW = in;
+			} else if ( paramName == "CAMERA_SPEED" ) {
+				float in;
+				inputLineStream >> in;
+				CAMERA_SPEED = in;
+			}
 		} // for
 	} catch ( const ifstream::failure e ) {
 		cout << "Exception opening/reading input paramater file." << endl;
@@ -142,46 +241,14 @@ void A5::reset() {
 //----------------------------------------------------------------------------------------
 // Reset camera position
 void A5::resetCamera() {
-	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
-	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
+	cameraPos 		= CAMERA_POS;
+	cameraFront 	= CAMERA_FRONT;
 	cameraRight 	= glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove 	= false;
-	pitch 			= 0.0f;
-	yaw 			= 0.0f;
-	cameraSpeed 	= 1.0f;
-	REDIST 			= 1.05f;
-
-	// position camera based on terrain size
-	if( TERRAIN_LENGTH >= 512 ) {
-		// position camera to have a view of 512x512 grid by default
-		cout << "grid is >= 512x512" << endl;
-		cameraPos 		= glm::vec3( -286.0f, 74.0f, -284.0f );
-		cameraFront 	= glm::vec3( 0.589f, -0.262f, 0.764f );
-		pitch = -16.5f;
-		yaw = 52.42f;
-	} else if ( TERRAIN_LENGTH >= 200 ) {
-		cout << "grid is >= 200x200 but <= 512x512" << endl;
-		// position camera to have a view of 200x200 grid by default
-		cameraPos 		= glm::vec3( -121.0f, 57.0f, -74.0f );
-		cameraFront 	= glm::vec3( 0.800f, -0.157f, 0.579f );
-		pitch = -27.0f;
-		yaw = 10.1f;
-		cameraSpeed = 1.5f;
-	} else {
-		cout << "grid is <= 100x100" << endl;
-		// position camera to have a view of 100x100 grid by default
-		cameraPos 		= glm::vec3( -88.3f, 66.0f, -34.8f );
-		cameraFront 	= glm::vec3( 0.870f, -0.403f, 0.285f );
-
-		// cameraPos 		= glm::vec3( 134.0f, 45.0f, 20.0f );
-		// cameraFront 	= glm::vec3( -0.962, -0.176, -0.208f );
-
-		pitch = -23.77f;
-		yaw = 18.13f;
-		cameraSpeed = 1.5f;
-		REDIST = 0.95f;
-	} // if
+	pitch 			= CAMERA_PITCH;
+	yaw 			= CAMERA_YAW;
+	cameraSpeed 	= CAMERA_SPEED;
 }
 
 //----------------------------------------------------------------------------------------
@@ -207,10 +274,11 @@ void A5::resetFoliage() {
 //----------------------------------------------------------------------------------------
 // Reset lights to defaults
 void A5::resetLight() {
-	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
-	m_theSunDir = glm::vec3(lightX, lightY, lightZ);
-	m_theSunIntensity = 0.5f;
-	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
+	m_theSunDir 		 = SUN_DIRECTION;
+	m_theSunColour 		 = SUN_COLOUR;
+	m_theSunIntensity 	 = SUN_INTENSITY;
+
+	m_globalAmbientLight = AMBIENT_COLOUR;
 }
 
 //----------------------------------------------------------------------------------------
