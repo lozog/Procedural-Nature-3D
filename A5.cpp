@@ -42,11 +42,6 @@ float CAMERA_PITCH = 0.0f;
 float CAMERA_YAW = 0.0f;
 float CAMERA_SPEED = 1.0f;
 
-// TODO: keyboard controls change these, but they aren't used
-float lightX = 48.0f;
-float lightY = 35.0f;
-float lightZ = 29.0f;
-
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5( int argc, char **argv )
@@ -226,16 +221,16 @@ void A5::reset() {
 	resetFoliage();
 
 	cout << "controls:" << endl;
-	cout << "U/Y: raise/lower x position of the Sun" << endl;
+	cout << "1/2: change sunlight X direction" << endl;
+	cout << "3/4: change sunlight Y direction" << endl;
+	cout << "5/6: change sunlight Z direction" << endl;
 	cout << "O/I: raise/lower # of octaves in terrain" << endl;
 	cout << "H/G: raise/lower water level" << endl;
 	cout << "K/J: raise/lower sun intensity" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
-	cout << "M/N: raise/lower distribution power" << endl;
 	cout << "B: toggle shadow map debug quad" << endl;
-	cout << "1/2: change sunlight X direction" << endl;
-	cout << "3/4: change sunlight Y direction" << endl;
-	cout << "5/6: change sunlight Z direction" << endl;
+	cout << "M/N: raise/lower distribution power" << endl;
+	
 }
 
 //----------------------------------------------------------------------------------------
@@ -945,8 +940,7 @@ void A5::draw()
 	// TODO: this should be based on the terrain size
 	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 150.0f);
 	glm::mat4 lightView = glm::lookAt(
-									  glm::vec3(lightX, lightY, lightZ),
-									  // -m_theSunDir,
+									  m_theSunDir,
 									  glm::vec3(20.0f, 20.0f, 20.0f),
 									  glm::vec3(0.0f, 1.0f, 0.0f)
 									 );
@@ -1208,19 +1202,6 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			initEnvironment();
 			eventHandled = true;
 		}
-		if (key == GLFW_KEY_U) {
-			m_theSunDir += glm::vec3(0.5f, 0.0f, 0.0f);
-			cout << m_theSunDir << " sun direction" << endl;
-			initEnvironment();
-			eventHandled = true;
-		}
-		if (key == GLFW_KEY_Y) {
-			if ( m_theSunDir.x > 0.0f)
-				m_theSunDir -= glm::vec3(0.5f, 0.0f, 0.0f);
-			cout << m_theSunDir << " sun direction" << endl;
-			initEnvironment();
-			eventHandled = true;
-		}
 		if (key == GLFW_KEY_H) {
 			WATER_HEIGHT += 1;
 			cout << "water height: " << WATER_HEIGHT << endl;
@@ -1239,38 +1220,38 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_1) {
-			lightX += 1.0f;
-			cout << "lightX: " << lightX << endl;
+			m_theSunDir.x += 1.0f;
+			cout << "m_theSunDir.x: " << m_theSunDir.x << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_2) {
-			lightX -= 1.0f;
-			cout << "lightX: " << lightX << endl;
+			m_theSunDir.x -= 1.0f;
+			cout << "m_theSunDir.x: " << m_theSunDir.x << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_3) {
-			lightY += 1.0f;
-			cout << "lightY: " << lightY << endl;
+			m_theSunDir.y += 1.0f;
+			cout << "m_theSunDir.y: " << m_theSunDir.y << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_4) {
-			lightY -= 1.0f;
-			cout << "lightY: " << lightY << endl;
+			m_theSunDir.y -= 1.0f;
+			cout << "m_theSunDir.y: " << m_theSunDir.y << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_5) {
-			lightZ += 1.0f;
-			cout << "lightZ: " << lightZ << endl;
+			m_theSunDir.z += 1.0f;
+			cout << "m_theSunDir.z: " << m_theSunDir.z << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
 		if (key == GLFW_KEY_6) {
-			lightZ -= 1.0f;
-			cout << "lightZ: " << lightZ << endl;
+			m_theSunDir.z -= 1.0f;
+			cout << "m_theSunDir.z: " << m_theSunDir.z << endl;
 			initEnvironment();
 			eventHandled = true;
 		}
