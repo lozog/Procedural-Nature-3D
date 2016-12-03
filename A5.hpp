@@ -17,7 +17,7 @@
 
 class A5 : public CS488Window {
 public:
-	A5();
+	A5( int argc, char **argv );
 	virtual ~A5();
 
 protected:
@@ -36,7 +36,7 @@ protected:
 
 private:
 	// data loading functions
-	void readParameters( const char* paramFile );
+	void readInputParams( const char* paramFile );
 	void loadTexture( const char* filename, GLuint* texture );
 	void loadTextureAlpha( const char* filename, GLuint* texture );
 	void loadSkybox( const std::string skyboxName, GLuint* texture );

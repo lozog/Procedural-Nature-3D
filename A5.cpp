@@ -37,7 +37,7 @@ float lightZ = 29.0f;
 
 //----------------------------------------------------------------------------------------
 // Constructor
-A5::A5()
+A5::A5( int argc, char **argv )
 	: theSkybox(),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
@@ -47,6 +47,13 @@ A5::A5()
 	upPress(false),
 	downPress(false)
 {
+	switch( argc ) {
+		case 2:
+			// readInputParams( argv[1] );
+		cout << "gonna read from file " << argv[1] << endl;
+		break;
+	} // switch
+
 	theTerrain.create(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST);
 	theWater.create(TERRAIN_WIDTH, TERRAIN_LENGTH);
 
@@ -77,7 +84,7 @@ A5::~A5()
 }
 //----------------------------------------------------------------------------------------
 // Reads input parameters from file
-void A5::readParameters( const char* paramFile ) {
+void A5::readInputParams( const char* paramFile ) {
 	istream* in;
 	ifstream infile;
 	try {
@@ -89,8 +96,6 @@ void A5::readParameters( const char* paramFile ) {
 		cout << "Exception opening input paramater file." << endl;
 		return;
 	} // try
-
-
 
 	infile.close();
 }
