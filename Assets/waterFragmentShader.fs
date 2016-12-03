@@ -10,6 +10,8 @@ uniform sampler2D theTexture;
 uniform sampler2D shadowMap;
 uniform samplerCube skybox;
 
+uniform mat4 view;
+
 out vec4 fragColor;
 
 struct DirLight {
@@ -69,8 +71,9 @@ void main() {
 
 	// skybox reflection
 	vec3 I = normalize(eye - pos);
-	vec3 R = reflect(I, -1.0f*normal);
+	vec3 R = reflect(I, normal);						// reflections on wrong side!
+	vec3 R2 = reflect(R, vec3(0.0f, 0.0f, 1.0f));		// reflect on Z axis to correct
 
-	fragColor = (0.3f * texture(theTexture, 0.05f*tex) + 0.7f * texture(skybox, R))
+	fragColor = (0.2f * texture(theTexture, 0.05f*tex) + 0.8f * texture(skybox, R2))
 				* (ambient + (1.0f - shadow)*(diffuse + spec));
 }

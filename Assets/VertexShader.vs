@@ -22,7 +22,7 @@ void main() {
 	// regular ol' vertex calculations
 	gl_Position = P * V * M * vec4(position, 1.0);
 	pos = position;
-	norm = normal;
+	norm = mat3(transpose(inverse(M))) * normal;
 	col = colour;
 	tex = texture;
 
