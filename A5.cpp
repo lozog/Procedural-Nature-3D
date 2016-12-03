@@ -306,16 +306,16 @@ void A5::init()
 				"FragmentShader.fs" );
 
 	// Set up vertex uniforms
-	P_uni = m_shader.getUniformLocation( "P" );
-	V_uni = m_shader.getUniformLocation( "V" );
-	M_uni = m_shader.getUniformLocation( "M" );
+	P_uni 					= m_shader.getUniformLocation( "P" );
+	V_uni 					= m_shader.getUniformLocation( "V" );
+	M_uni 					= m_shader.getUniformLocation( "M" );
 	theSunColour_uni		= m_shader.getUniformLocation( "theSunColour" );
 	theSunDir_uni 			= m_shader.getUniformLocation( "theSunDir" );
 	theSunIntensity_uni 	= m_shader.getUniformLocation( "theSunIntensity" );
 	globalAmbientLight_uni 	= m_shader.getUniformLocation( "globalAmbientLight" );
 	eye_uni 				= m_shader.getUniformLocation( "eye" );
-	P_lightspace_uni = m_shader.getUniformLocation( "lightProj" );
-	V_lightspace_uni = m_shader.getUniformLocation( "lightView" );
+	P_lightspace_uni 		= m_shader.getUniformLocation( "lightProj" );
+	V_lightspace_uni 		= m_shader.getUniformLocation( "lightView" );
 
 	//----------------------------------------------------------------------------------------
 	/*
@@ -328,16 +328,16 @@ void A5::init()
 				"waterFragmentShader.fs" );
 
 	// Set up water uniforms
-	P_water_uni = m_water_shader.getUniformLocation( "P" );
-	V_water_uni = m_water_shader.getUniformLocation( "V" );
-	M_water_uni = m_water_shader.getUniformLocation( "M" );
-	theSunColour_water_uni		 = m_water_shader.getUniformLocation( "theSunColour" );
-	theSunDir_water_uni 		 = m_water_shader.getUniformLocation( "theSunDir" );
-	theSunIntensity_water_uni 	 = m_water_shader.getUniformLocation( "theSunIntensity" );
-	globalAmbientLight_water_uni = m_water_shader.getUniformLocation( "globalAmbientLight" );
-	eye_water_uni 				 = m_water_shader.getUniformLocation( "eye" );
-	P_water_lightspace_uni = m_water_shader.getUniformLocation( "lightProj" );
-	V_water_lightspace_uni = m_water_shader.getUniformLocation( "lightView" );
+	P_water_uni 					= m_water_shader.getUniformLocation( "P" );
+	V_water_uni 					= m_water_shader.getUniformLocation( "V" );
+	M_water_uni 					= m_water_shader.getUniformLocation( "M" );
+	theSunColour_water_uni		 	= m_water_shader.getUniformLocation( "theSunColour" );
+	theSunDir_water_uni 		 	= m_water_shader.getUniformLocation( "theSunDir" );
+	theSunIntensity_water_uni 	 	= m_water_shader.getUniformLocation( "theSunIntensity" );
+	globalAmbientLight_water_uni 	= m_water_shader.getUniformLocation( "globalAmbientLight" );
+	eye_water_uni 				 	= m_water_shader.getUniformLocation( "eye" );
+	P_water_lightspace_uni 			= m_water_shader.getUniformLocation( "lightProj" );
+	V_water_lightspace_uni 			= m_water_shader.getUniformLocation( "lightView" );
 
 	//----------------------------------------------------------------------------------------
 	/*
@@ -468,7 +468,7 @@ void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 	if( glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE ) {
 		cout << "error rendering shadow map to framebuffer" << endl;
 		return;
-	}
+	} // if
 }
 
 void A5::initFoliage() {
