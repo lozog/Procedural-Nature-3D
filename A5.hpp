@@ -37,7 +37,7 @@ protected:
 private:
 	void loadTexture( const char* filename, GLuint* texture );
 	void loadTextureAlpha( const char* filename, GLuint* texture );
-	void loadSkybox( const std::vector<std::string> filenames, GLuint* texture );
+	void loadSkybox( const std::string skyboxName, GLuint* texture );
 	void initEnvironment();
 	void initFoliage();
 	void initShadowMap( GLuint* texture, GLuint* fbo  );
@@ -67,7 +67,7 @@ private:
 	glm::vec3 cameraPos;						// position of camera
 	glm::vec3 cameraFront;						// point camera is looking at
 	glm::vec3 cameraUp;							// "up" relative to cameraFront
-	glm::vec3 cameraRight;							// "right" relative to cameraFront
+	glm::vec3 cameraRight;						// "right" relative to cameraFront
 	float cameraSpeed;							// movement speed of camera
 	float mouseSensitivity;						// sensitivity of mouse control of pitch/yaw
 
@@ -97,14 +97,14 @@ private:
 
 	// Fields related to the water vertex shader and uniforms.
 	ShaderProgram m_water_shader;
-	GLint P_water_uni; 								// Uniform location for Projection matrix.
-	GLint V_water_uni; 								// Uniform location for View matrix.
-	GLint M_water_uni; 								// Uniform location for Model matrix.
-	GLint theSunColour_water_uni;   					// Uniform location for the Sun colour
-	GLint theSunDir_water_uni;   						// Uniform location for the Sun direction
-	GLint theSunIntensity_water_uni;   				// Uniform location for the Sun intensity
-	GLint globalAmbientLight_water_uni;   			// Uniform location for global ambient light
-	GLint eye_water_uni;   							// Uniform location for eye position
+	GLint P_water_uni; 							// Uniform location for Projection matrix.
+	GLint V_water_uni; 							// Uniform location for View matrix.
+	GLint M_water_uni; 							// Uniform location for Model matrix.
+	GLint theSunColour_water_uni;   			// Uniform location for the Sun colour
+	GLint theSunDir_water_uni;   				// Uniform location for the Sun direction
+	GLint theSunIntensity_water_uni;   			// Uniform location for the Sun intensity
+	GLint globalAmbientLight_water_uni;   		// Uniform location for global ambient light
+	GLint eye_water_uni;   						// Uniform location for eye position
 	GLint P_water_lightspace_uni;
 	GLint V_water_lightspace_uni;
 
@@ -124,9 +124,9 @@ private:
 
 	// Fields related to the shadow map vertex shader and uniforms.
 	ShaderProgram m_shadow_shader;
-	GLint P_shadow_uni; 								// Uniform location for Projection matrix.
-	GLint V_shadow_uni; 								// Uniform location for View matrix.
-	GLint M_shadow_uni; 								// Uniform location for Model matrix.
+	GLint P_shadow_uni; 						// Uniform location for Projection matrix.
+	GLint V_shadow_uni; 						// Uniform location for View matrix.
+	GLint M_shadow_uni; 						// Uniform location for Model matrix.
 	GLuint shadowMap_FBO;
 
 	ShaderProgram m_debugquad_shader;

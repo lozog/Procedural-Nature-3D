@@ -64,9 +64,7 @@ void main() {
 	// float bias = max(0.05f * (1.0f - dot(normal, lightDir)), 0.005f);
 	float bias = 0.005f; // I've found that this bias is sufficient to eliminate shadow acne with minimal to no peter panning
 	float shadow = shadowCalc(posLightspace, bias);
-	shadow -= 0.9f;
-	// ambient *= (0.9f - shadow);
-
+	// shadow -= 0.9f;
 
 	// float scale = 0.0000001;
 	// float scale = 1;

@@ -29,6 +29,7 @@ static const unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generatio
 static double REDIST = 0.8f; // 1.05f;
 static const unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
 static bool drawShadowDebugQuad = false;
+const string SKYBOX_NAME = "heather";
 float lightX = 48.0f;
 float lightY = 35.0f;
 float lightZ = 29.0f;
@@ -99,7 +100,7 @@ void A5::reset() {
 void A5::resetCamera() {
 	cameraPos 		= glm::vec3( 0.0f, 0.0f, 0.0f );
 	cameraFront 	= glm::vec3( 1.0f, 0.0f, 0.0f );
-	cameraRight = glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
+	cameraRight 	= glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraFront);
 	cameraUp 		= glm::vec3( 0.0f, 1.0f, 0.0f );
 	firstMouseMove 	= false;
 	pitch 			= 0.0f;
@@ -107,6 +108,7 @@ void A5::resetCamera() {
 	cameraSpeed 	= 1.0f;
 	REDIST 			= 1.05f;
 
+	// position camera based on terrain size
 	switch( TERRAIN_LENGTH ) {
 		case 512:
 			// position camera to have a view of 512x512 grid by default
@@ -142,6 +144,8 @@ void A5::resetCamera() {
 	} // switch
 }
 
+//----------------------------------------------------------------------------------------
+// clears away all trees and grass
 void A5::resetFoliage() {
 	for( int x = 0; x < TERRAIN_LENGTH; x += 1 ) {
 		for( int z = 0; z < TERRAIN_WIDTH; z += 1 ) {
@@ -155,10 +159,9 @@ void A5::resetFoliage() {
 }
 
 //----------------------------------------------------------------------------------------
-// Reset lights
+// Reset lights to defaults
 void A5::resetLight() {
 	m_theSunColour = glm::vec3(1.0f, 0.7f, 0.0f);
-	// m_theSunDir = glm::vec3(0.1f, 0.0f, -0.5f);
 	m_theSunDir = glm::vec3(lightX, lightY, lightZ);
 	m_theSunIntensity = 0.5f;
 	m_globalAmbientLight = glm::vec3(0.3f, 0.3f, 0.3f);
@@ -184,7 +187,7 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
-	// colours seem more saturated (better) WITHOUT this
+	// colours seem more saturated (better) WITHOUT the following line
 	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// free image and unbind texture
@@ -220,8 +223,20 @@ void A5::loadTextureAlpha( const char* filename, GLuint* texture ) {
 }
 
 // Load skybox textures
-void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture ) {
+void A5::loadSkybox( string skyboxName, GLuint* texture ) {
 
+	// skybox is a cubemap, which has 6 faces
+	const unsigned int numFaces = 6;
+
+	// load skybox texture - CAUTION: faces need to load in this order
+	const char* skyboxFaces[numFaces] =
+	{   "ft",
+		"bk",
+		"up",
+		"dn",
+		"rt",
+		"lf"
+	};
 	// generate texture
 	glGenTextures(1, texture);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, *texture);
@@ -232,22 +247,26 @@ void A5::loadSkybox( const std::vector<std::string> filenames, GLuint* texture )
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
-	// load texture image with SOIL
 	int width, height;
 	unsigned char* image;
 
-	unsigned int numFaces = filenames.size();
 	for ( GLuint i = 0; i < numFaces; i += 1 ) {
 
-		const char* filename = filenames.at(i).c_str();
-		image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGB);
-		// cout << filename << " " << width << " " << height << endl;
-		glTexImage2D(
-			GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, 
-			GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
-			);
+		string filename = "res/skybox/"
+						  + skyboxName + "/"
+						  + skyboxName + "_"
+						  + skyboxFaces[i] + ".jpg";
+
+		// load texture from image with SOIL
+		image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+
+		// pass texture to OpenGL
+		glTexImage2D( 	GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+						0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image
+					);
 
 	} // for
+
 	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	// free image and unbind texture
@@ -308,11 +327,11 @@ void A5::init()
 	P_water_uni = m_water_shader.getUniformLocation( "P" );
 	V_water_uni = m_water_shader.getUniformLocation( "V" );
 	M_water_uni = m_water_shader.getUniformLocation( "M" );
-	theSunColour_water_uni		= m_water_shader.getUniformLocation( "theSunColour" );
-	theSunDir_water_uni 			= m_water_shader.getUniformLocation( "theSunDir" );
-	theSunIntensity_water_uni 	= m_water_shader.getUniformLocation( "theSunIntensity" );
-	globalAmbientLight_water_uni 	= m_water_shader.getUniformLocation( "globalAmbientLight" );
-	eye_water_uni 				= m_water_shader.getUniformLocation( "eye" );
+	theSunColour_water_uni		 = m_water_shader.getUniformLocation( "theSunColour" );
+	theSunDir_water_uni 		 = m_water_shader.getUniformLocation( "theSunDir" );
+	theSunIntensity_water_uni 	 = m_water_shader.getUniformLocation( "theSunIntensity" );
+	globalAmbientLight_water_uni = m_water_shader.getUniformLocation( "globalAmbientLight" );
+	eye_water_uni 				 = m_water_shader.getUniformLocation( "eye" );
 	P_water_lightspace_uni = m_water_shader.getUniformLocation( "lightProj" );
 	V_water_lightspace_uni = m_water_shader.getUniformLocation( "lightView" );
 
@@ -397,28 +416,7 @@ void A5::init()
 	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
 	loadTextureAlpha("res/grass-screendoor.png", &m_screendoor_texture);
 
-	// load skybox texture - CAUTION: order matters!
-	const std::vector<std::string> skyboxTextureFiles {
-		/*"res/skybox/rt.png",
-		"res/skybox/lf.png",
-		"res/skybox/up.png",
-		"res/skybox/dn.png",
-		"res/skybox/bk.png",
-		"res/skybox/ft.png"*/
-		/*"res/skybox/arid2/arid2_rt.jpg",
-		"res/skybox/arid2/arid2_lf.jpg",
-		"res/skybox/arid2/arid2_up.jpg",
-		"res/skybox/arid2/arid2_dn.jpg",
-		"res/skybox/arid2/arid2_bk.jpg",
-		"res/skybox/arid2/arid2_ft.jpg"*/
-		"res/skybox/desertdawn/desertdawn_ft.jpg",
-		"res/skybox/desertdawn/desertdawn_bk.jpg",
-		"res/skybox/desertdawn/desertdawn_up.jpg",
-		"res/skybox/desertdawn/desertdawn_dn.jpg",
-		"res/skybox/desertdawn/desertdawn_rt.jpg",
-		"res/skybox/desertdawn/desertdawn_lf.jpg"
-	};
-	loadSkybox( skyboxTextureFiles, &m_skybox_texture );
+	loadSkybox( SKYBOX_NAME, &m_skybox_texture );
 
 	//----------------------------------------------------------------------------------------
 	/*
@@ -588,13 +586,13 @@ void A5::initFoliage() {
  */
 void A5::appLogic()
 {
-	// calculate viewMatrix
-	if ( forwardPress ) moveCameraForward();
+	// calculate view matrix
+	if ( forwardPress )	 moveCameraForward();
 	if ( backwardPress ) moveCameraBackward();
-	if ( leftPress ) moveCameraLeft();
-	if ( rightPress ) moveCameraRight();
-	if ( upPress ) moveCameraUp();
-	if ( downPress ) moveCameraDown();
+	if ( leftPress )	 moveCameraLeft();
+	if ( rightPress )	 moveCameraRight();
+	if ( upPress )		 moveCameraUp();
+	if ( downPress )	 moveCameraDown();
 
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
@@ -607,67 +605,13 @@ void A5::appLogic()
  */
 void A5::guiLogic()
 {
-	#if 0
-	// We already know there's only going to be one window, so for 
-	// simplicity we'll store button states in static local variables.
-	// If there was ever a possibility of having multiple instances of
-	// A5 running simultaneously, this would break; you'd want to make
-	// this into instance fields of A5.
-	static bool showTestWindow(false);
-	static bool showDebugWindow(true);
-
-	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_ENABLED );
-
-
-	ImGuiWindowFlags windowFlags(ImGuiWindowFlags_AlwaysAutoResize);
-	float opacity(0.5f);
-
-	// ImGui::SetMouseCursor(ImGuiMouseCursor_None);
-
-	ImGui::Begin("Debug Window", &showDebugWindow, ImVec2(100,100), opacity, windowFlags);
-		if( ImGui::Button( "Quit Application" ) ) {
-			glfwSetWindowShouldClose(m_window, GL_TRUE);
-		}
-
-		// Eventually you'll create multiple colour widgets with
-		// radio buttons.  If you use PushID/PopID to give them all
-		// unique IDs, then ImGui will be able to keep them separate.
-		// This is unnecessary with a single colour selector and
-		// radio button, but I'm leaving it in as an example.
-
-		// Prefixing a widget name with "##" keeps it from being
-		// displayed.
-
-		ImGui::PushID( 0 );
-		ImGui::ColorEdit3( "##Colour", colour );
-		ImGui::SameLine();
-		if( ImGui::RadioButton( "##Col", &current_col, 0 ) ) {
-			// Select this colour.
-		}
-		ImGui::PopID();
-
-/*
-		// For convenience, you can uncomment this to show ImGui's massive
-		// demonstration window right in your application.  Very handy for
-		// browsing around to get the widget you want.  Then look in 
-		// shared/imgui/imgui_demo.cpp to see how it's done.
-		if( ImGui::Button( "Test Window" ) ) {
-			showTestWindow = !showTestWindow;
-		}
-*/
-
-		ImGui::Text( "Framerate: %.1f FPS", ImGui::GetIO().Framerate );
-
-	ImGui::End();
-
-	if( showTestWindow ) {
-		ImGui::ShowTestWindow( &showTestWindow );
-	}
-
-	glfwSetInputMode( m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED );
-
-	#endif
+	// no gui.
 }
+
+//----------------------------------------------------------------------------------------
+/*
+ * Rendering routines
+ */
 
 // RenderQuad() Renders a 1x1 quad in NDC, best used for framebuffer color targets
 // and post-processing effects.
