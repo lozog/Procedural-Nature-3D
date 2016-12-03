@@ -14,6 +14,7 @@
 #include "branchnode.hpp"
 #include "ltree.hpp"
 #include "billboard.hpp"
+#include "lsystem.hpp"
 
 class A5 : public CS488Window {
 public:
@@ -139,6 +140,9 @@ private:
 	GLint M_shadow_uni; 						// Uniform location for Model matrix.
 	GLuint shadowMap_FBO;
 
+	// Fields related to the loading screen shader
+	ShaderProgram m_load_shader;
+
 	ShaderProgram m_debugquad_shader;
 
 	// Lighting
@@ -161,6 +165,8 @@ private:
 	// Matrices controlling the camera and projection.
 	glm::mat4 proj;
 	glm::mat4 view;
+
+	std::vector<Rules*> treeLSystems;
 
 	// models
 	Terrain theTerrain;

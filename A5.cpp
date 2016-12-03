@@ -18,8 +18,6 @@
 // http://www.lonesock.net/soil.html
 #include "SOIL.h"
 
-#include "lsystem.hpp"
-
 using namespace glm;
 using namespace std;
 
@@ -82,6 +80,15 @@ A5::~A5()
 {
 	// delete foliage
 	resetFoliage();
+
+	// delete LSystems
+	for( Rules* rules : treeLSystems ) {
+		for( Rule* rule : *rules ) {
+			delete rule;
+		} // for
+		delete rules;
+	} // for
+	treeLSystems.clear();
 
 	// delete maps
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
@@ -203,7 +210,27 @@ void A5::readInputParams( const char* paramFile ) {
 				float in;
 				inputLineStream >> in;
 				CAMERA_SPEED = in;
-			}
+			} else if ( paramName == "LSYSTEM" ) {
+				int numRules;
+				inputLineStream >> numRules;
+				Rules* sysRules = new Rules();
+				for( unsigned int i = 0; i < numRules; i += 1 ) {
+					string prodrule;
+					getline(*in, prodrule);					// read one line
+					stringstream prodLineStream(prodrule);
+
+					string LHS, RHS;
+					prodLineStream >> LHS;
+					prodLineStream >> RHS;
+					cout << LHS << " " << RHS << endl;
+
+					Rule* rule = new Rule(LHS, RHS);
+					sysRules->push_back(rule);
+				} // for
+				treeLSystems.push_back(sysRules);
+			} else {
+				cout << "skipping unrecognized parameter: " << paramName << endl;
+			} // if
 		} // for
 	} catch ( const ifstream::failure e ) {
 		cout << "Exception opening/reading input paramater file." << endl;
@@ -403,8 +430,6 @@ void A5::init()
 	// Set the background colour.
 	glClearColor( 0.1, 0.1, 0.1, 1.0 );
 
-	// TODO: loading screen
-
 	//----------------------------------------------------------------------------------------
 	/*
 	 * Set up vertex shader
@@ -585,24 +610,26 @@ void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 
 void A5::initFoliage() {
 
+	#if 0
+	// TODO: do this if no input file specified
 	// define some L-Systems
 	// each system guides the generation of different "species"
-	Rule sys1rule1("F", "FF/[/F&&Fl\\F]\\[\\F^F^F]");
+	Rule sys1rule1("F", "FFl/[/F&&Fl\\F]\\[\\F^F^F]");
 	Rules sys1rules;
 	sys1rules.push_back(&sys1rule1);
 
-	Rule sys2rule1("F", "F[&F[//F^+F]]+F[\\F]");
+	Rule sys2rule1("F", "F[&lF[//F^+F]]+F[\\F]");
 	Rules sys2rules;
 	sys2rules.push_back(&sys2rule1);
 
-	Rule sys3rule1("F", "FF[F//F][&\\F]");
+	Rule sys3rule1("F", "FF[F//Fl][&\\F]");
 	Rules sys3rules;
 	sys3rules.push_back(&sys3rule1);
 
-	vector<Rules> treeLSystems;
 	treeLSystems.push_back(sys1rules);
 	treeLSystems.push_back(sys2rules);
 	treeLSystems.push_back(sys3rules);
+	#endif
 
 	const unsigned int numTreeLSystems = treeLSystems.size();
 
@@ -644,8 +671,8 @@ void A5::initFoliage() {
 
 				// generate seed for this tree (get it? seed?!)
 				int treetype = random % numTreeLSystems;
-				Rules treeRules = treeLSystems.at(treetype);
-				string seed = LSystem::generateExpr(axiom, treeRules, 3);		
+				Rules* treeRules = treeLSystems.at(treetype);
+				string seed = LSystem::generateExpr(axiom, *treeRules, 3);		
 
 				glm::vec3 position = glm::vec3((float)x, heightMap[x][z]-0.25f, (float)z);
 				LTree* tree = new LTree();
