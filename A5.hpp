@@ -35,18 +35,23 @@ protected:
 	virtual bool keyInputEvent(int key, int action, int mods) override;
 
 private:
+	// data loading functions
 	void loadTexture( const char* filename, GLuint* texture );
 	void loadTextureAlpha( const char* filename, GLuint* texture );
 	void loadSkybox( const std::string skyboxName, GLuint* texture );
+
+	// initializes model data
 	void initEnvironment();
 	void initFoliage();
 	void initShadowMap( GLuint* texture, GLuint* fbo  );
 
+	// reset to default functions
 	void reset();
 	void resetCamera();
 	void resetLight();
 	void resetFoliage();
 
+	// drawing functions
 	void drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView );
 	void drawSkybox();
 	void drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, GLuint* shadowmapTexture );
@@ -62,6 +67,10 @@ private:
 	void moveCameraDown();
 	void cameraSpeedUp();
 	void cameraSpeedDown();
+
+	void buildShader( ShaderProgram& shader,
+				const char* vertexShaderName,
+				const char* fragmentShaderName );
 
 	// camera-related fields
 	glm::vec3 cameraPos;						// position of camera

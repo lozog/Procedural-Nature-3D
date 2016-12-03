@@ -274,6 +274,17 @@ void A5::loadSkybox( string skyboxName, GLuint* texture ) {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+void A5::buildShader( ShaderProgram& shader,
+				const char* vertexShaderName,
+				const char* fragmentShaderName ) {
+	shader.generateProgramObject();
+	shader.attachVertexShader(
+		getAssetFilePath( vertexShaderName ).c_str() );
+	shader.attachFragmentShader(
+		getAssetFilePath( fragmentShaderName ).c_str() );
+	shader.link();
+}
+
 //----------------------------------------------------------------------------------------
 /*
  * Called once, at program start.
@@ -290,13 +301,9 @@ void A5::init()
 	 * Set up vertex shader
 	 */
 
-	// Build the vertex shader
-	m_shader.generateProgramObject();
-	m_shader.attachVertexShader(
-		getAssetFilePath( "VertexShader.vs" ).c_str() );
-	m_shader.attachFragmentShader(
-		getAssetFilePath( "FragmentShader.fs" ).c_str() );
-	m_shader.link();
+	buildShader( m_shader,
+				"VertexShader.vs",
+				"FragmentShader.fs" );
 
 	// Set up vertex uniforms
 	P_uni = m_shader.getUniformLocation( "P" );
@@ -316,12 +323,9 @@ void A5::init()
 	 */
 
 	// Build the water shader
-	m_water_shader.generateProgramObject();
-	m_water_shader.attachVertexShader(
-		getAssetFilePath( "waterVertexShader.vs" ).c_str() );
-	m_water_shader.attachFragmentShader(
-		getAssetFilePath( "waterFragmentShader.fs" ).c_str() );
-	m_water_shader.link();
+	buildShader( m_water_shader,
+				"waterVertexShader.vs",
+				"waterFragmentShader.fs" );
 
 	// Set up water uniforms
 	P_water_uni = m_water_shader.getUniformLocation( "P" );
@@ -341,12 +345,9 @@ void A5::init()
 	 */
 
 	// Build the skybox shader
-	m_skybox_shader.generateProgramObject();
-	m_skybox_shader.attachVertexShader(
-		getAssetFilePath( "skyboxVertexShader.vs" ).c_str() );
-	m_skybox_shader.attachFragmentShader(
-		getAssetFilePath( "skyboxFragmentShader.fs" ).c_str() );
-	m_skybox_shader.link();
+	buildShader( m_skybox_shader,
+				"skyboxVertexShader.vs",
+				"skyboxFragmentShader.fs" );
 
 	// Set up skybox uniforms
 	P_skybox_uni = m_skybox_shader.getUniformLocation( "P" );
@@ -358,12 +359,9 @@ void A5::init()
 	 */
 
 	// Build the billboard shader
-	m_billboard_shader.generateProgramObject();
-	m_billboard_shader.attachVertexShader(
-		getAssetFilePath( "billboardVertexShader.vs" ).c_str() );
-	m_billboard_shader.attachFragmentShader(
-		getAssetFilePath( "billboardFragmentShader.fs" ).c_str() );
-	m_billboard_shader.link();
+	buildShader( m_billboard_shader,
+				"billboardVertexShader.vs",
+				"billboardFragmentShader.fs" );
 
 	// Set up billboard uniforms
 	grass_position_uni 	= m_billboard_shader.getUniformLocation( "grass_position" );
@@ -379,12 +377,9 @@ void A5::init()
 	 */
 
 	// Build the shadowmap shader
-	m_shadow_shader.generateProgramObject();
-	m_shadow_shader.attachVertexShader(
-		getAssetFilePath( "shadowVertexShader.vs" ).c_str() );
-	m_shadow_shader.attachFragmentShader(
-		getAssetFilePath( "shadowFragmentShader.fs" ).c_str() );
-	m_shadow_shader.link();
+	buildShader( m_shadow_shader,
+				"shadowVertexShader.vs",
+				"shadowFragmentShader.fs" );
 
 	// Set up vertex uniforms
 	P_shadow_uni = m_shadow_shader.getUniformLocation( "P" );
@@ -397,12 +392,9 @@ void A5::init()
 	 */
 
 	// Build the debugquad shader
-	m_debugquad_shader.generateProgramObject();
-	m_debugquad_shader.attachVertexShader(
-		getAssetFilePath( "debugquadVertexShader.vs" ).c_str() );
-	m_debugquad_shader.attachFragmentShader(
-		getAssetFilePath( "debugquadFragmentShader.fs" ).c_str() );
-	m_debugquad_shader.link();
+	buildShader( m_debugquad_shader,
+				"debugquadVertexShader.vs",
+				"debugquadFragmentShader.fs" );
 
 	//----------------------------------------------------------------------------------------
 	/*
