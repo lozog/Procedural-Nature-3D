@@ -4,14 +4,23 @@
 #include <iostream>
 using namespace std;
 
-Water::Water( size_t length, size_t width )
+/*Water::Water( size_t length, size_t width )
 	: m_length( length ),
 	  m_width( width ),
 	  numVerts(4)
+{}*/
+Water::Water() : created(false)
 {}
 
 Water::~Water()
 {}
+
+void Water::create( size_t length, size_t width ) {
+	Water::m_length = length;
+	Water::m_width = width;
+	Water::numVerts = 4;
+	Water::created = true;
+}
 
 // generates water to be rendered with GL_TRIANGLES
 void Water::init( ShaderProgram& m_shader, GLuint texture, size_t waterHeight ) {

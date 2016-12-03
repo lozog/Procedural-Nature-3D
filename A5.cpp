@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>								// rand, srand
+#include <fstream>								// ifstream
 
 #include <imgui/imgui.h>
 #include <glm/glm.hpp>
@@ -37,9 +38,7 @@ float lightZ = 29.0f;
 //----------------------------------------------------------------------------------------
 // Constructor
 A5::A5()
-	: theTerrain(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST),
-	theWater(TERRAIN_WIDTH, TERRAIN_LENGTH),
-	theSkybox(),
+	: theSkybox(),
 	mouseSensitivity(0.05f),
 	forwardPress(false),
 	backwardPress(false),
@@ -48,6 +47,9 @@ A5::A5()
 	upPress(false),
 	downPress(false)
 {
+	theTerrain.create(TERRAIN_WIDTH, TERRAIN_LENGTH, NUM_OCTAVES, REDIST);
+	theWater.create(TERRAIN_WIDTH, TERRAIN_LENGTH);
+
 	treeMap = new bool*[TERRAIN_LENGTH];
 	grassMap = new bool*[TERRAIN_LENGTH];
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
@@ -72,6 +74,25 @@ A5::~A5()
 	} // for
 	delete [] treeMap;
 	delete [] grassMap;
+}
+//----------------------------------------------------------------------------------------
+// Reads input parameters from file
+void A5::readParameters( const char* paramFile ) {
+	istream* in;
+	ifstream infile;
+	try {
+		infile.open( paramFile );
+		if ( infile.is_open() ) {
+			in = &infile;
+		} // if
+	} catch ( ifstream::failure e ) {
+		cout << "Exception opening input paramater file." << endl;
+		return;
+	} // try
+
+
+
+	infile.close();
 }
 
 //----------------------------------------------------------------------------------------
@@ -807,6 +828,7 @@ void A5::drawBillboards( glm::mat4* W ) {
 			grass.draw();
 		} // for
 
+		#if 1
 		// draw every tree's leaves
 		for( LTree* tree : theTrees ) {
 			vector<glm::vec3*> leaves = tree->getLeafPositions();
@@ -815,6 +837,7 @@ void A5::drawBillboards( glm::mat4* W ) {
 				leaf.draw();
 			} // for
 		} // for
+		#endif
 
 	// glDisable( GL_BLEND );
 	m_billboard_shader.disable();

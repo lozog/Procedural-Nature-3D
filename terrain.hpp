@@ -7,11 +7,12 @@
 class Terrain
 {
 public:
-	Terrain( size_t m_length, size_t m_width, unsigned int numOctaves, double redist );
+	Terrain();
 	~Terrain();
 
 	size_t getBufferIndexCount();
 
+	void create( size_t m_length, size_t m_width, unsigned int numOctaves, double redist );
 	void init( ShaderProgram& m_shader, GLuint m_ground_texture );
 
 	void draw();
@@ -23,6 +24,8 @@ public:
 	double redist;								// raise elevation to pow of redist
 	
 private:
+	bool created;								// has storage been allocated?
+
 	size_t m_length, m_width;
 	size_t bufferIndexCount;
 

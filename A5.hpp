@@ -36,6 +36,7 @@ protected:
 
 private:
 	// data loading functions
+	void readParameters( const char* paramFile );
 	void loadTexture( const char* filename, GLuint* texture );
 	void loadTextureAlpha( const char* filename, GLuint* texture );
 	void loadSkybox( const std::string skyboxName, GLuint* texture );

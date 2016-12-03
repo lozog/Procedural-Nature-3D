@@ -8,7 +8,7 @@
 #include <iostream>
 using namespace std;
 
-Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
+/*Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
 	: m_length( length ),
 	  m_width( width ),
 	  bufferIndexCount(0),
@@ -21,13 +21,35 @@ Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double r
 	for ( int i = 0; i < m_length; i += 1 ) {
 		m_heightmap[i] = new double[m_width];
 	} // for
-}
+}*/
+
+Terrain::Terrain() : created(false)
+{}
 
 Terrain::~Terrain() {
+	if (created) {
+		for ( int i = 0; i < m_length; i += 1 ) {
+			delete [] m_heightmap[i];
+		} // for
+		delete [] m_heightmap;
+	} // if
+}
+
+void Terrain::create( size_t length, size_t width, unsigned int numOctaves, double redist ) {
+	Terrain::m_length = length;
+	Terrain::m_width = width;
+	Terrain::bufferIndexCount = 0;
+	Terrain::numOctaves = numOctaves;
+	Terrain::mode = 1;
+	Terrain::numModes = 2;
+	Terrain::redist = redist;
+
+	m_heightmap = new double*[m_length];
 	for ( int i = 0; i < m_length; i += 1 ) {
-		delete [] m_heightmap[i];
+		m_heightmap[i] = new double[m_width];
 	} // for
-	delete [] m_heightmap;
+
+	Terrain::created = true;
 }
 
 double** Terrain::getHeightMap() {
