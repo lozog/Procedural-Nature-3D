@@ -44,6 +44,7 @@ float CAMERA_YAW = 0.0f;
 float CAMERA_SPEED = 1.0f;
 glm::vec4 GRASS_COLOUR = glm::vec4(0.4f, 0.3f, 0.0f, 1.0f);
 glm::vec4 LEAF_COLOUR = glm::vec4(0.9f, 0.1f, 0.1f, 1.0f);
+string GROUND_TEXTURE = "res/grass.png";
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -62,7 +63,7 @@ A5::A5( int argc, char **argv )
 			readInputParams( argv[1] );
 		break;
 		default:
-			readInputParams( "inparams" );
+			readInputParams( "inparams1" );
 	} // switch
 
 	// cout << TERRAIN_LENGTH << " " << TERRAIN_WIDTH << " " << NUM_OCTAVES << " " << REDIST << endl;
@@ -153,6 +154,10 @@ void A5::readInputParams( const char* paramFile ) {
 				double in;
 				inputLineStream >> in;
 				REDIST = in;
+			} else if ( paramName == "GROUND_TEXTURE" ) {
+				string in;
+				inputLineStream >> in;
+				GROUND_TEXTURE = "res/" + in;
 			} else if ( paramName == "TREE_DENSITY" ) {
 				unsigned int in;
 				inputLineStream >> in;
@@ -595,7 +600,7 @@ void A5::init()
 	 */
 
 	// load model textures
-	loadTexture("res/grass.png", &m_ground_texture);
+	loadTexture(GROUND_TEXTURE.c_str(), &m_ground_texture);
 	loadTexture("res/stone.png", &m_cliff_texture);
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);

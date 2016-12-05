@@ -1,4 +1,4 @@
-# 3D Nature Environment with Procedurally Generated Trees
+# 3D Nature Environment with Procedurally Generated Terrain and Trees
 
 ---
 
@@ -34,7 +34,8 @@ folder of your cs488 project directory.
 * libcs488-framework.a
 * libglfw3.a
 * libimgui.a
-* libSOIL.a
+
+I have manually added *libSOIL.a* to this folder.
 
 Next we can build the actual project.  To do this, **cd** into the A5/ directory and run the following terminal commands in order to compile the A5 executable using all .cpp files in the A5 directory:
 
@@ -70,3 +71,33 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 * stone.png
     * created by hornpipe2
     * retrieved from http://opengameart.org/content/gray-stone-mountaincliff
+
+* snow7_d.jpg
+    * created by tomek
+    * retrieved from http://opengameart.org/content/tomeks-seamless-snow-textures
+
+----
+
+## Objectives
+
+1. UI: Implement a first-person camera with associated controls to allow navigation of the scene, including movement in 3 axes, speed adjustment, and camera rotation.
+
+2. Modelling: Add a skybox to the scene using cube mapping.
+
+3. Implement reflections for water using OpenGL's stencil buffer.
+  * I implemented skybox reflections on the water instead
+
+4. Generate a pseudo-random terrain heightmap with Perlin noise.
+
+5. Add grass to the scene using billboards to create the illusion of many blades of grass.
+
+6. Add texture to the ground and foliage using texture mapping.
+
+7. Use L-systems to procedurally generate trees.
+
+8. Implement shadows using a depth map stored in an OpenGL frame buffer.
+
+9. Implement bloom using framebuffers and Gaussian blur.
+  * This objective was not achieved.
+
+10. Use a 'screen-door' effect to simulate alpha transparency for grass.
