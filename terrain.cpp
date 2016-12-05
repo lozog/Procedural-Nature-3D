@@ -62,8 +62,9 @@ size_t Terrain::getBufferIndexCount() {
 }
 
 // generates a flat terrain to be rendered with GL_TRIANGLES_STRIP
-void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture ) {
+void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture, GLuint cliff_texture ) {
 	m_ground_texture = ground_texture;
+	m_cliff_texture = cliff_texture;
 	//----------------------------------------------------------------------------------------
 	/*
 	 * use noise to generate terrain

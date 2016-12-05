@@ -13,7 +13,7 @@ public:
 	size_t getBufferIndexCount();
 
 	void create( size_t m_length, size_t m_width, unsigned int numOctaves, double redist );
-	void init( ShaderProgram& m_shader, GLuint m_ground_texture );
+	void init( ShaderProgram& m_shader, GLuint m_ground_texture, GLuint m_cliff_texture );
 
 	void draw();
 
@@ -39,7 +39,10 @@ private:
 	GLuint m_texture_vbo; 						// vertex texture Buffer Object
 	GLuint m_terrain_ibo; 						// Index Buffer Object
 
+	ShaderProgram m_shader;
+
 	// terrain texture
 	GLuint m_ground_texture; 					// ground texture
+	GLuint m_cliff_texture; 					// steep slope texture
 
 };

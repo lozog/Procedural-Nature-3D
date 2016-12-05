@@ -537,6 +537,7 @@ void A5::init()
 
 	// load model textures
 	loadTexture("res/grass.png", &m_ground_texture);
+	loadTexture("res/stone.png", &m_cliff_texture);
 	loadTexture("res/water.png", &m_water_texture);
 	loadTexture("res/bark.png", &m_tree_texture);
 	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
@@ -569,7 +570,7 @@ void A5::init()
 void A5::initEnvironment() {
 	initShadowMap( &m_shadow_texture, &shadowMap_FBO );
 
-	theTerrain.init( m_shader, m_ground_texture );
+	theTerrain.init( m_shader, m_ground_texture, m_cliff_texture );
 	theWater.init( m_water_shader, m_water_texture, WATER_HEIGHT );
 
 	resetFoliage();
@@ -819,8 +820,12 @@ void A5::drawObjects( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView, 
 	m_shader.enable();
 
 		glActiveTexture(GL_TEXTURE0+1);
+		glBindTexture(GL_TEXTURE_2D, m_cliff_texture);
+		glUniform1i(m_shader.getUniformLocation("cliffTexture"), 1);
+
+		glActiveTexture(GL_TEXTURE0+2);
 		glBindTexture(GL_TEXTURE_2D, *shadowmapTexture);
-		glUniform1i(m_shader.getUniformLocation("shadowMap"), 1);
+		glUniform1i(m_shader.getUniformLocation("shadowMap"), 2);
 
 		// set matrix uniforms
 		glUniformMatrix4fv( P_uni, 1, GL_FALSE, value_ptr( proj ) );

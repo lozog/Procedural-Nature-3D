@@ -185,6 +185,8 @@ void BranchNode::init( ShaderProgram& m_shader, GLuint m_texture ) {
 void BranchNode::draw() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glActiveTexture(GL_TEXTURE0+1);
+	glBindTexture(GL_TEXTURE_2D, m_texture);
 	glBindVertexArray( m_vao );
 	glDrawElements( GL_TRIANGLE_STRIP, numVerts+2, GL_UNSIGNED_INT, 0 );
 	glBindVertexArray( 0 );									// Restore defaults

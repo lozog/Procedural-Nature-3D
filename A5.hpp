@@ -140,9 +140,6 @@ private:
 	GLint M_shadow_uni; 						// Uniform location for Model matrix.
 	GLuint shadowMap_FBO;
 
-	// Fields related to the loading screen shader
-	ShaderProgram m_load_shader;
-
 	ShaderProgram m_debugquad_shader;
 
 	// Lighting
@@ -153,6 +150,7 @@ private:
 
 	// Textures
 	GLuint m_ground_texture;
+	GLuint m_cliff_texture;
 	GLuint m_water_texture;
 	GLuint m_skybox_texture;
 	GLuint m_tree_texture;

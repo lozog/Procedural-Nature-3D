@@ -6,7 +6,8 @@ in vec4 col;
 in vec2 tex;
 in vec4 posLightspace;
 
-uniform sampler2D theTexture;
+uniform sampler2D groundTexture;
+uniform sampler2D cliffTexture;
 uniform sampler2D shadowMap;
 
 out vec4 fragColor;
@@ -35,6 +36,8 @@ float shadowCalc(vec4 posLightspace, float bias) {
 }
 
 void main() {
+	float PI = 3.14159f;
+
 	// directional light from the Sun
 	DirLight theSun;
 	theSun.colour = theSunColour;
@@ -46,8 +49,9 @@ void main() {
 
 	// note: no attenuation of direction lights
 
-	// diffuse light
 	vec3 normal = normalize(norm);
+
+	// diffuse light
 	float diffterm = max(0.0f, dot(normal, lightDir));
 	vec4 diffuse = col * sunLightColour * diffterm;
 
@@ -68,6 +72,13 @@ void main() {
 
 	// float scale = 0.0000001;
 	// float scale = 1;
-
-	fragColor = texture(theTexture, 0.05f*tex)*(ambient + (1.0f - shadow)*(diffuse + spec));
+	vec4 texture1 = texture(groundTexture, 0.05f*tex);
+	vec4 texture2 = texture(cliffTexture, 0.05f*tex);
+	vec4 finaltexture = texture1;
+	float angleOfGround = acos(dot(normal, vec3(0.0f, 1.0f, 0.0f)));
+	angleOfGround -= 0.225f;
+	if ( angleOfGround > 1.0f ) angleOfGround = 1.0f;
+	else if (angleOfGround < 0.0f ) angleOfGround = 0.0f;
+	finaltexture = angleOfGround*texture2 + (1.0f - angleOfGround)*texture1;
+	fragColor = finaltexture*(ambient + (1.0f - shadow)*(diffuse + spec));
 }

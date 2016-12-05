@@ -66,3 +66,7 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
 
 * leaf.png
     * retrieved from http://www.textures.com/download/leaves0120/27993
+
+* stone.png
+    * created by hornpipe2
+    * retrieved from http://opengameart.org/content/gray-stone-mountaincliff
