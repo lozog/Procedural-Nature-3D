@@ -970,7 +970,7 @@ void A5::draw()
 
 	// calculate ortho projection matrix for light's POV
 	// TODO: this should be based on the terrain size
-	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, -10.0f, 150.0f);
+	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, 125.0f);
 	glm::mat4 lightView = glm::lookAt(
 									  m_theSunDir,
 									  glm::vec3(20.0f, 20.0f, 20.0f),

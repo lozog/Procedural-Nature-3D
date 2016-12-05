@@ -73,12 +73,15 @@ void main() {
 	// float scale = 0.0000001;
 	// float scale = 1;
 	vec4 texture1 = texture(groundTexture, 0.05f*tex);
-	vec4 texture2 = texture(cliffTexture, 0.05f*tex);
+	vec4 texture2 = texture(cliffTexture, 0.1f*tex);
 	vec4 finaltexture = texture1;
 	float angleOfGround = acos(dot(normal, vec3(0.0f, 1.0f, 0.0f)));
 	angleOfGround -= 0.225f;
 	if ( angleOfGround > 1.0f ) angleOfGround = 1.0f;
 	else if (angleOfGround < 0.0f ) angleOfGround = 0.0f;
+	else {
+		angleOfGround *= 2.0f;
+	}
 	finaltexture = angleOfGround*texture2 + (1.0f - angleOfGround)*texture1;
 	fragColor = finaltexture*(ambient + (1.0f - shadow)*(diffuse + spec));
 }
