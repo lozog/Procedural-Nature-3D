@@ -126,7 +126,8 @@ private:
 
 	// Fields related to the billboard vertex shader and uniforms.
 	ShaderProgram m_billboard_shader;
-	GLint billboard_position_uni;   			// Uniform location for grass position
+	GLint billboard_position_uni;   			// Uniform location for billboard position
+	GLint billboard_colour_uni;   			// Uniform location for billboard colour
 	GLint P_billboard_uni; 						// Uniform location for Projection matrix.
 	GLint V_billboard_uni; 						// Uniform location for View matrix.
 	GLint M_billboard_uni; 						// Uniform location for Model matrix.
@@ -138,7 +139,7 @@ private:
 	GLint P_shadow_uni; 						// Uniform location for Projection matrix.
 	GLint V_shadow_uni; 						// Uniform location for View matrix.
 	GLint M_shadow_uni; 						// Uniform location for Model matrix.
-	GLuint shadowMap_FBO;
+	GLuint shadowMap_FBO;						// Framebuffer object for the shadowmap
 
 	ShaderProgram m_debugquad_shader;
 

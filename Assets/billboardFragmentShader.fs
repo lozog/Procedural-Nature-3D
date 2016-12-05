@@ -19,6 +19,6 @@ void main() {
 		discard;
 	}
 	vec4 outColor = texture(billboard, texCoords);
-	fragColor = outColor + col - vec4(0.0f, 0.1f, 0.3f, 0.0f);
+	fragColor = (0.65f*outColor) + (0.35f*col)/* - vec4(0.1f, 0.1f, 0.1f, 0.0f)*/;
 	// fragColor = texture(billboard, texCoords);
 }

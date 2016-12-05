@@ -42,6 +42,8 @@ glm::vec3 CAMERA_FRONT = glm::vec3( 1.0f, 0.0f, 0.0f );
 float CAMERA_PITCH = 0.0f;
 float CAMERA_YAW = 0.0f;
 float CAMERA_SPEED = 1.0f;
+glm::vec4 GRASS_COLOUR = glm::vec4(0.4f, 0.3f, 0.0f, 1.0f);
+glm::vec4 LEAF_COLOUR = glm::vec4(0.9f, 0.1f, 0.1f, 1.0f);
 
 //----------------------------------------------------------------------------------------
 // Constructor
@@ -148,6 +150,26 @@ void A5::readInputParams( const char* paramFile ) {
 				unsigned int in;
 				inputLineStream >> in;
 				GRASS_DENSITY = in;
+			} else if ( paramName == "GRASS_COLOUR" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				GRASS_COLOUR = glm::vec4(vec3f, 1.0f);
+			} else if ( paramName == "LEAF_COLOUR" ) {
+				float in;
+				glm::vec3 vec3f;
+				inputLineStream >> in;
+				vec3f.x = in;
+				inputLineStream >> in;
+				vec3f.y = in;
+				inputLineStream >> in;
+				vec3f.z = in;
+				LEAF_COLOUR = glm::vec4(vec3f, 1.0f);
 			} else if ( paramName == "SKYBOX_NAME" ) {
 				string in;
 				inputLineStream >> in;
@@ -506,11 +528,12 @@ void A5::init()
 
 	// Set up billboard uniforms
 	billboard_position_uni 	= m_billboard_shader.getUniformLocation( "billboard_position" );
-	cameraUp_uni 		= m_billboard_shader.getUniformLocation( "cameraUp" );
-	cameraRight_uni 	= m_billboard_shader.getUniformLocation( "cameraRight" );
-	P_billboard_uni 	= m_billboard_shader.getUniformLocation( "P" );
-	V_billboard_uni 	= m_billboard_shader.getUniformLocation( "V" );
-	M_billboard_uni 	= m_billboard_shader.getUniformLocation( "M" );
+	billboard_colour_uni 	= m_billboard_shader.getUniformLocation( "billboard_colour" );
+	cameraUp_uni 			= m_billboard_shader.getUniformLocation( "cameraUp" );
+	cameraRight_uni 		= m_billboard_shader.getUniformLocation( "cameraRight" );
+	P_billboard_uni 		= m_billboard_shader.getUniformLocation( "P" );
+	V_billboard_uni 		= m_billboard_shader.getUniformLocation( "V" );
+	M_billboard_uni 		= m_billboard_shader.getUniformLocation( "M" );
 
 	//----------------------------------------------------------------------------------------
 	/*
@@ -934,6 +957,7 @@ void A5::drawBillboards( glm::mat4* W ) {
 		// draw the grass
 		for( glm::vec3* grassPosition : theGrass ) {
 			glUniform3fv( billboard_position_uni, 1, value_ptr( *grassPosition ) );
+			glUniform4fv( billboard_colour_uni, 1, value_ptr( GRASS_COLOUR ) );
 			grass.draw();
 		} // for
 
@@ -943,6 +967,7 @@ void A5::drawBillboards( glm::mat4* W ) {
 			vector<glm::vec3*> leaves = tree->getLeafPositions();
 			for( glm::vec3* leafPosition : leaves ) {
 				glUniform3fv( billboard_position_uni, 1, value_ptr( *leafPosition ) );
+				glUniform4fv( billboard_colour_uni, 1, value_ptr( LEAF_COLOUR ) );
 				leaf.draw();
 			} // for
 		} // for
