@@ -32,12 +32,86 @@
 \newpage
 \noindent{\Large \bf Final Project:}
 \begin{description}
-\item[Manual]:\\
-	Building this project is largely similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
-	\begin{verbatim}
-		premake4 gmake
-		make
-	\end{verbatim}
+\item[Manual]:
+	\begin{description}
+	\item[Build]:\\
+		Building this project is largely similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
+		\begin{verbatim}
+			premake4 gmake
+			make
+		\end{verbatim}
+		There is an additional library, SOIL, used for image loading. Copy the file \textit{libSOIL.a} from the A5/ directory to the lib/ directory. \\
+		Next, build the actual project. Navigate to the A5/ folder and compile:
+		\begin{verbatim}
+			cd A5
+			premake4 gmake
+			make
+		\end{verbatim}
+
+	\item[Program Input]:\\
+		Usage of the program is as follows:
+		\begin{verbatim}
+			./A5 [ input-param-file ]
+		\end{verbatim}
+		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist.
+
+		The input file is used to specify program parameters. I chose not to use Lua because the input is simple enough to not require it.
+		The input file is assumed to be well-formed. Each line contains a parameter name, then a value. Depending on the parameter, the value might be a number or a vector. Lines beginning with a \# are ignored.
+		The input system recognizes the following parameters:
+		\begin{itemize}
+			\item TERRAIN\_SIZE
+			\item WATER\_HEIGHT
+			\item NUM\_OCTAVES
+			\item REDIST
+			\item GROUND\_TEXTURE
+			\item TREE\_DENSITY
+			\item GRASS\_DENSITY
+			\item GRASS\_COLOUR
+			\item LEAF\_COLOUR
+			\item SKYBOX\_NAME
+			\item SUN\_DIRECTION
+			\item SUN\_COLOUR
+			\item SUN\_INTENSITY
+			\item AMBIENT\_COLOUR
+			\item CAMERA\_POS
+			\item CAMERA\_FRONT
+			\item CAMERA\_PITCH
+			\item CAMERA\_YAW
+			\item CAMERA\_SPEED
+			\item LSYSTEM
+		\end{itemize}
+		The LSYSTEM parameter takes an integer \textit{n} ( n \textgreater 0) that specifies the number of production rules associated with that L-system. The following \textit{n} lines are then read as production rules.
+	\item[Controls]:\\
+		The program employs a standard first-person camera (controlled by the mouse) with the following keyboard shortcuts:
+		\begin{itemize}
+			\item W - Forward
+			\item A - Left
+			\item S - Backward
+			\item D - Right
+			\item Q - Down
+			\item E - Up
+			\item Z - Speed down
+			\item X - Speed Up
+			\item R - Reset camera
+			\item P - print position information
+		\end{itemize}
+		In addition to the camera controls, the user may also alter some of the program parameters at runtime, and the results are immmediately applied. Here are the relevant keyboard shortcuts:
+		\begin{itemize}
+			\item 1 - Increase the Sun's X direction
+			\item 2 - Decrease the Sun's X direction
+			\item 3 - Increase the Sun's Y direction
+			\item 4 - Decrease the Sun's Y direction
+			\item 5 - Increase the Sun's Z direction
+			\item 6 - Decrease the Sun's Z direction
+			\item O - Increase the number of octaves used by terrain generation
+			\item I - Decrease the number of octaves used by terrain generation
+			\item G - Raise the water level
+			\item H - Lower the water level
+			\item M - Increase the distribution exponent used by terrain generation
+			\item N - Decrease the distribution exponent used by terrain generation
+		\end{itemize}
+		Finally, the \textbf{B} key toggles display of the shadow map, and the \textbf{ESC} key quits the program.
+	\end{description}
 
 \item[Statement]:\\
 
