@@ -18,6 +18,7 @@ public:
 	void draw();
 
 	double** getHeightMap();
+	glm::vec3** getNormalMap();
 
 	int mode, numModes;							// 0 == SimplexNoise1234, 1 == my impl
 	unsigned int numOctaves;					// fractalization factor
@@ -30,6 +31,7 @@ private:
 	size_t bufferIndexCount;
 
 	double** m_heightmap;						// x,y,z coords of terrain vertices
+	glm::vec3** m_normalmap;						// normal vectors of terrain vertices
 
 	// Fields related to terrain geometry.
 	GLuint m_terrain_vao; 						// Vertex Array Object

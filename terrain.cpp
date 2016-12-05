@@ -8,21 +8,6 @@
 #include <iostream>
 using namespace std;
 
-/*Terrain::Terrain( size_t length, size_t width, unsigned int numOctaves, double redist )
-	: m_length( length ),
-	  m_width( width ),
-	  bufferIndexCount(0),
-	  numOctaves(numOctaves),
-	  mode(1),
-	  numModes(2),
-	  redist(redist)
-{
-	m_heightmap = new double*[m_length];
-	for ( int i = 0; i < m_length; i += 1 ) {
-		m_heightmap[i] = new double[m_width];
-	} // for
-}*/
-
 Terrain::Terrain() : created(false)
 {}
 
@@ -30,8 +15,10 @@ Terrain::~Terrain() {
 	if (created) {
 		for ( int i = 0; i < m_length; i += 1 ) {
 			delete [] m_heightmap[i];
+			delete [] m_normalmap[i];
 		} // for
 		delete [] m_heightmap;
+		delete [] m_normalmap;
 	} // if
 }
 
@@ -45,8 +32,10 @@ void Terrain::create( size_t length, size_t width, unsigned int numOctaves, doub
 	Terrain::redist = redist;
 
 	m_heightmap = new double*[m_length];
+	m_normalmap = new glm::vec3*[m_length];
 	for ( int i = 0; i < m_length; i += 1 ) {
 		m_heightmap[i] = new double[m_width];
+		m_normalmap[i] = new glm::vec3[m_width];
 	} // for
 
 	Terrain::created = true;
@@ -56,6 +45,9 @@ double** Terrain::getHeightMap() {
 	return m_heightmap;
 }
 
+glm::vec3** Terrain::getNormalMap() {
+	return m_normalmap;
+}
 
 size_t Terrain::getBufferIndexCount() {
 	return bufferIndexCount;
@@ -181,6 +173,8 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture, GLuint cliff
 			normalMap[idx+1] = norm.y;
 			normalMap[idx+2] = norm.z;
 			idx += 3;
+
+			m_normalmap[x][z] = glm::vec3(norm.x, norm.y, norm.z);
 		} // for
 	} // for
 

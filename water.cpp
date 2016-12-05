@@ -4,11 +4,6 @@
 #include <iostream>
 using namespace std;
 
-/*Water::Water( size_t length, size_t width )
-	: m_length( length ),
-	  m_width( width ),
-	  numVerts(4)
-{}*/
 Water::Water() : created(false)
 {}
 

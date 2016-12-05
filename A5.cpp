@@ -21,6 +21,8 @@
 using namespace glm;
 using namespace std;
 
+// Default input parameters
+
 // terrain needs to be square or terrain map vertices get all hecked up
 static size_t TERRAIN_WIDTH = 100;
 static size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
@@ -617,13 +619,10 @@ void A5::initFoliage() {
 
 	unsigned int numTrees = 0;
 	double** heightMap = theTerrain.getHeightMap();
+	glm::vec3** normalMap = theTerrain.getNormalMap();
 	srand(1995); // good year
 	for (int x = 1; x < TERRAIN_LENGTH-1; x += 1) {
 		for (int z = 1; z < TERRAIN_WIDTH-1; z += 1) {
-			double scale = 0.5f;
-			double gridX = ((double)x / ((double)TERRAIN_LENGTH * scale)) - 0.5f;
-			double gridY = ((double)z / ((double)TERRAIN_WIDTH * scale)) - 0.5f;
-
 			// randomly pick spots to plant trees
 			// in the future, could use a random perturbation scatter to pick spots
 			int random = rand() % PLANT_DENSITY;
@@ -636,7 +635,12 @@ void A5::initFoliage() {
 
 				// make sure above water
 				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
-				// TODO: check normal of terrain
+
+				// make sure ground isn't too steep
+				glm::vec3 normal = normalMap[x][z];
+				float angleOfGround = acos(dot(normal, vec3(0.0f, 1.0f, 0.0f)));
+				angleOfGround -= 0.225f;
+				if ( angleOfGround > 0.25f ) continue;
 				
 				// make sure tree has breathing room (ha!)
 				if (treeMap[x-1][z] ||
@@ -678,7 +682,13 @@ void A5::initFoliage() {
 
 				// make sure above underwater
 				if (heightMap[x][z] <= WATER_HEIGHT + 1.0f) continue;
-				// TODO: check normal of terrain
+
+				// make sure ground isn't too steep
+				glm::vec3 normal = normalMap[x][z];
+				float angleOfGround = acos(dot(normal, vec3(0.0f, 1.0f, 0.0f)));
+				angleOfGround -= 0.225f;
+				if ( angleOfGround > 0.25f ) continue;
+
 				if ( treeMap[x][z] ) continue;
 
 				grassMap[x][z] = true;
