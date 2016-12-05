@@ -963,9 +963,8 @@ void A5::draw()
 	W = glm::translate( W, vec3( -float(TERRAIN_WIDTH)/2.0f, 0, -float(TERRAIN_WIDTH)/2.0f ) );
 
 	// calculate ortho projection matrix for light's POV
-	// TODO: this should be based on the terrain size
 	float orthoSize = (float)TERRAIN_WIDTH / 1.5f;
-	float nearPlane = -10.0f;
+	float nearPlane = -40.0f;
 	float farPlane = (float)TERRAIN_WIDTH + 15.0f;
 	float centerPoint = (float)TERRAIN_WIDTH / 20.0f;
 	glm::mat4 lightProj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
