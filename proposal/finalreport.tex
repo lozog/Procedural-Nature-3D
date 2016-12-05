@@ -30,6 +30,42 @@
 \end{center}
 \vfill ~\vfill~
 \newpage
+\noindent{\Large \bf Final Project:}
+\begin{description}
+\item[Manual]:\\
+	Building this project is largely similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
+	\begin{verbatim}
+		premake4 gmake
+		make
+	\end{verbatim}
+
+\item[Statement]:\\
+
+	For my project, I intend to render a 3D environment with terrain, procedurally generated trees, and reflective water. Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, \'Toward Photorealism in Virtual Botany\'. Many of the topics covered in that chapter are beyond the scope of this project, but it did pique my interest in nature scenes. The other inspiration was Ryan Geiss\' chapter in GPU Gems 3, \'Generating Complex Procedural Terrains Using the GPU\', which got me interested in procedural generation.
+
+	This project is more advanced than any real-time program I have ever attempted, so it will be an interesting challenge to try to achieve the objectives while maintaining a reasonable framerate. I also hope to achieve some interesting, perhaps even life-like trees when implementing L-systems to generate tree models.
+
+	All of these objectives are completely new topics to me. I've been playing videogames for much of my life, and am familiar with many of these effects in terms of the end result (how they look), but I haven't given much thought as to how they are implemented. A lot of ground will be covered - procedural generation with L-systems, mapping of height and texture, and interesting lighting effects. As I noted above, this will be the most advanced real-time program I have attempted, so I expect to learn a lot in that area.
+
+\item[Technical Outline]:\\
+
+    The terrain will be modelled from a height map, with a grayscale gradient representing height. The height map will be generated using Perlin noise.
+
+    I will implement a skybox in the scene using the technique of cubemapping.
+
+    The landscape will have water up to a fixed height. Using OpenGL's stencil buffer, I plan on adding reflections to the water.
+
+    The environment will be populated with foliage - grass and trees. 
+
+    Since it's unrealistic to render each individual blade of grass, I will use billboards to render \'clumps\' of grass. Additionally, I plan on using a \'screen-door\' effect (also known as a dissolve effect) to simulate alpha transparency for grass - since calculating the attentuation of alpha transparency for the grass as distances increases is expensive.
+
+    I plan on making use of Lindenmayer systems to procedurally generate tree models to make the world seem more \"life-like\".
+
+    The ground and models (grass and trees) will have textures applied to them using texture mapping. 
+
+    Finally, I plan on making the scene look nicer (for some definition of nicer) by implementing high dynamic range (HDR) rendering and bloom effects, which both make use of framebuffers.
+
+\end{description}
 
 \newpage
 
