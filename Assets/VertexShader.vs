@@ -27,5 +27,5 @@ void main() {
 	tex = texture;
 
 	// shadow calculations
-	posLightspace = lightProj * lightView *  M * vec4( position, 1.0f);
+	posLightspace = lightProj * lightView * M * vec4( position, 1.0f);
 }

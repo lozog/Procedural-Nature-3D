@@ -264,6 +264,7 @@ void A5::readInputParams( const char* paramFile ) {
 						continue;
 					} // if
 					stringstream prodLineStream(prodrule);
+					// cout << prodrule << endl;
 
 					string LHS, RHS;
 					prodLineStream >> LHS;
@@ -670,8 +671,7 @@ void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 void A5::initFoliage() {
 	const unsigned int numTreeLSystems = treeLSystems.size();
 
-	// TODO: more complicated rules might not all have the same axiom
-	string axiom = "F";
+	string axiom = "S";
 
 	unsigned int numTrees = 0;
 	double** heightMap = theTerrain.getHeightMap();

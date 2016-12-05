@@ -21,6 +21,7 @@ string LSystem::generateExpr( string axiom,
 	string result = axiom;
 	for ( unsigned int i = 0; i < depth; i += 1 ) {
 		for ( Rule* rule : rules ) {
+			// cout << result << endl;
 			ReplaceString( result, rule->LHS, rule->RHS );
 		} // for
 		// cout << result << endl;
