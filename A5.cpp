@@ -309,8 +309,7 @@ void A5::reset() {
 	cout << "5/6: change sunlight Z direction" << endl;
 	cout << endl;
 
-	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
-	cout << "B: toggle shadow map debug quad" << endl;
+	cout << "B: toggle shadow map display" << endl;
 	cout << endl;
 
 	cout << "W/A/S/D: Camera movement" << endl;
@@ -1266,26 +1265,6 @@ bool A5::keyInputEvent(int key, int action, int mods) {
 			if ( theTerrain.numOctaves > 0)
 				theTerrain.numOctaves -= 1;
 			cout << theTerrain.numOctaves << " octaves" << endl;
-			initEnvironment();
-			eventHandled = true;
-		}
-		if (key == GLFW_KEY_L) {
-			theTerrain.mode += 1;
-			theTerrain.mode %= theTerrain.numModes; // cycle through terrain modes
-			cout << "mode: " << theTerrain.mode << endl;
-			initEnvironment();
-			eventHandled = true;
-		}
-		if (key == GLFW_KEY_K) {
-			m_theSunIntensity += 0.1f;;
-			cout << m_theSunIntensity << " intensity" << endl;
-			initEnvironment();
-			eventHandled = true;
-		}
-		if (key == GLFW_KEY_J) {
-			if ( m_theSunIntensity > 0.1f)
-				m_theSunIntensity -= 0.1f;
-			cout << m_theSunIntensity << " intensity" << endl;
 			initEnvironment();
 			eventHandled = true;
 		}

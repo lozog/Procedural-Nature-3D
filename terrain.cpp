@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "terrain.hpp"
-#include "simplexnoise.hpp"
+// #include "simplexnoise.hpp"
 #include "perlinnoise.hpp"
 #include "vertex.hpp"
 
@@ -79,11 +79,14 @@ void Terrain::init( ShaderProgram& m_shader, GLuint ground_texture, GLuint cliff
 			double fractalSum = 0;
 
 			for ( unsigned int i = 0; i < numOctaves; i += 1 ) {
+				#if 0
 				if (mode == 0 ) {
 					fractalSum += 3.0f * (1.0f + (SimplexNoise1234::noise(freq*gridX, freq*gridY) * amp));
 				} else {
 					fractalSum += 3.0f * (1.1f + (Perlin::noise(freq*gridX, freq*gridY) * amp));
 				}
+				#endif
+				fractalSum += 3.0f * (1.1f + (Perlin::noise(freq*gridX, freq*gridY) * amp));
 				amp *= 0.5f;
 				freq *= 2.0f;
 			} // for
