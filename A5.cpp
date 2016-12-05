@@ -118,8 +118,8 @@ A5::~A5()
 void A5::readInputParams( const char* paramFile ) {
 	istream* in;
 	ifstream infile;
-	try {
-		infile.open( paramFile );
+	infile.open( paramFile );
+	if (infile) {
 		if ( infile.is_open() ) {
 			in = &infile;
 		} // if
@@ -283,10 +283,10 @@ void A5::readInputParams( const char* paramFile ) {
 				cout << "skipping unrecognized parameter: " << paramName << endl;
 			} // if
 		} // for
-	} catch ( const ifstream::failure e ) {
-		cout << "Exception opening/reading input paramater file." << endl;
-		return;
-	} // try
+	} else {
+		cout << "Error opening input parameter file." << endl;
+		exit(1);
+	} // if
 
 	infile.close();
 }
