@@ -55,8 +55,9 @@ A5::A5( int argc, char **argv )
 	switch( argc ) {
 		case 2:
 			readInputParams( argv[1] );
-		// cout << "gonna read from file " << argv[1] << endl;
 		break;
+		default:
+			readInputParams( "inparams.txt" );
 	} // switch
 
 	// cout << TERRAIN_LENGTH << " " << TERRAIN_WIDTH << " " << NUM_OCTAVES << " " << REDIST << endl;
@@ -251,12 +252,11 @@ void A5::reset() {
 	cout << "1/2: change sunlight X direction" << endl;
 	cout << "3/4: change sunlight Y direction" << endl;
 	cout << "5/6: change sunlight Z direction" << endl;
-	cout << "O/I: raise/lower # of octaves in terrain" << endl;
-	cout << "H/G: raise/lower water level" << endl;
-	cout << "K/J: raise/lower sun intensity" << endl;
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "B: toggle shadow map debug quad" << endl;
-	cout << "M/N: raise/lower distribution power" << endl;
+	cout << "W/A/S/D: Camera movement" << endl;
+	cout << "Q/E: Raise/lower camera" << endl;
+	cout << "Z/X: Decrease/increase camera speed" << endl;
 	
 }
 
@@ -610,28 +610,6 @@ void A5::initShadowMap( GLuint* texture, GLuint* fbo ) {
 }
 
 void A5::initFoliage() {
-
-	#if 0
-	// TODO: do this if no input file specified
-	// define some L-Systems
-	// each system guides the generation of different "species"
-	Rule sys1rule1("F", "FFl/[/F&&Fl\\F]\\[\\F^F^F]");
-	Rules sys1rules;
-	sys1rules.push_back(&sys1rule1);
-
-	Rule sys2rule1("F", "F[&lF[//F^+F]]+F[\\F]");
-	Rules sys2rules;
-	sys2rules.push_back(&sys2rule1);
-
-	Rule sys3rule1("F", "FF[F//Fl][&\\F]");
-	Rules sys3rules;
-	sys3rules.push_back(&sys3rule1);
-
-	treeLSystems.push_back(sys1rules);
-	treeLSystems.push_back(sys2rules);
-	treeLSystems.push_back(sys3rules);
-	#endif
-
 	const unsigned int numTreeLSystems = treeLSystems.size();
 
 	// TODO: more complicated rules might not all have the same axiom
