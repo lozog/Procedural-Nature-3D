@@ -29,7 +29,8 @@ static size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
 static size_t WATER_HEIGHT = 9; // 17
 static unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
 static double REDIST = 0.8f; // 1.05f;
-static unsigned int PLANT_DENSITY = 2000; // density of foliage (lower->denser)
+static unsigned int TREE_DENSITY = 2000; // density of trees (lower->denser)
+static unsigned int GRASS_DENSITY = 2000; // density of grass (lower->denser)
 static bool drawShadowDebugQuad = false;
 string SKYBOX_NAME = "heather";
 glm::vec3 SUN_DIRECTION = glm::vec3(48.0f, 35.0f, 29.0f);
@@ -59,7 +60,7 @@ A5::A5( int argc, char **argv )
 			readInputParams( argv[1] );
 		break;
 		default:
-			readInputParams( "inparams.txt" );
+			readInputParams( "inparams" );
 	} // switch
 
 	// cout << TERRAIN_LENGTH << " " << TERRAIN_WIDTH << " " << NUM_OCTAVES << " " << REDIST << endl;
@@ -139,10 +140,14 @@ void A5::readInputParams( const char* paramFile ) {
 				double in;
 				inputLineStream >> in;
 				REDIST = in;
-			} else if ( paramName == "PLANT_DENSITY" ) {
+			} else if ( paramName == "TREE_DENSITY" ) {
 				unsigned int in;
 				inputLineStream >> in;
-				PLANT_DENSITY = in;
+				TREE_DENSITY = in;
+			} else if ( paramName == "GRASS_DENSITY" ) {
+				unsigned int in;
+				inputLineStream >> in;
+				GRASS_DENSITY = in;
 			} else if ( paramName == "SKYBOX_NAME" ) {
 				string in;
 				inputLineStream >> in;
@@ -625,9 +630,10 @@ void A5::initFoliage() {
 		for (int z = 1; z < TERRAIN_WIDTH-1; z += 1) {
 			// randomly pick spots to plant trees
 			// in the future, could use a random perturbation scatter to pick spots
-			int random = rand() % PLANT_DENSITY;
-			bool plantTree = ( random < 3 || random > PLANT_DENSITY - 2 ? true : false );
-			bool plantGrass = ( random > 3 && random <= 1000 ? true : false );
+			int randomTree = rand() % TREE_DENSITY;
+			bool plantTree = ( randomTree < 3 || randomTree > TREE_DENSITY - 2 ? true : false );
+			int randomGrass = rand() % GRASS_DENSITY;
+			bool plantGrass = ( randomGrass <= 300 ? true : false );
 
 			if( plantTree ) {
 				// decide if chosen position is suitable for tree
@@ -653,7 +659,7 @@ void A5::initFoliage() {
 				treeMap[x][z] = true;
 
 				// generate seed for this tree (get it? seed?!)
-				int treetype = random % numTreeLSystems;
+				int treetype = randomTree % numTreeLSystems;
 				Rules* treeRules = treeLSystems.at(treetype);
 				string seed = LSystem::generateExpr(axiom, *treeRules, 3);		
 
@@ -958,10 +964,14 @@ void A5::draw()
 
 	// calculate ortho projection matrix for light's POV
 	// TODO: this should be based on the terrain size
-	glm::mat4 lightProj = glm::ortho(-70.0f, 70.0f, -70.0f, 70.0f, 1.0f, 125.0f);
+	float orthoSize = (float)TERRAIN_WIDTH / 1.5f;
+	float nearPlane = -10.0f;
+	float farPlane = (float)TERRAIN_WIDTH + 15.0f;
+	float centerPoint = (float)TERRAIN_WIDTH / 20.0f;
+	glm::mat4 lightProj = glm::ortho(-orthoSize, orthoSize, -orthoSize, orthoSize, nearPlane, farPlane);
 	glm::mat4 lightView = glm::lookAt(
 									  m_theSunDir,
-									  glm::vec3(20.0f, 20.0f, 20.0f),
+									  glm::vec3(20.0f, 15.0f, 20.0f),
 									  glm::vec3(0.0f, 1.0f, 0.0f)
 									 );
 
