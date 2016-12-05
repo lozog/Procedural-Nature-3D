@@ -125,6 +125,9 @@ void A5::readInputParams( const char* paramFile ) {
 			string paramName;
 			inputLineStream >> paramName;
 			// cout << paramName << endl;
+
+			if ( paramName.at(0) == '#' ) continue; 	// skip comments
+
 			if ( paramName == "TERRAIN_SIZE" ) {
 				size_t in;
 				inputLineStream >> in;
@@ -245,14 +248,18 @@ void A5::readInputParams( const char* paramFile ) {
 				inputLineStream >> numRules;
 				Rules* sysRules = new Rules();
 				for( unsigned int i = 0; i < numRules; i += 1 ) {
+
 					string prodrule;
 					getline(*in, prodrule);					// read one line
+					if ( prodrule.at(0) == '#' ) { 			// skip comments
+						i -= 1;
+						continue;
+					} // if
 					stringstream prodLineStream(prodrule);
 
 					string LHS, RHS;
 					prodLineStream >> LHS;
 					prodLineStream >> RHS;
-					cout << LHS << " " << RHS << endl;
 
 					Rule* rule = new Rule(LHS, RHS);
 					sysRules->push_back(rule);
