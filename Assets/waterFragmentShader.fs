@@ -56,8 +56,8 @@ void main() {
 
 	// specular light
 	vec3 h = normalize(normalize(eye) + lightDir);
-	float ks = 0.7f;
-	float specterm = pow(max(0.0, dot(h, normal)), 5);
+	float ks = 0.9f;
+	float specterm = pow(max(0.0, dot(h, normal)), 2);
 	vec4 spec = specterm * sunLightColour * ks;
 
 	// ambient light

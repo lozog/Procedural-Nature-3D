@@ -66,6 +66,7 @@ public:
 				ShaderProgram& m_shader, GLuint m_texture );
 	void draw();
 	std::vector<glm::vec3*>& getLeafPositions();
+	glm::vec3 getOrigin();
 private:
 	// angle in radians
 	glm::mat3 Ru( float angle );

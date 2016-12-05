@@ -224,3 +224,7 @@ void LTree::draw() {
 vector<glm::vec3*>& LTree::getLeafPositions() {
 	return leaves;
 }
+
+glm::vec3 LTree::getOrigin() {
+	return origin;
+}

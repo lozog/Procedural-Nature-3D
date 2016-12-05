@@ -127,7 +127,7 @@ private:
 	// Fields related to the billboard vertex shader and uniforms.
 	ShaderProgram m_billboard_shader;
 	GLint billboard_position_uni;   			// Uniform location for billboard position
-	GLint billboard_colour_uni;   			// Uniform location for billboard colour
+	GLint billboard_colour_uni;   				// Uniform location for billboard colour
 	GLint P_billboard_uni; 						// Uniform location for Projection matrix.
 	GLint V_billboard_uni; 						// Uniform location for View matrix.
 	GLint M_billboard_uni; 						// Uniform location for Model matrix.
@@ -179,5 +179,9 @@ private:
 	// useful maps that keep track of object placement
 	bool** treeMap;
 	bool** grassMap;
+
+	// maps that keep track of colour variance
+	glm::vec4** leafColourMap;
+	// glm::vec4** grassColourMap;
 
 };

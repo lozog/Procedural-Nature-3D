@@ -72,9 +72,13 @@ A5::A5( int argc, char **argv )
 
 	treeMap = new bool*[TERRAIN_LENGTH];
 	grassMap = new bool*[TERRAIN_LENGTH];
+	leafColourMap = new glm::vec4*[TERRAIN_LENGTH];
+	// grassColourMap = new glm::vec4*[TERRAIN_LENGTH];
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
 		treeMap[i] = new bool[TERRAIN_WIDTH];
 		grassMap[i] = new bool[TERRAIN_WIDTH];
+		leafColourMap[i] = new glm::vec4[TERRAIN_WIDTH];
+		// grassColourMap[i] = new glm::vec4[TERRAIN_WIDTH];
 	} // for
 
 	reset();
@@ -100,9 +104,13 @@ A5::~A5()
 	for(int i = 0; i < TERRAIN_LENGTH; i += 1) {
 		delete [] treeMap[i];
 		delete [] grassMap[i];
+		delete [] leafColourMap[i];
+		// delete [] grassColourMap[i];
 	} // for
 	delete [] treeMap;
 	delete [] grassMap;
+	delete [] leafColourMap;
+	// delete [] grassColourMap;
 }
 //----------------------------------------------------------------------------------------
 // Reads input parameters from file
@@ -284,16 +292,29 @@ void A5::reset() {
 	resetLight();
 	resetFoliage();
 
-	cout << "controls:" << endl;
+	cout << "3D Nature Environment with Procedurally Generated Terrain and Trees" << endl;
+	cout << "By Liam Ozog" << endl;
+	cout << "CS488 Fall 2016" << endl;
+	cout << endl;
+
+	cout << "Controls:" << endl;
 	cout << "1/2: change sunlight X direction" << endl;
 	cout << "3/4: change sunlight Y direction" << endl;
 	cout << "5/6: change sunlight Z direction" << endl;
+	cout << endl;
+
 	cout << "L: toggle noise function implementation (Simplex vs. my Perlin)" << endl;
 	cout << "B: toggle shadow map debug quad" << endl;
+	cout << endl;
+
 	cout << "W/A/S/D: Camera movement" << endl;
 	cout << "Q/E: Raise/lower camera" << endl;
 	cout << "Z/X: Decrease/increase camera speed" << endl;
-	
+	cout << endl;
+
+	cout << "O/I: raise/lower # of octaves in terrain" << endl;
+	cout << "H/G: raise/lower water level" << endl;
+	cout << "M/N: raise/lower distribution power" << endl;
 }
 
 //----------------------------------------------------------------------------------------
@@ -698,17 +719,23 @@ void A5::initFoliage() {
 
 				// TODO: encapsulate randomness of angles, etc. with treetype prods in treetype object
 				tree->init(
-					glm::vec3(1.0f, 0.0f, 0.0f),						// heading vector
-					glm::vec3(0.0f, -1.0f, 0.0f),						// down vector (direction of gravity)
-					position,						// tree position
-					seed,												// L-system expression
-					0.75f,												// contraction ratio
-					18.0f,												// divergence angle
-					10.0f,												// range of divergence
-					0.9f,												// length (width?) decrease ratio,
+					glm::vec3(1.0f, 0.0f, 0.0f),			// heading vector
+					glm::vec3(0.0f, -1.0f, 0.0f),			// down vector (direction of gravity)
+					position,								// tree position
+					seed,									// L-system expression
+					0.75f,									// contraction ratio
+					18.0f,									// divergence angle
+					10.0f,									// range of divergence
+					0.9f,									// length (width?) decrease ratio,
 					m_shader, m_tree_texture
 				);
 				theTrees.push_back(tree);
+
+				// vary leaf colour per tree
+				glm::vec4 leafColour = LEAF_COLOUR;
+				leafColour.x = (float)(rand() % x) / (float)TERRAIN_LENGTH;
+				leafColourMap[x][z] = leafColour;
+				// cout << leafColourMap[x][z] << endl;
 
 			} else if( plantGrass ) {
 				if ( x == 1 || z == 1 || x == TERRAIN_LENGTH - 1 || z == TERRAIN_WIDTH - 1)
@@ -963,8 +990,12 @@ void A5::drawBillboards( glm::mat4* W ) {
 
 		// draw the grass
 		for( glm::vec3* grassPosition : theGrass ) {
+			// glm::vec4 grassColour = grassColourMap[(int)grassPosition->x][(int)grassPosition->z];
+			glm::vec4 grassColour = GRASS_COLOUR;
+			glUniform4fv( billboard_colour_uni, 1, value_ptr( grassColour ) );
+
 			glUniform3fv( billboard_position_uni, 1, value_ptr( *grassPosition ) );
-			glUniform4fv( billboard_colour_uni, 1, value_ptr( GRASS_COLOUR ) );
+
 			grass.draw();
 		} // for
 
@@ -972,9 +1003,12 @@ void A5::drawBillboards( glm::mat4* W ) {
 		// draw every tree's leaves
 		for( LTree* tree : theTrees ) {
 			vector<glm::vec3*> leaves = tree->getLeafPositions();
+			glm::vec3 origin = tree->getOrigin();
+			glm::vec4 leafColour = leafColourMap[(int)origin.x][(int)origin.z];
+			glUniform4fv( billboard_colour_uni, 1, value_ptr( leafColour ) );
+
 			for( glm::vec3* leafPosition : leaves ) {
 				glUniform3fv( billboard_position_uni, 1, value_ptr( *leafPosition ) );
-				glUniform4fv( billboard_colour_uni, 1, value_ptr( LEAF_COLOUR ) );
 				leaf.draw();
 			} // for
 		} // for
