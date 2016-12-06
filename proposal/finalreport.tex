@@ -37,7 +37,8 @@
 \normalsize
 
 Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, ``Toward Photorealism in Virtual Botany". The aim was to combine principles of procedural generation with other graphics techniques to create an immersive, organic environment.
-\\\\
+\\
+
 \Large\textbf{Manual:}
 \normalsize
 	\begin{description}
@@ -60,7 +61,7 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 		\begin{verbatim}
 			./A5 [ input-param-file ]
 		\end{verbatim}
-		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist.
+		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist. Three sample input files, \textbf{inparams1}, \textbf{inparams2}, and \textbf{inparams3} have been provided. Each produces a unique scene.
 
 		The input file is used to specify program parameters. I chose not to use Lua because the input is simple enough to not require it.
 		The input file is assumed to be well-formed. Each line contains a parameter name, then a value. Depending on the parameter, the value might be a number or a vector. Lines beginning with a \# are ignored.
@@ -300,6 +301,40 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 	Threshold tests for each fragment. screen.a checks against the outline of the texture, a cheap alpha test. Then, screen.r then checks against the value of the (greyscale) noise.
 	\end{itemize}
 
+
+\newpage
+
+\large\noindent\textbf{Acknowledgements}
+\normalsize
+\\
+
+The function RenderQuad(), which can be found in A5.cpp on lines 806-832, was taken from learnopengl.com's tutorial on shadow mapping. It renders a single quad that fills the screen with a texture, and I used it to debug the shadow map. It isn't really used by the program itself, but is still used if you toggle the shadowmap debug mode.
+\\
+
+The textures used in this program were all retrieved from opengameart.org. They were all made by various artists. Individual credits for each texture may be found in the readme file.
+\\
+
+Calculating the normal vector at a point on the terrain grid is done using a method provided by user Gigi
+ on this Stackoverflow question: http://stackoverflow.com/questions/13983189/opengl-how-to-calculate-normals-in-a-terrain-height-grid
+\\
+
+My understanding of Perlin noise is largely from the following sources:
+\begin{itemize}
+\item http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+\item http://flafla2.github.io/2014/08/09/perlinnoise.html
+\item http://www.scratchapixel.com/lessons/procedural-generation-virtual-worlds/procedural-patterns-noise-part-1
+\item http://www.redblobgames.com/maps/terrain-from-noise
+\end{itemize}
+
+
+I used the first two chapters of the book \textit{The Algorithmic Beauty of Plants} and from chapter 5 of \textit{Procedural Content Generation in Games} to learn about L-systems:
+\begin{itemize}
+\item http://algorithmicbotany.org/papers/\#abop
+\item http://pcgbook.com/wp-content/uploads/chapter05.pdf
+\end{itemize}
+
+
+The websites learnopengl.com and opengl-tutorial.org were invaluable resources for learning about other various OpenGL features.
 
 \newpage
 
