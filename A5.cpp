@@ -843,7 +843,7 @@ void A5::drawShadowMap( glm::mat4* W, glm::mat4* lightProj, glm::mat4* lightView
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowMap_FBO);
 
 	theTerrain.draw();
-	theWater.draw();
+	// theWater.draw();
 	for( LTree* tree : theTrees ) {
 		tree->draw();
 	} // for
