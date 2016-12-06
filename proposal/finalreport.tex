@@ -40,6 +40,9 @@
 Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, ``Toward Photorealism in Virtual Botany". The aim was to combine principles of procedural generation with other graphics techniques to create an immersive, organic environment.
 \\
 
+You may view screenshots of the final project with various different input parameters in the \textbf{screenshots/final/} directory. You may also view screenshots of the program in the process of being developed in the \textbf{screenshots/progress/} directory.
+\\
+
 \Large\textbf{Manual:}
 \normalsize
 	\begin{description}
@@ -62,7 +65,7 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 		\begin{verbatim}
 			./A5 [ input-param-file ]
 		\end{verbatim}
-		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist. Three sample input files, \textbf{inparams1}, \textbf{inparams2}, and \textbf{inparams3} have been provided. Each produces a unique scene.
+		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist. Five sample input files, \textbf{inparams1}, \textbf{inparams2}, \textbf{inparams3}, \textbf{inparams4}, and \textbf{inparams3} have been provided. Each produces a unique scene.
 
 		The input file is used to specify program parameters. I chose not to use Lua because the input is simple enough to not require it.
 		The input file is assumed to be well-formed. Each line contains a parameter name, then a value. Depending on the parameter, the value might be a number or a vector. Lines beginning with a \# are ignored.
