@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\setlength{\parindent}{0pt}
+\setlength{\parindent}{4em}
 
 \usepackage{fullpage}
 \usepackage{graphicx}
@@ -30,51 +30,134 @@
 \end{center}
 \vfill ~\vfill~
 \newpage
-\noindent{\Large \bf Final Project:}
-\begin{description}
-\item[Manual]:\\
-	Building this project is largely similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
-	\begin{verbatim}
-		premake4 gmake
-		make
-	\end{verbatim}
+\Large\noindent\textbf{Introduction:} \\
+\normalsize
 
-\item[Statement]:\\
+Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, ``Toward Photorealism in Virtual Botany". The aim was to combine principles of procedural generation with other graphics techniques to create an immersive, organic environment.
+\\\\
+\Large\textbf{Manual:}
+\normalsize
+	\begin{description}
+	\item[Build]:\\
+		Building this project is mostly similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
+		\begin{verbatim}
+			premake4 gmake
+			make
+		\end{verbatim}
+		There is an additional library, SOIL, used for image loading. Copy the file \textit{libSOIL.a} from the A5/ directory to the lib/ directory. \\
+		Next, build the actual project. Navigate to the A5/ folder and compile:
+		\begin{verbatim}
+			cd A5
+			premake4 gmake
+			make
+		\end{verbatim}
 
-	For my project, I intend to render a 3D environment with terrain, procedurally generated trees, and reflective water. Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, \'Toward Photorealism in Virtual Botany\'. Many of the topics covered in that chapter are beyond the scope of this project, but it did pique my interest in nature scenes. The other inspiration was Ryan Geiss\' chapter in GPU Gems 3, \'Generating Complex Procedural Terrains Using the GPU\', which got me interested in procedural generation.
+	\item[Program Input]:\\
+		Usage of the program is as follows:
+		\begin{verbatim}
+			./A5 [ input-param-file ]
+		\end{verbatim}
+		Specifying the input file name is not required. If it isn't supplied, the program will load the file \textbf{inparams1}, which \textit{must} exist.
 
-	This project is more advanced than any real-time program I have ever attempted, so it will be an interesting challenge to try to achieve the objectives while maintaining a reasonable framerate. I also hope to achieve some interesting, perhaps even life-like trees when implementing L-systems to generate tree models.
-
-	All of these objectives are completely new topics to me. I've been playing videogames for much of my life, and am familiar with many of these effects in terms of the end result (how they look), but I haven't given much thought as to how they are implemented. A lot of ground will be covered - procedural generation with L-systems, mapping of height and texture, and interesting lighting effects. As I noted above, this will be the most advanced real-time program I have attempted, so I expect to learn a lot in that area.
-
-\item[Technical Outline]:\\
-
-    The terrain will be modelled from a height map, with a grayscale gradient representing height. The height map will be generated using Perlin noise.
-
-    I will implement a skybox in the scene using the technique of cubemapping.
-
-    The landscape will have water up to a fixed height. Using OpenGL's stencil buffer, I plan on adding reflections to the water.
-
-    The environment will be populated with foliage - grass and trees. 
-
-    Since it's unrealistic to render each individual blade of grass, I will use billboards to render \'clumps\' of grass. Additionally, I plan on using a \'screen-door\' effect (also known as a dissolve effect) to simulate alpha transparency for grass - since calculating the attentuation of alpha transparency for the grass as distances increases is expensive.
-
-    I plan on making use of Lindenmayer systems to procedurally generate tree models to make the world seem more \"life-like\".
-
-    The ground and models (grass and trees) will have textures applied to them using texture mapping. 
-
-    Finally, I plan on making the scene look nicer (for some definition of nicer) by implementing high dynamic range (HDR) rendering and bloom effects, which both make use of framebuffers.
-
-\end{description}
+		The input file is used to specify program parameters. I chose not to use Lua because the input is simple enough to not require it.
+		The input file is assumed to be well-formed. Each line contains a parameter name, then a value. Depending on the parameter, the value might be a number or a vector. Lines beginning with a \# are ignored.
+		The input system recognizes the following parameters:
+		\begin{itemize}
+			\item TERRAIN\_SIZE
+			\item WATER\_HEIGHT
+			\item NUM\_OCTAVES
+			\item REDIST
+			\item GROUND\_TEXTURE
+			\item TREE\_DENSITY
+			\item GRASS\_DENSITY
+			\item GRASS\_COLOUR
+			\item LEAF\_COLOUR
+			\item SKYBOX\_NAME
+			\item SUN\_DIRECTION
+			\item SUN\_COLOUR
+			\item SUN\_INTENSITY
+			\item AMBIENT\_COLOUR
+			\item CAMERA\_POS
+			\item CAMERA\_FRONT
+			\item CAMERA\_PITCH
+			\item CAMERA\_YAW
+			\item CAMERA\_SPEED
+			\item LSYSTEM
+		\end{itemize}
+		The LSYSTEM parameter takes an integer \textit{n} ( n \textgreater 0) that specifies the number of production rules associated with that L-system. The following \textit{n} lines are then read as production rules.
+	\item[Controls]:\\
+		The program employs a standard first-person camera (controlled by the mouse) with the following keyboard shortcuts:
+		\begin{itemize}
+			\item W - Forward
+			\item A - Left
+			\item S - Backward
+			\item D - Right
+			\item Q - Down
+			\item E - Up
+			\item Z - Speed down
+			\item X - Speed Up
+			\item R - Reset camera
+			\item P - print position information
+		\end{itemize}
+		In addition to the camera controls, the user may also alter some of the program parameters at runtime, and the results are immmediately applied. Here are the relevant keyboard shortcuts:
+		\begin{itemize}
+			\item 1 - Increase the Sun's X direction
+			\item 2 - Decrease the Sun's X direction
+			\item 3 - Increase the Sun's Y direction
+			\item 4 - Decrease the Sun's Y direction
+			\item 5 - Increase the Sun's Z direction
+			\item 6 - Decrease the Sun's Z direction
+			\item O - Increase the number of octaves used by terrain generation
+			\item I - Decrease the number of octaves used by terrain generation
+			\item G - Raise the water level
+			\item H - Lower the water level
+			\item M - Increase the distribution exponent used by terrain generation
+			\item N - Decrease the distribution exponent used by terrain generation
+		\end{itemize}
+		Finally, the \textbf{B} key toggles display of the shadow map, and the \textbf{ESC} key quits the program.
+	\end{description}
 
 \newpage
 
-{\huge \bf 
+\Large\noindent\textbf{Implementation:}\\
+\normalsize
+
+	The biggest objectives of this project are procedural generation of terrain with Perlin noise and procedural generation of trees with L-systems.
+	\\
+
+	\large\noindent\textbf{Procedural Generation of terrain using Perlin noise}
+	\normalsize
+	\\
+
+	Perlin noise was first developed in the 1980s by Ken Perlin for the movie TRON. Since then, it has seen widepsread use in many application, such as bump mapping, texture generation, and, in this project, terrain generation.
+	\\
+
+	The terrain is a 2-dimensional grid of vertices, each with an x, y, and z coordinate. The y coordinate corresponds to height, and the noise function is used to assign y coordinates to all the vertices. By assigning appropriate values, the program can generate ``realistic"-looking terrain (for some definition of realistic).
+	\\
+
+	Perlin noise is a type of gradient noise. In a nutshell, you assign pseudo-random gradients at regularly-spaced points (the \textit{noise lattice}) then interpolate a smooth function between those points. This can be done in any number of dimensions, but it made sense to use 2D for my purposes. That means that each gradient will be a 2D vector. In the case of Perlin noise, the gradient are uniformly spaced on the unit circle. To find the noise value at a point P, the gradients of the four closest points on the noise lattice are lineraly interpolated. This yields the noise value at P.
+	\\
+
+	The implementation of Perlin noise has a few more nuances. The gradient of a point (x,y) on the lattice is chosen by using a hashing function on (x,y) to obtain an index in a permutation array. The permutation array contains two copies each of all the numbers from 0-255 (it could be higher, but most sources use 256), shuffled. The particular arrangement of the permutation array can be thought of as the ``seed" for Perlin noise.
+	\\
+
+	In the case of terrain generation, an extra step is taken to make the terrain more realistic. The  resulting noise value at P is multiplied by two factors, \textit{amplitude} and \textit{frequency}. This process is then repeated, with \textit{amplitude} and \textit{frequency} halved and doubled each time, respectively. Each step is sometimes called an \textit{octave}. This is repeated a certain number of times (usually 5 or 7), and the result is realistic-looking terrain. The lower octaves shape the low-level details of the terrain (global hills and valleys), whereas the higher octaves yield smaller, local features of the land.
+	\\
+
+	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
+	\normalsize
+	\\
+
+	Lindenmayer Systems
+
+\newpage
+
+{\noindent \huge \bf 
 	\projecttitle 
 }
 
 \medskip
-Name: \myname \\ 
+\noindent{Name: \myname} \\ 
 User ID: \myuserid \\ 
 Student ID: \mystudentid 
 
@@ -111,7 +194,7 @@ Student ID: \mystudentid
 		  Implement bloom using framebuffers and Gaussian blur.
 
         \item[\_\_\_ 10:]
-		  Objective ten. Use a "screen-door" effect to simulate alpha transparency for grass.
+		  Objective ten. Use a ``screen-door" effect to simulate alpha transparency for grass.
 
 \end{description}
 
