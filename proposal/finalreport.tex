@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\setlength{\parindent}{4em}
+\setlength{\parindent}{2em}
 
 \usepackage{fullpage}
 \usepackage{graphicx}
@@ -147,12 +147,45 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 	In the case of terrain generation, an extra step is taken to make the terrain more realistic. The  resulting noise value at P is multiplied by two factors, \textit{amplitude} and \textit{frequency}. This process is then repeated, with \textit{amplitude} and \textit{frequency} halved and doubled each time, respectively. Each step is sometimes called an \textit{octave}. This is repeated a certain number of times (usually 5 or 7), and the result is realistic-looking terrain. The lower octaves shape the low-level details of the terrain (global hills and valleys), whereas the higher octaves yield smaller, local features of the land.
 	\\
 
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item perlinnoise.cpp, perlinnoise.hpp \\
+	The Perlinnoise class encapsulates the noise algorithm.
+	\item terrain.cpp: init() function, lines 64-101 \\
+	The Terrain::init() function uses the Perlinnoise::noise() function to generate heights for the terrain.
+	\end{itemize}
+
 	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
 	\normalsize
 	\\
 
-	Lindenmayer Systems are a type of formal grammar that are commonly used to procedurally generate vegetation, because they lend themselves nicely to the self-similar structure of plants.
+	Lindenmayer Systems (L-systems) are a type of formal grammar that are commonly used to procedurally generate vegetation, because they lend themselves nicely to the self-similar structure of plants. They are distinguished from other grammars in that they use parallel rewriting (this helps with the self-similarity aspect).
+	\\
 
+	3D models of trees can be generated from an L-system (which consists of a set of production rules) by interpreting the characters in the generated strings as instructions for a turtle in \textit{turtle graphics}. The turtle, in this case, begins at a point in 3D space, and each character instructs the turtle to either draw a branch or change its direction. Branching is achieved through the use of bracketing; a \textit{[} instruction tells the turtle, ``save your current position and orientation", and \textit{]} means ``return to your last saved position and orientation".
+	\\
+
+	There are several classes of L-systems. The one used by this project is \textit{bracketed} (explained above) and \textit{deterministic}, meaning each non-terminating character is the LHS of exactly \textit{one} production rules.
+	\\
+
+	I have added variation to my trees by randomizing the divergence angle of each branch (within a specified range) and by varying the colours of leaves. The effect is that trees generated using an L-system will look similar, but not exactly the same (like tree species). More variation could be added by using \textit{stochastic} L-systems, which are non-deterministic: a non-terminating symbol can be the LHS of several production rules, each with a certain probability of being chosen.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item\noindent lsystem.cpp, lsystem.hpp \\
+	The LSystem class encapsulates the rewriting of production rules. The Rule struct encapsulates a single production rule.
+	\item ltree.cpp. ltree.hpp \\
+	The LTree class encapsulates a single tree generated from an LSystem.
+	\item branchnode.cpp, branchnode.hpp \\
+	The BranchNode class encapsulates the geometry of a single branch.
+	\item A5.cpp: initFoliage() function, lines 716-736 \\
+	This section of the initFoliage function is where an LTree is generated from a randomly chosen LSystem.
+	\end{itemize}
+
+	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
+	\normalsize
+	\\
 \newpage
 
 {\noindent \huge \bf 
