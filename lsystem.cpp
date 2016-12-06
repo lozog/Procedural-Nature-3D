@@ -18,13 +18,32 @@ void ReplaceString(string& subject, const string& search,
 string LSystem::generateExpr( string axiom,
 									 Rules rules,
 									 unsigned int depth ) {
+
+	// parallel rewriting of production rules
 	string result = axiom;
 	for ( unsigned int i = 0; i < depth; i += 1 ) {
-		for ( Rule* rule : rules ) {
-			// cout << result << endl;
-			ReplaceString( result, rule->LHS, rule->RHS );
+
+		string newResult = "";
+		size_t ruleLength = result.length();
+		string newRulePieces[ruleLength];
+
+		for ( unsigned int j = 0; j < ruleLength; j += 1 ) {
+
+			string rulePiece = "";
+			rulePiece += result.at(j);		// implicit string cast
+			newRulePieces[j] = rulePiece;
+			for ( Rule* rule : rules ) {
+
+				if( rulePiece == rule->LHS ) {
+					newRulePieces[j] = rule->RHS;
+					break;
+				} // if
+
+			} // for
+			newResult += newRulePieces[j];
 		} // for
-		// cout << result << endl;
+		result = newResult;
 	} // for
+
 	return result;
 }

@@ -716,7 +716,7 @@ void A5::initFoliage() {
 				// generate seed for this tree (get it? seed?!)
 				int treetype = randomTree % numTreeLSystems;
 				Rules* treeRules = treeLSystems.at(treetype);
-				string seed = LSystem::generateExpr(axiom, *treeRules, 3);		
+				string seed = LSystem::generateExpr(axiom, *treeRules, 7);		
 
 				glm::vec3 position = glm::vec3((float)x, heightMap[x][z]-0.25f, (float)z);
 				LTree* tree = new LTree();
