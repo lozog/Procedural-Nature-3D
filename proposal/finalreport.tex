@@ -1,6 +1,6 @@
 \documentclass{article}
 
-\setlength{\parindent}{0pt}
+\setlength{\parindent}{4em}
 
 \usepackage{fullpage}
 \usepackage{graphicx}
@@ -30,12 +30,16 @@
 \end{center}
 \vfill ~\vfill~
 \newpage
-\noindent{\Large \bf Final Project:}
-\begin{description}
-\item[Manual]:
+\Large\noindent\textbf{Introduction:} \\
+\normalsize
+
+Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, ``Toward Photorealism in Virtual Botany". The aim was to combine principles of procedural generation with other graphics techniques to create an immersive, organic environment.
+\\\\
+\Large\textbf{Manual:}
+\normalsize
 	\begin{description}
 	\item[Build]:\\
-		Building this project is largely similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
+		Building this project is mostly similar to the previous CS488 assignments. First, run premake in the top level CS488 project directory:
 		\begin{verbatim}
 			premake4 gmake
 			make
@@ -113,42 +117,47 @@
 		Finally, the \textbf{B} key toggles display of the shadow map, and the \textbf{ESC} key quits the program.
 	\end{description}
 
-\item[Statement]:\\
+\newpage
 
-	For my project, I intend to render a 3D environment with terrain, procedurally generated trees, and reflective water. Much of the inspiration for this project comes from David Whatley's chapter in GPU Gems 2, \'Toward Photorealism in Virtual Botany\'. Many of the topics covered in that chapter are beyond the scope of this project, but it did pique my interest in nature scenes. The other inspiration was Ryan Geiss\' chapter in GPU Gems 3, \'Generating Complex Procedural Terrains Using the GPU\', which got me interested in procedural generation.
+\Large\noindent\textbf{Implementation:}\\
+\normalsize
 
-	This project is more advanced than any real-time program I have ever attempted, so it will be an interesting challenge to try to achieve the objectives while maintaining a reasonable framerate. I also hope to achieve some interesting, perhaps even life-like trees when implementing L-systems to generate tree models.
+	The biggest objectives of this project are procedural generation of terrain with Perlin noise and procedural generation of trees with L-systems.
+	\\
 
-	All of these objectives are completely new topics to me. I've been playing videogames for much of my life, and am familiar with many of these effects in terms of the end result (how they look), but I haven't given much thought as to how they are implemented. A lot of ground will be covered - procedural generation with L-systems, mapping of height and texture, and interesting lighting effects. As I noted above, this will be the most advanced real-time program I have attempted, so I expect to learn a lot in that area.
+	\large\noindent\textbf{Procedural Generation of terrain using Perlin noise}
+	\normalsize
+	\\
 
-\item[Technical Outline]:\\
+	Perlin noise was first developed in the 1980s by Ken Perlin for the movie TRON. Since then, it has seen widepsread use in many application, such as bump mapping, texture generation, and, in this project, terrain generation.
+	\\
 
-    The terrain will be modelled from a height map, with a grayscale gradient representing height. The height map will be generated using Perlin noise.
+	The terrain is a 2-dimensional grid of vertices, each with an x, y, and z coordinate. The y coordinate corresponds to height, and the noise function is used to assign y coordinates to all the vertices. By assigning appropriate values, the program can generate ``realistic"-looking terrain (for some definition of realistic).
+	\\
 
-    I will implement a skybox in the scene using the technique of cubemapping.
+	Perlin noise is a type of gradient noise. In a nutshell, you assign pseudo-random gradients at regularly-spaced points (the \textit{noise lattice}) then interpolate a smooth function between those points. This can be done in any number of dimensions, but it made sense to use 2D for my purposes. That means that each gradient will be a 2D vector. In the case of Perlin noise, the gradient are uniformly spaced on the unit circle. To find the noise value at a point P, the gradients of the four closest points on the noise lattice are lineraly interpolated. This yields the noise value at P.
+	\\
 
-    The landscape will have water up to a fixed height. Using OpenGL's stencil buffer, I plan on adding reflections to the water.
+	The implementation of Perlin noise has a few more nuances. The gradient of a point (x,y) on the lattice is chosen by using a hashing function on (x,y) to obtain an index in a permutation array. The permutation array contains two copies each of all the numbers from 0-255 (it could be higher, but most sources use 256), shuffled. The particular arrangement of the permutation array can be thought of as the ``seed" for Perlin noise.
+	\\
 
-    The environment will be populated with foliage - grass and trees. 
+	In the case of terrain generation, an extra step is taken to make the terrain more realistic. The  resulting noise value at P is multiplied by two factors, \textit{amplitude} and \textit{frequency}. This process is then repeated, with \textit{amplitude} and \textit{frequency} halved and doubled each time, respectively. Each step is sometimes called an \textit{octave}. This is repeated a certain number of times (usually 5 or 7), and the result is realistic-looking terrain. The lower octaves shape the low-level details of the terrain (global hills and valleys), whereas the higher octaves yield smaller, local features of the land.
+	\\
 
-    Since it's unrealistic to render each individual blade of grass, I will use billboards to render \'clumps\' of grass. Additionally, I plan on using a \'screen-door\' effect (also known as a dissolve effect) to simulate alpha transparency for grass - since calculating the attentuation of alpha transparency for the grass as distances increases is expensive.
+	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
+	\normalsize
+	\\
 
-    I plan on making use of Lindenmayer systems to procedurally generate tree models to make the world seem more \"life-like\".
-
-    The ground and models (grass and trees) will have textures applied to them using texture mapping. 
-
-    Finally, I plan on making the scene look nicer (for some definition of nicer) by implementing high dynamic range (HDR) rendering and bloom effects, which both make use of framebuffers.
-
-\end{description}
+	Lindenmayer Systems
 
 \newpage
 
-{\huge \bf 
+{\noindent \huge \bf 
 	\projecttitle 
 }
 
 \medskip
-Name: \myname \\ 
+\noindent{Name: \myname} \\ 
 User ID: \myuserid \\ 
 Student ID: \mystudentid 
 
@@ -185,7 +194,7 @@ Student ID: \mystudentid
 		  Implement bloom using framebuffers and Gaussian blur.
 
         \item[\_\_\_ 10:]
-		  Objective ten. Use a "screen-door" effect to simulate alpha transparency for grass.
+		  Objective ten. Use a ``screen-door" effect to simulate alpha transparency for grass.
 
 \end{description}
 
