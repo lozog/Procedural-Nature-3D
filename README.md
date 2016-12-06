@@ -76,6 +76,10 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
     * created by tomek
     * retrieved from http://opengameart.org/content/tomeks-seamless-snow-textures
 
+* sand.png
+    * created by n4
+    * retrieved from http://opengameart.org/content/seamless-beach-sand
+
 ----
 
 ## Objectives
