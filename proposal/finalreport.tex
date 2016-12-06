@@ -125,8 +125,54 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 \Large\noindent\textbf{Implementation:}\\
 \normalsize
 
-	The biggest objectives of this project are procedural generation of terrain with Perlin noise and procedural generation of trees with L-systems.
+	The biggest objectives of this project are procedural generation of terrain with Perlin noise and procedural generation of trees with L-systems. However, I will talk about each of my objectives in order.
 	\\
+
+	\large\noindent\textbf{First-Person Camera}
+	\normalsize
+	\\
+
+	The camera is a fairly standard first-person camera. The controls section has more info on how to use it.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item A5.cpp: resetCamera() function, lines 327-336 \\
+	This function sets the default settings for the camera
+	\item A5.cpp: mouseMoveEvent() function, lines 1115-1142 \\
+	This function updates the camera vectors (front, up, and right) which are used to control direction of motion, as well as the camera's pitch and yaw. The pitch is limited to a range of [-89.0f, 89.0f] to restrict the range of motion (and also to keep the sin and cos functions behaving nicely).
+	\end{itemize}
+
+	\large\noindent\textbf{Skybox}
+	\normalsize
+	\\
+
+	The camera is a cubemap texture, which is specifically supported by OpenGL.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item A5.cpp: loadSkybox() function, lines 424-473 \\
+	This function opens the skybox texture files and loads them into OpenGL's GL\_TEXTURE\_CUBE\_MAP.
+	\item A5.cpp: drawSkybox() function, lines 859-872 \\
+	This function uses the skybox shaders to actually draw the skybox. It is necessary to disregard the translation component of the view matrix (line 865).
+	\item Assets/skyboxVertexShader.vs, Assets/skyboxFragmentShader.vs
+	\end{itemize}
+
+	\large\noindent\textbf{Water reflections}
+	\normalsize
+	\\
+
+	My original plan was to use OpenGL's stencil buffer to implement reflections of geometry (trees, terrain) on the water, but that proved to be problematic. Instead, I reflected the skybox on the water by passing the skybox texture to the water's fragment shader and calculating the reflection.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item Assets/waterFragmentShader.vs, lines 72-78 \\
+	Calculate the reflection
+	\item A5.cpp: drawWater() function, lines 922-925 \\
+	Here, I pass the skybox texture to the water's fragment shader.
+	\end{itemize}
 
 	\large\noindent\textbf{Procedural Generation of terrain using Perlin noise}
 	\normalsize
@@ -155,6 +201,37 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 	The Terrain::init() function uses the Perlinnoise::noise() function to generate heights for the terrain.
 	\end{itemize}
 
+	\large\noindent\textbf{Billboards}
+	\normalsize
+	\\
+
+	Billboards are 2D sprites that exist in a 3D environment and always face the camera. It's much cheaper to draw clumps of grass with these than to model individual blades of grass. I also used billboards for the tree leaves. One billboard of each type is created, then instanced many times by drawing it many times in different poisitions.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item billboard.cpp, billboard.hpp \\
+	The Billboard class encapsulates billboards. 
+	\item A5.cpp: drawBillboards() function, lines 979-1023 \\
+	Here, many instances of the billboards (one for grass, one for leaves) are drawn. The variation of leaf colour is also applied here.
+	\item Assets/billboardVertexShader.vs, Assets/billboardFragmentShader.fs \\
+	\end{itemize}
+
+	\large\noindent\textbf{Texture mapping}
+	\normalsize
+	\\
+
+	Textures are applied to the terrain, water, trees, grass billboards, leaf billboards, and skybox. In the case of the terrain, the terrain is blended depending on slope: flat ground is given a ``ground" texture, and steeper ground is given a ``cliff" texture. The ground texture image is passed in as a parameter, which can help create different environments (e.g. grass, snow, sand). The two textures are blended manually using a weighted sum calculated from the normal vector at each point of terrain.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item A5.cpp: loadTexture function, lines 370-394 \\
+	Opens a texture file and loads it into GL\_TEXTURE\_2D.
+	\item Assets/FragmentShader.fs, lines 72-83 \\
+	Here, the ground and cliff textures are blended according to a weighted sum of the slope of the ground at each point. Each slope is compared (dot product) with the up direction (0,1,0). Some values have been scaled according to what I've found to look best.
+	\end{itemize}
+
 	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
 	\normalsize
 	\\
@@ -180,12 +257,50 @@ Much of the inspiration for this project comes from David Whatley's chapter in G
 	\item branchnode.cpp, branchnode.hpp \\
 	The BranchNode class encapsulates the geometry of a single branch.
 	\item A5.cpp: initFoliage() function, lines 716-736 \\
-	This section of the initFoliage function is where an LTree is generated from a randomly chosen LSystem.
+	This section of the initFoliage function is where an LTree is generated fcrom a randomly chosen LSystem.
 	\end{itemize}
 
-	\large\noindent\textbf{Procedural Generation of trees with Lindenmayer systems}
+	\large\noindent\textbf{Shadows}
 	\normalsize
 	\\
+
+	Shadows are created by first rendering the scene from the direction of the light and storing the resulting depth values in an OpenGL Framebuffer object, creating the shadow map. The shadow map is then passed to the fragment shader, which checks each point to see if it's in a shadow. If it is, no diffuse or specular light is applied to that point (ambient light only).
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item A5.cpp: initShadowMap function, lines 648-673 \\
+	Initializes a framebuffer object to be used as the shadow map, which will be written to a 2D texture that can be read by the shaders.
+	\item A5.cpp: drawShadowMap function, lines 834-857 \\
+	Renders scene from light's point of view, then writes results to the framebuffer object. To render the scene from the light's POV, an orthographic projection matrix (which is calculated from the terrain size to make sure it covers everything) is created, as well as a new view matrix. Terrain and trees cast shadows, but water and billboards do not.
+	\item Assets/shadowVertexShader.vs, Assets/shadowFragmentShader.fs \\
+	\item Assets/FragmentShader.fs, lines 29-36, 68-69 \\
+	The fragment shader only adds diffuse \& specular light to a vertex if it isn't in a shadow. A bias of 0.005 is used to eliminate shadow acne with minimal peter panning (when the shadow is offset from the object).
+	\end{itemize}
+
+	\large\noindent\textbf{Bloom}
+	\normalsize
+	\\
+
+	I did not implement bloom.
+	\\
+
+	\large\noindent\textbf{Screen-door effect for billboards}
+	\normalsize
+	\\
+
+	Alpha-based transparency requires sorting, which is slow. Instead, the screen-door (also known as dissolve) effect is a cheaper approximation. Each billboard texture also has an associated screen-door texture. The screen-door texture matches the billboard's shape, but instead of colour, it has greyscale noise. The noise is interpreted by the shader as an alpha value (e.g. white is fully transparent, black is fully opaque). The shader then tests the value of the noise at each pixel; if it does not exceed a certain threshold, the pixel is discarded, and the billboard will be transparent at that point. The effect of this is that as billboards are further away, fewer and fewer pixels pass the threshold, and billboards ``fade" away with distance.
+	\\
+
+	\noindent{You may find the relevant code in the following places:}
+	\begin{itemize}
+	\item A5.cpp: loadTextureAlpha function, lines 397-421 \\
+	Identical to the loadTexture() function, but also loads the alpha channel.
+	\item Assets/billboardFragmentShader.fs, lines 12-20 \\
+	Threshold tests for each fragment. screen.a checks against the outline of the texture, a cheap alpha test. Then, screen.r then checks against the value of the (greyscale) noise.
+	\end{itemize}
+
+
 \newpage
 
 {\noindent \huge \bf 
@@ -198,7 +313,7 @@ User ID: \myuserid \\
 Student ID: \mystudentid 
 
 \bigskip
-{\Large Objectives}
+{\noindent\Large Objectives}
 
 \hrule
 \begin{description}
@@ -230,7 +345,7 @@ Student ID: \mystudentid
 		  Implement bloom using framebuffers and Gaussian blur.
 
         \item[\_\_\_ 10:]
-		  Objective ten. Use a ``screen-door" effect to simulate alpha transparency for grass.
+		  Use a ``screen-door" effect to simulate alpha transparency for grass.
 
 \end{description}
 
