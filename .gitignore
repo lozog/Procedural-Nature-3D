@@ -2,6 +2,7 @@
 *.sty
 *.aux
 *.log
+*.dvi
 
 A5
 out*.txt
