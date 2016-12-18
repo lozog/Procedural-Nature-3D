@@ -11,5 +11,7 @@
 A5
 out*.txt
 
+resources.txt
+
 build
 *.a
