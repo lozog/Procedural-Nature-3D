@@ -3,6 +3,7 @@
 ---
 
 ## not in any particular order:
+* code refactoring (leverage OO!)
 * non-deterministic L-systems
 * water bump map
 * shadow smooth/blur
