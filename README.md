@@ -2,26 +2,27 @@
 
 ---
 
-## Dependencies
-* OpenGL 3.2+
-* GLFW
-    * http://www.glfw.org/
-* Lua
-    * http://www.lua.org/
-* Premake4
-    * https://github.com/premake/premake-4.x/wiki
-    * http://premake.github.io/download.html
-* GLM
-    * http://glm.g-truc.net/0.9.7/index.html
-* ImGui
-    * https://github.com/ocornut/imgui
-* Simple OpenGL Image Library
-    * http://www.lonesock.net/soil.html
+## TODO
+(in no particular order)
+
+* code refactoring (leverage OO!)
+* non-deterministic L-systems
+* water bump map
+* shadow smooth/blur
+* dynamic loading of map tiles
+* water reflection/refraction
+* point lights, bloom
+* more control over environment:
+    * different tree leaf types (maple, oak, ..), grass blade billboards
+    * grass colour
+    * plant (tree, bush) species with own rules, textures, ...
+    * biomes?
+* Lua support
 
 ---
 
 ## Build
-As with other CS488 projects, this program uses **premake4** as the cross-platform build system. First you will need to build all
+This program uses **premake4** as the cross-platform build system. First you will need to build all
 the static libraries that the projects depend on. To build the libraries, open up a
 terminal, and **cd** to the top level of the CS488 project directory and then run the
 following:
@@ -80,9 +81,27 @@ Next we can build the actual project.  To do this, **cd** into the A5/ directory
     * created by n4
     * retrieved from http://opengameart.org/content/seamless-beach-sand
 
+---
+
+## Dependencies
+* OpenGL 3.2+
+* GLFW
+    * http://www.glfw.org/
+* Lua
+    * http://www.lua.org/
+* Premake4
+    * https://github.com/premake/premake-4.x/wiki
+    * http://premake.github.io/download.html
+* GLM
+    * http://glm.g-truc.net/0.9.7/index.html
+* ImGui
+    * https://github.com/ocornut/imgui
+* Simple OpenGL Image Library
+    * http://www.lonesock.net/soil.html
+
 ----
 
-## Objectives
+## Original Objectives
 
 1. UI: Implement a first-person camera with associated controls to allow navigation of the scene, including movement in 3 axes, speed adjustment, and camera rotation.
 
