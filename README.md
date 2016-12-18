@@ -31,23 +31,23 @@
 ## Build
 This program uses **premake4** as the cross-platform build system. First you will need to build all
 the static libraries that the projects depend on. To build the libraries, open up a
-terminal, and **cd** to the top level of the CS488 project directory and then run the
+terminal, and **cd** to the top level of the project directory and then run the
 following:
 
     $ premake4 gmake
     $ make
 
 This will build the following static libraries, and place them in the top level **lib**
-folder of your cs488 project directory.
+folder of the project directory.
 * libcs488-framework.a
 * libglfw3.a
 * libimgui.a
 
-I have manually added *libSOIL.a* to this folder.
+I have added *libSOIL.a* to this folder. This may work out of the box, or you may need to manually install SOIL on your machine.
 
-Next we can build the actual project.  To do this, **cd** into the A5/ directory and run the following terminal commands in order to compile the A5 executable using all .cpp files in the A5 directory:
+Next we can build the actual project.  To do this, **cd** into the src/ directory and run the following terminal commands in order to compile the A5 executable using all .cpp files in the src directory:
 
-    $ cd A5/
+    $ cd src/
     $ premake4 gmake
     $ make
 
