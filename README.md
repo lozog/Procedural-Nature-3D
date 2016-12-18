@@ -1,5 +1,12 @@
 # 3D Nature Environment with Procedurally Generated Terrain and Trees
 
+![Screenshot of inparams1](screenshots/final/149 - inparams1.png)
+![Screenshot of inparams2](screenshots/final/150 - inparams2.png)
+![Screenshot of inparams3](screenshots/final/151 - inparams3.png)
+![Screenshot of inparams4](screenshots/final/152 - inparams4.png)
+![Screenshot of inparams5](screenshots/final/153 - inparams5.png)
+
+
 ---
 
 ## TODO
