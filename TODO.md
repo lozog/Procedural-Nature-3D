@@ -2,7 +2,7 @@
 
 ---
 
-#not in any particular order:
+## not in any particular order:
 * non-deterministic L-systems
 * water bump map
 * shadow smooth/blur
