@@ -1,11 +1,33 @@
 #include "inputparams.hpp"
 
-
 #include <iostream>
 #include <fstream>								// ifstream
 #include <sstream>								// stringstream
 
 using namespace std;
+
+size_t TERRAIN_WIDTH = 100;
+size_t TERRAIN_LENGTH = TERRAIN_WIDTH;
+size_t WATER_HEIGHT = 9; // 17
+unsigned int NUM_OCTAVES = 7; // # of octaves for terrain generation
+double REDIST = 0.8f; // 1.05f;
+unsigned int TREE_DENSITY = 2000; // density of trees (lower->denser)
+unsigned int GRASS_DENSITY = 2000; // density of grass (lower->denser)
+bool drawShadowDebugQuad = false;
+std::string SKYBOX_NAME = "heather";
+glm::vec3 SUN_DIRECTION = glm::vec3(48.0f, 35.0f, 29.0f);
+glm::vec3 SUN_COLOUR = glm::vec3(1.0f, 0.7f, 0.0f);
+float SUN_INTENSITY = 0.5f;
+glm::vec3 AMBIENT_COLOUR = glm::vec3(0.3f, 0.3f, 0.3f);
+glm::vec3 CAMERA_POS = glm::vec3( 0.0f, 0.0f, 0.0f );
+glm::vec3 CAMERA_FRONT = glm::vec3( 1.0f, 0.0f, 0.0f );
+float CAMERA_PITCH = 0.0f;
+float CAMERA_YAW = 0.0f;
+float CAMERA_SPEED = 1.0f;
+glm::vec4 GRASS_COLOUR = glm::vec4(0.4f, 0.3f, 0.0f, 1.0f);
+glm::vec4 LEAF_COLOUR = glm::vec4(0.9f, 0.1f, 0.1f, 1.0f);
+std::string GROUND_TEXTURE = "res/grass.png";
+std::vector<Rules*> treeLSystems;
 
 void readInputParams( const char* paramFile ) {
 	istream* in;
@@ -171,6 +193,7 @@ void readInputParams( const char* paramFile ) {
 					sysRules->push_back(rule);
 				} // for
 				treeLSystems.push_back(sysRules);
+				cout << "adding tree lsys" << endl;
 			} else {
 				cout << "skipping unrecognized parameter: " << paramName << endl;
 			} // if

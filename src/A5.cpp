@@ -177,8 +177,7 @@ void A5::loadTexture( const char* filename, GLuint* texture ) {
 	// bind image to OpenGL
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	glGenerateMipmap(GL_TEXTURE_2D); // this fails on VMware if 3D acceleration is on
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 
@@ -397,13 +396,13 @@ void A5::init()
 
 	// load model textures
 	loadTexture(GROUND_TEXTURE.c_str(), &m_ground_texture);
-	loadTexture("../res/stone.png", &m_cliff_texture);
-	loadTexture("../res/water.png", &m_water_texture);
-	loadTexture("../res/bark.png", &m_tree_texture); // TODO: on VMWare, crash occurs here
-	loadTextureAlpha("../res/sgrass5-1.png", &m_grass_texture);
-	loadTextureAlpha("../res/leaf.png", &m_leaf_texture);
-	loadTextureAlpha("../res/grass-screendoor.png", &m_grass_screendoor_texture);
-	loadTextureAlpha("../res/leaf-screendoor.png", &m_leaf_screendoor_texture);
+	loadTexture("res/stone.png", &m_cliff_texture);
+	loadTexture("res/water.png", &m_water_texture);
+	loadTexture("res/bark.png", &m_tree_texture);
+	loadTextureAlpha("res/sgrass5-1.png", &m_grass_texture);
+	loadTextureAlpha("res/leaf.png", &m_leaf_texture);
+	loadTextureAlpha("res/grass-screendoor.png", &m_grass_screendoor_texture);
+	loadTextureAlpha("res/leaf-screendoor.png", &m_leaf_screendoor_texture);
 
 	loadSkybox( SKYBOX_NAME, &m_skybox_texture );
 
@@ -580,7 +579,6 @@ void A5::appLogic()
 
 	// cout << cameraPos + cameraFront << endl;
 	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-
 }
 
 //----------------------------------------------------------------------------------------
