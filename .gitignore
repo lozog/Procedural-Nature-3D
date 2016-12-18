@@ -4,5 +4,9 @@
 *.log
 *.dvi
 
+# ignore sublime files
+*.sublime-project
+*.sublime-workspace
+
 A5
 out*.txt
