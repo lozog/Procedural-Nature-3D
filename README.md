@@ -1,11 +1,10 @@
 # 3D Nature Environment with Procedurally Generated Terrain and Trees
 
-![Screenshot of inparams1](screenshots/final/149 - inparams1.png)
-![Screenshot of inparams2](screenshots/final/150 - inparams2.png)
-![Screenshot of inparams3](screenshots/final/151 - inparams3.png)
-![Screenshot of inparams4](screenshots/final/152 - inparams4.png)
-![Screenshot of inparams5](screenshots/final/153 - inparams5.png)
-
+![Screenshot of inparams2](https://lozog.github.io/cs488imgs/150%20-%20inparams2.png)
+![Screenshot of inparams1](https://lozog.github.io/cs488imgs/149%20-%20inparams1.png)
+![Screenshot of inparams3](https://lozog.github.io/cs488imgs/151%20-%20inparams3.png)
+![Screenshot of inparams4](https://lozog.github.io/cs488imgs/152%20-%20inparams4.png)
+![Screenshot of inparams5](https://lozog.github.io/cs488imgs/153%20-%20inparams5.png)
 
 ---
 
