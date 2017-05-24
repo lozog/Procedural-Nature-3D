@@ -1,4 +1,5 @@
 # 3D Nature Environment with Procedurally Generated Terrain and Trees
+Click [here](https://lozog.github.io/) for more information plus in-development screenshots!
 
 ![Screenshot of inparams2](https://lozog.github.io/cs488imgs/150%20-%20inparams2.png)
 ![Screenshot of inparams1](https://lozog.github.io/cs488imgs/149%20-%20inparams1.png)
