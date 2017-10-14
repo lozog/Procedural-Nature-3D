@@ -110,24 +110,23 @@ Next we can build the actual project.  To do this, **cd** into the src/ director
 
 ## Original Objectives
 
-1. UI: Implement a first-person camera with associated controls to allow navigation of the scene, including movement in 3 axes, speed adjustment, and camera rotation.
+1. UI: Implement a first-person camera with associated controls to allow navigation of the scene, including movement in 3 axes, speed adjustment, and camera rotation
 
-2. Modelling: Add a skybox to the scene using cube mapping.
+2. Modelling: Add a skybox to the scene using cube mapping
 
-3. Implement reflections for water using OpenGL's stencil buffer.
+3. Implement reflections for water using OpenGL's stencil buffer
   * I implemented skybox reflections on the water instead
 
-4. Generate a pseudo-random terrain heightmap with Perlin noise.
+4. Generate a pseudo-random terrain heightmap with Perlin noise
 
-5. Add grass to the scene using billboards to create the illusion of many blades of grass.
+5. Add grass to the scene using billboards to create the illusion of many blades of grass
 
-6. Add texture to the ground and foliage using texture mapping.
+6. Add texture to the ground and foliage using texture mapping
 
-7. Use L-systems to procedurally generate trees.
+7. Use L-systems to procedurally generate trees
 
-8. Implement shadows using a depth map stored in an OpenGL frame buffer.
+8. Implement shadows using a depth map stored in an OpenGL frame buffer
 
-9. Implement bloom using framebuffers and Gaussian blur.
-  * This objective was not achieved.
+~9. Implement bloom using framebuffers and Gaussian blur~
 
-10. Use a 'screen-door' effect to simulate alpha transparency for grass.
+10. Use a 'screen-door' effect to simulate alpha transparency for grass
