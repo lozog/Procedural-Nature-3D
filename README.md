@@ -1,30 +1,10 @@
 # 3D Nature Environment with Procedurally Generated Terrain and Trees
-Click [here](https://lozog.github.io/) for more information plus in-development screenshots!
 
-![Screenshot of inparams2](https://lozog.github.io/cs488imgs/150%20-%20inparams2.png)
-![Screenshot of inparams1](https://lozog.github.io/cs488imgs/149%20-%20inparams1.png)
-![Screenshot of inparams3](https://lozog.github.io/cs488imgs/151%20-%20inparams3.png)
-![Screenshot of inparams4](https://lozog.github.io/cs488imgs/152%20-%20inparams4.png)
-![Screenshot of inparams5](https://lozog.github.io/cs488imgs/153%20-%20inparams5.png)
-
----
-
-## TODO
-(in no particular order)
-
-* code refactoring (leverage OO!)
-* non-deterministic L-systems
-* water bump map
-* shadow smooth/blur
-* dynamic loading of map tiles
-* water reflection/refraction
-* point lights, bloom
-* more control over environment:
-    * different tree leaf types (maple, oak, ..), grass blade billboards
-    * grass colour
-    * plant (tree, bush) species with own rules, textures, ...
-    * biomes?
-* Lua support
+![Screenshot of inparams2](https://github.com/lozog/Procedural-Nature-3D/blob/master/screenshots/final/150%20-%20inparams2.png)
+![Screenshot of inparams1](https://github.com/lozog/Procedural-Nature-3D/blob/master/screenshots/final/149%20-%20inparams1.png)
+![Screenshot of inparams3](https://github.com/lozog/Procedural-Nature-3D/blob/master/screenshots/final/151%20-%20inparams3.png)
+![Screenshot of inparams4](https://github.com/lozog/Procedural-Nature-3D/blob/master/screenshots/final/152%20-%20inparams4.png)
+![Screenshot of inparams5](https://github.com/lozog/Procedural-Nature-3D/blob/master/screenshots/final/153%20-%20inparams5.png)
 
 ---
 
